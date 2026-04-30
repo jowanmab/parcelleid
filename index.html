@@ -19,6 +19,7 @@
       --sage:   #4a7c59;
       --muted:  #7a7163;
       --border: #ccc4b4;
+      --purple: #6c47b6;
       --radius: 10px;
       --shadow: 0 2px 16px rgba(15,14,13,0.10);
     }
@@ -30,9 +31,9 @@
     .header-sep { flex: 1; }
     .header-tag { font-size: 0.7rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: #7a7163; border: 1px solid #333; padding: 4px 10px; border-radius: 20px; }
 
-    main { display: grid; grid-template-columns: 360px 1fr; flex: 1; overflow: hidden; height: calc(100vh - 58px); }
+    main { display: grid; grid-template-columns: 360px 1fr; height: calc(100vh - 58px); overflow: hidden; }
 
-    .panel { background: var(--cream); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+    .panel { background: var(--cream); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; height: 100%; }
     .panel-scroll { overflow-y: auto; flex: 1; padding: 28px 24px 32px; }
 
     .hero { margin-bottom: 24px; }
@@ -86,7 +87,6 @@
     .spinner { display: inline-block; width: 12px; height: 12px; border: 2px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 6px; vertical-align: middle; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* progress bar */
     .progress-wrap { height: 4px; background: var(--border); border-radius: 2px; margin-bottom: 14px; display: none; overflow: hidden; }
     .progress-wrap.show { display: block; }
     .progress-bar { height: 100%; background: var(--gold); border-radius: 2px; transition: width 0.3s ease; width: 0%; }
@@ -98,25 +98,20 @@
     #results-list { display: flex; flex-direction: column; gap: 7px; }
 
     .card { background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 13px 14px; cursor: pointer; transition: border-color 0.18s, box-shadow 0.18s, transform 0.15s; position: relative; }
-    .card::after { content: ''; position: absolute; left: 0; top: 12px; bottom: 12px; width: 3px; border-radius: 0 2px 2px 0; background: var(--gold); opacity: 0; transition: opacity 0.2s; }
-    .card:hover { border-color: var(--gold); box-shadow: 0 4px 16px rgba(181,134,42,0.1); transform: translateX(2px); }
+    .card::after { content: ''; position: absolute; left: 0; top: 12px; bottom: 12px; width: 3px; border-radius: 0 2px 2px 0; background: var(--purple); opacity: 0; transition: opacity 0.2s; }
+    .card:hover { border-color: var(--purple); box-shadow: 0 4px 16px rgba(108,71,182,0.1); transform: translateX(2px); }
     .card:hover::after, .card.active::after { opacity: 1; }
-    .card.active { border-color: var(--gold); background: #fffdf7; }
+    .card.active { border-color: var(--purple); background: #faf8ff; }
 
     .card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 7px; }
     .card-id { font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700; color: var(--ink); }
-    .match-tag { font-size: 0.7rem; font-weight: 600; padding: 3px 8px; border-radius: 20px; border: 1px solid; }
-    .match-high { background: rgba(74,124,89,0.1);  color: var(--sage); border-color: rgba(74,124,89,0.3); }
-    .match-med  { background: rgba(181,134,42,0.1); color: var(--gold); border-color: rgba(181,134,42,0.3); }
-    .match-low  { background: rgba(192,66,42,0.08); color: var(--rust); border-color: rgba(192,66,42,0.25); }
+    .match-tag { font-size: 0.7rem; font-weight: 600; padding: 3px 8px; border-radius: 20px; border: 1px solid; background: rgba(108,71,182,0.1); color: var(--purple); border-color: rgba(108,71,182,0.3); }
 
-    .card-meta { display: flex; gap: 14px; font-size: 0.79rem; color: var(--muted); flex-wrap: wrap; }
-    .card-meta strong { color: var(--ink); font-weight: 500; }
     .card-bar-bg { height: 2px; background: var(--cream); border-radius: 2px; margin-top: 9px; overflow: hidden; }
-    .card-bar { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+    .card-bar { height: 100%; border-radius: 2px; transition: width 0.5s ease; background: var(--purple); }
 
-    .map-wrap { position: relative; overflow: hidden; }
-    #map { width: 100%; height: 100%; }
+    .map-wrap { position: relative; overflow: hidden; height: 100%; }
+    #map { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
 
     .leaflet-popup-content-wrapper { background: var(--ink); color: var(--paper); border-radius: var(--radius); box-shadow: 0 8px 32px rgba(0,0,0,0.3); font-family: 'Instrument Sans', sans-serif; }
     .leaflet-popup-tip { background: var(--ink); }
@@ -137,11 +132,6 @@
 
     .map-footer { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); background: white; border: 1px solid var(--border); border-radius: 30px; padding: 6px 16px; font-size: 0.72rem; color: var(--muted); z-index: 500; white-space: nowrap; pointer-events: none; box-shadow: var(--shadow); }
     .map-footer span { color: var(--gold); font-weight: 500; }
-
-    /* légende couleurs */
-    .legend { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
-    .legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.72rem; color: var(--muted); }
-    .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 
     @media (max-width: 768px) {
       main { grid-template-columns: 1fr; grid-template-rows: auto 1fr; height: auto; }
@@ -171,9 +161,9 @@
       <div class="form-section">
         <div class="form-section-label">📍 Localisation</div>
         <div class="field">
-          <label>Commune</label>
+          <label>Commune ou code postal</label>
           <div class="ac-wrap">
-            <input type="text" id="commune-input" placeholder="Ex : Mérignac, Vannes…" autocomplete="off"/>
+            <input type="text" id="commune-input" placeholder="Ex : Mérignac, Vannes, 44000…" autocomplete="off"/>
             <ul id="commune-suggestions"></ul>
           </div>
         </div>
@@ -191,11 +181,6 @@
           <div style="font-size:0.74rem;color:var(--muted);margin-top:6px">
             Entre <span id="surf-min">—</span> et <span id="surf-max">—</span> m²
           </div>
-        </div>
-        <div class="legend">
-          <div class="legend-item"><div class="legend-dot" style="background:#4a7c59"></div>≤ 5% écart</div>
-          <div class="legend-item"><div class="legend-dot" style="background:#b5862a"></div>≤ 15%</div>
-          <div class="legend-item"><div class="legend-dot" style="background:#c0422a"></div>> 15%</div>
         </div>
       </div>
 
@@ -239,15 +224,51 @@
 <script>
 
 // ── Carte ────────────────────────────────────────────────
-const map = L.map('map', { zoomControl: true }).setView([46.6, 2.3], 5);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+const map = L.map('map', { zoomControl: true, maxZoom: 22 }).setView([46.6, 2.3], 5);
+
+const carteIGN = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
   attribution: '© OpenStreetMap contributors © CARTO',
   subdomains: 'abcd', maxZoom: 20
-}).addTo(map);
+});
+
+const satelliteIGN = L.tileLayer(
+  'https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}',
+  { attribution: '© IGN BD Ortho', maxZoom: 22, maxNativeZoom: 19 }
+);
+
+carteIGN.addTo(map);
+
+// ── Bouton satellite style Google Maps ───────────────────
+const SatControl = L.Control.extend({
+  options: { position: 'bottomleft' },
+  onAdd: function() {
+    const div = L.DomUtil.create('div');
+    div.style.cssText = `width:74px;cursor:pointer;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.35);border:2px solid white;font-family:'Instrument Sans',sans-serif;`;
+    let isSat = false;
+    function render() {
+      div.innerHTML = isSat ? `
+        <div style="background:#e8e0d0;padding:4px 0 3px;text-align:center;font-size:0.68rem;font-weight:600;color:#333;letter-spacing:0.03em;">Carte</div>
+        <img src="https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg&TILEMATRIXSET=PM&TILEMATRIX=5&TILEROW=11&TILECOL=16" style="width:74px;height:52px;object-fit:cover;display:block;filter:grayscale(0.3)"/>
+      ` : `
+        <img src="https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg&TILEMATRIXSET=PM&TILEMATRIX=5&TILEROW=11&TILECOL=16" style="width:74px;height:52px;object-fit:cover;display:block;"/>
+        <div style="background:rgba(0,0,0,0.55);padding:4px 0 3px;text-align:center;font-size:0.68rem;font-weight:600;color:white;letter-spacing:0.03em;">Satellite</div>
+      `;
+    }
+    render();
+    L.DomEvent.on(div, 'click', function() {
+      isSat = !isSat;
+      if (isSat) { map.removeLayer(carteIGN); satelliteIGN.addTo(map); }
+      else { map.removeLayer(satelliteIGN); carteIGN.addTo(map); }
+      render();
+    });
+    L.DomEvent.disableClickPropagation(div);
+    return div;
+  }
+});
+new SatControl().addTo(map);
 
 let parcelsLayer = null;
 let communeLayer = null;
-let communePolygon = null;
 
 // ── Progress ─────────────────────────────────────────────
 function setProgress(pct) {
@@ -295,7 +316,11 @@ document.addEventListener('click', e => { if (!e.target.closest('.ac-wrap')) com
 
 async function fetchCommunes(q) {
   try {
-    const r = await fetch(`https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(q)}&fields=nom,code,codeDepartement,centre&boost=population&limit=8`);
+    const isCP = /^\d{3,5}$/.test(q);
+    const url = isCP
+      ? `https://geo.api.gouv.fr/communes?codePostal=${encodeURIComponent(q)}&fields=nom,code,codeDepartement,centre&limit=20`
+      : `https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(q)}&fields=nom,code,codeDepartement,centre&boost=population&limit=8`;
+    const r = await fetch(url);
     const data = await r.json();
     communeSugg.innerHTML = '';
     if (!data.length) { communeSugg.style.display = 'none'; return; }
@@ -321,18 +346,6 @@ function setStatus(msg, type = '') {
 }
 function clearStatus() { document.getElementById('status').className = ''; }
 
-// ── Couleurs selon écart ─────────────────────────────────
-function matchClass(pct) {
-  if (pct <= 5)  return 'match-high';
-  if (pct <= 15) return 'match-med';
-  return 'match-low';
-}
-function barColor(pct) {
-  if (pct <= 5)  return '#4a7c59';
-  if (pct <= 15) return '#b5862a';
-  return '#c0422a';
-}
-
 // ── Affiche les résultats ────────────────────────────────
 function renderCards(features, targetSurf) {
   const list    = document.getElementById('results-list');
@@ -340,8 +353,7 @@ function renderCards(features, targetSurf) {
 
   if (!features.length) {
     countEl.textContent = '0 résultat';
-    list.innerHTML = `<div style="font-size:0.82rem;color:var(--muted);text-align:center;padding:20px 0;border:1px dashed var(--border);border-radius:8px;">
-      Aucune parcelle trouvée.<br/>Essayez d'augmenter la tolérance.</div>`;
+    list.innerHTML = `<div style="font-size:0.82rem;color:var(--muted);text-align:center;padding:20px 0;border:1px dashed var(--border);border-radius:8px;">Aucune parcelle trouvée.<br/>Essayez d'augmenter la tolérance.</div>`;
     return;
   }
 
@@ -349,25 +361,19 @@ function renderCards(features, targetSurf) {
   list.innerHTML = '';
 
   features.forEach(f => {
-    const props   = f.properties || {};
-    // ✅ Compatibilité : l'API peut renvoyer "surface" ou "contenance"
-    const surf    = parseFloat(props.surface ?? props.contenance ?? 0);
-    const section = props.section || '—';
-    const numero  = props.numero  || '—';
-    const ecart   = targetSurf > 0 ? Math.abs(surf - targetSurf) / targetSurf * 100 : 0;
+    const props  = f.properties || {};
+    const surf   = parseFloat(props.surface ?? props.contenance ?? 0);
+    const ecart  = targetSurf > 0 ? Math.abs(surf - targetSurf) / targetSurf * 100 : 0;
 
     const card = document.createElement('div');
     card.className = 'card';
     card.innerHTML = `
       <div class="card-top">
-        <div class="card-id">Section ${section} · N° ${numero}</div>
-        <div class="match-tag ${matchClass(ecart)}">±${ecart.toFixed(1)}%</div>
-      </div>
-      <div class="card-meta">
-        <span>Surface : <strong>${Math.round(surf)} m²</strong></span>
+        <div class="card-id">${Math.round(surf)} m²</div>
+        <div class="match-tag">±${ecart.toFixed(1)}%</div>
       </div>
       <div class="card-bar-bg">
-        <div class="card-bar" style="width:${Math.max(5, 100 - ecart * 4)}%;background:${barColor(ecart)}"></div>
+        <div class="card-bar" style="width:${Math.max(5, 100 - ecart * 4)}%"></div>
       </div>
     `;
     card.addEventListener('click', () => {
@@ -377,7 +383,9 @@ function renderCards(features, targetSurf) {
       parcelsLayer.eachLayer(layer => {
         if (layer.feature === f) {
           map.fitBounds(layer.getBounds(), { padding: [80, 80] });
-          layer.openPopup();
+          const northLat = layer.getBounds().getNorth();
+          const centerLng = layer.getBounds().getCenter().lng;
+          layer.getPopup().setLatLng(L.latLng(northLat, centerLng)).openOn(map);
         }
       });
     });
@@ -385,37 +393,78 @@ function renderCards(features, targetSurf) {
   });
 }
 
+// ── Heading Street View ──────────────────────────────────
+async function getHeading(lat, lng) {
+  try {
+    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&zoom=17&format=json`);
+    const d = await r.json();
+    const roadLat = parseFloat(d.lat);
+    const roadLng = parseFloat(d.lon);
+    const dLng = (lng - roadLng) * Math.cos(lat * Math.PI / 180);
+    const dLat = lat - roadLat;
+    return (Math.atan2(dLng, dLat) * 180 / Math.PI + 360) % 360;
+  } catch { return 0; }
+}
+
 // ── Dessine les parcelles sur la carte ───────────────────
 function drawParcels(features, targetSurf) {
   if (parcelsLayer) { map.removeLayer(parcelsLayer); parcelsLayer = null; }
 
   parcelsLayer = L.geoJSON(features, {
-    style: f => {
-      // ✅ Compatibilité : l'API peut renvoyer "surface" ou "contenance"
-      const surf  = parseFloat(f.properties?.surface ?? f.properties?.contenance ?? 0);
-      const ecart = targetSurf > 0 ? Math.abs(surf - targetSurf) / targetSurf * 100 : 0;
-      return { color: barColor(ecart), weight: 2, opacity: 0.95, fillColor: barColor(ecart), fillOpacity: 0.22 };
-    },
+    style: () => ({
+      color: '#6c47b6', weight: 2, opacity: 0.95,
+      fillColor: '#6c47b6', fillOpacity: 0.22
+    }),
     onEachFeature: (f, layer) => {
-      const props   = f.properties || {};
-      // ✅ Compatibilité : l'API peut renvoyer "surface" ou "contenance"
-      const surf    = parseFloat(props.surface ?? props.contenance ?? 0);
-      const ecart   = targetSurf > 0 ? Math.abs(surf - targetSurf) / targetSurf * 100 : 0;
-      const section = props.section || '—';
-      const numero  = props.numero  || '—';
+      const props  = f.properties || {};
+      const surf   = parseFloat(props.surface ?? props.contenance ?? 0);
+      const ecart  = targetSurf > 0 ? Math.abs(surf - targetSurf) / targetSurf * 100 : 0;
+      const uid    = Math.random().toString(36).slice(2, 8);
 
       let lat = 0, lng = 0;
-      try { const b = layer.getBounds(); lat = b.getCenter().lat; lng = b.getCenter().lng; } catch {}
+      try {
+        lat = layer.getBounds().getCenter().lat;
+        lng = layer.getBounds().getCenter().lng;
+      } catch {}
 
       layer.bindPopup(`
-        <div class="popup-id">Section ${section} · N° ${numero}</div>
-        <div>Contenance : <strong>${Math.round(surf)} m²</strong></div>
-        <div>Écart : <strong>±${ecart.toFixed(1)}%</strong></div>
+        <div class="popup-id" id="addr-${uid}">📍 Chargement adresse…</div>
+        <div>Surface : <strong>${Math.round(surf)} m²</strong> · Écart : <strong>±${ecart.toFixed(1)}%</strong></div>
         <div class="popup-links">
-          <a class="popup-link" href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}" target="_blank">🚶 Street View</a>
+          <a class="popup-link" id="sv-${uid}" href="#" target="_blank">🚶 Street View</a>
           <a class="popup-link" href="https://www.google.com/maps/search/?api=1&query=${lat},${lng}" target="_blank">📍 Google Maps</a>
+          <a class="popup-link" href="https://explore.data.gouv.fr/fr/immobilier?lng=${lng}&lat=${lat}&zoom=17" target="_blank">🏷️ Ventes DVF</a>
         </div>
       `);
+
+      layer.on('click', function() {
+        const northLat = layer.getBounds().getNorth();
+        const centerLng = layer.getBounds().getCenter().lng;
+        layer.getPopup().setLatLng(L.latLng(northLat, centerLng)).openOn(map);
+      });
+
+      layer.on('popupopen', async () => {
+        try {
+          const ra = await fetch(`https://api-adresse.data.gouv.fr/reverse/?lon=${lng}&lat=${lat}&limit=1&type=housenumber`);
+          const da = await ra.json();
+          const addrEl = document.getElementById(`addr-${uid}`);
+          if (addrEl && da.features?.length) {
+            addrEl.textContent = da.features[0].properties.label;
+          } else {
+            const ra2 = await fetch(`https://api-adresse.data.gouv.fr/reverse/?lon=${lng}&lat=${lat}&limit=1`);
+            const da2 = await ra2.json();
+            if (addrEl && da2.features?.length) {
+              addrEl.textContent = da2.features[0].properties.label;
+            } else if (addrEl) {
+              addrEl.textContent = '📍 Adresse non trouvée';
+            }
+          }
+        } catch {}
+
+        const heading = await getHeading(lat, lng);
+        const svLink = document.getElementById(`sv-${uid}`);
+        if (svLink) svLink.href = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}&heading=${Math.round(heading)}&pitch=0&fov=80`;
+      });
     }
   }).addTo(map);
 
@@ -424,34 +473,26 @@ function drawParcels(features, targetSurf) {
   }
 }
 
-
-// ── ✅ CORRECTION PRINCIPALE : fetchParcellesByINSEE ─────
-// L'API renvoie une FeatureCollection → on lit fc.features (et NON data.map())
+// ── API Parcelles ─────────────────────────────────────────
 async function fetchParcellesByINSEE(codeInsee, surfMin, surfMax) {
   const surf = (surfMin + surfMax) / 2;
   const tol  = surf > 0 ? Math.round((surfMax - surfMin) / surf * 100) : 0;
-
-  const url = `https://parcelleid.duckdns.org/parcelles?insee=${codeInsee}&surf=${Math.round(surf)}&tol=${tol}`;
+  const url  = `https://parcelleid.duckdns.org/parcelles?insee=${codeInsee}&surf=${Math.round(surf)}&tol=${tol}`;
 
   let r;
   try {
     r = await fetch(url);
-  } catch (e) {
-    throw new Error('Impossible de joindre l\'API locale (http://127.0.0.1:8000). Vérifiez que uvicorn tourne.');
+  } catch {
+    throw new Error('Impossible de joindre l\'API. Vérifiez que uvicorn tourne.');
   }
-
   if (!r.ok) throw new Error(`Erreur API : ${r.status} ${r.statusText}`);
 
   const fc = await r.json();
-
-  // ✅ fc est une FeatureCollection → on extrait fc.features
   return (fc.features || []).filter(f => {
-    // Compatibilité : le champ surface peut s'appeler "surface" ou "contenance"
     const s = parseFloat(f.properties?.surface ?? f.properties?.contenance ?? 0);
     return s >= surfMin && s <= surfMax;
   });
 }
-
 
 // ── Recherche principale ─────────────────────────────────
 async function doSearch() {
@@ -471,33 +512,25 @@ async function doSearch() {
   setStatus('<span class="spinner"></span>Chargement du contour de la commune…');
 
   try {
-    // 1. Contour commune
     const r = await fetch(`https://geo.api.gouv.fr/communes/${commune.code}?fields=contour&format=geojson&geometry=contour`);
     if (!r.ok) throw new Error('Contour commune introuvable');
-    communePolygon = await r.json();
+    const communeGeo = await r.json();
 
-    // Affiche contour sur la carte
     if (communeLayer) map.removeLayer(communeLayer);
-    communeLayer = L.geoJSON(communePolygon, {
+    communeLayer = L.geoJSON(communeGeo, {
       style: { color: '#b5862a', weight: 2, fillOpacity: 0.04, dashArray: '5,4', opacity: 0.7 }
     }).addTo(map);
-
-    const lb = communeLayer.getBounds();
-    map.fitBounds(lb, { padding: [20, 20] });
+    map.fitBounds(communeLayer.getBounds(), { padding: [20, 20] });
 
     setProgress(10);
-    setStatus('<span class="spinner"></span>Interrogation de l\'API cadastre locale…');
+    setStatus('<span class="spinner"></span>Interrogation de l\'API cadastre…');
 
-    // 2. ✅ Fetch parcelles via l'API locale (FeatureCollection corrigée)
     const features = await fetchParcellesByINSEE(commune.code, sMin, sMax);
 
-    // 3. Tri par écart croissant
     features.sort((a, b) => {
-      const surfA = parseFloat(a.properties?.surface ?? a.properties?.contenance ?? 0);
-      const surfB = parseFloat(b.properties?.surface ?? b.properties?.contenance ?? 0);
-      const dA = Math.abs(surfA - surf);
-      const dB = Math.abs(surfB - surf);
-      return dA - dB;
+      const sA = parseFloat(a.properties?.surface ?? a.properties?.contenance ?? 0);
+      const sB = parseFloat(b.properties?.surface ?? b.properties?.contenance ?? 0);
+      return Math.abs(sA - surf) - Math.abs(sB - surf);
     });
 
     setProgress(100);
@@ -510,11 +543,8 @@ async function doSearch() {
     drawParcels(features, surf);
     renderCards(features, surf);
 
-    if (features.length > 0) {
-      clearStatus();
-    } else {
-      setStatus('Aucune parcelle trouvée. Essayez d\'augmenter la tolérance.', 'err');
-    }
+    if (features.length > 0) clearStatus();
+    else setStatus('Aucune parcelle trouvée. Essayez d\'augmenter la tolérance.', 'err');
 
   } catch (err) {
     setStatus(`❌ ${err.message}`, 'err');

@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ParcelleID — Identifier une annonce immo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ink:    #0f0e0d;
+      --paper:  #f5f1ea;
+      --cream:  #ede9e0;
+      --gold:   #b5862a;
+      --gold2:  #d4a843;
+      --rust:   #c0422a;
+      --sage:   #4a7c59;
+      --muted:  #7a7163;
+      --border: #ccc4b4;
+      --radius: 10px;
+      --shadow: 0 2px 16px rgba(15,14,13,0.10);
+    }
+    body { font-family: 'Instrument Sans', sans-serif; background: var(--paper); color: var(--ink); min-height: 100vh; display: flex; flex-direction: column; }
+
+    header { background: var(--ink); color: var(--paper); padding: 0 32px; height: 58px; display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
+    .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.25rem; letter-spacing: -0.03em; }
+    .logo em { color: var(--gold2); font-style: normal; }
+    .header-sep { flex: 1; }
+    .header-tag { font-size: 0.7rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: #7a7163; border: 1px solid #333; padding: 4px 10px; border-radius: 20px; }
+
+    main { display: grid; grid-template-columns: 360px 1fr; flex: 1; overflow: hidden; height: calc(100vh - 58px); }
+
+    .panel { background: var(--cream); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+    .panel-scroll { overflow-y: auto; flex: 1; padding: 28px 24px 32px; }
+
+    .hero { margin-bottom: 24px; }
+    .hero-eyebrow { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--gold); margin-bottom: 8px; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 700; line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 10px; }
+    .hero p { font-size: 0.84rem; color: var(--muted); line-height: 1.6; }
+
+    .form-section { background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; margin-bottom: 14px; box-shadow: var(--shadow); }
+    .form-section-label { font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--gold); margin-bottom: 12px; }
+
+    label { display: block; font-size: 0.75rem; font-weight: 500; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .field { margin-bottom: 14px; }
+    .field:last-child { margin-bottom: 0; }
+
+    input[type=text], input[type=number] {
+      width: 100%; background: var(--paper); border: 1px solid var(--border); border-radius: 8px;
+      padding: 10px 12px; font-family: 'Instrument Sans', sans-serif; font-size: 0.92rem;
+      color: var(--ink); outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(181,134,42,0.12); background: white; }
+    input::placeholder { color: #b0a898; }
+
+    .ac-wrap { position: relative; }
+    #commune-suggestions {
+      position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+      background: white; border: 1px solid var(--border); border-radius: 8px;
+      z-index: 2000; max-height: 210px; overflow-y: auto; display: none;
+      box-shadow: 0 8px 24px rgba(15,14,13,0.12);
+    }
+    #commune-suggestions li { list-style: none; padding: 10px 13px; font-size: 0.87rem; cursor: pointer; border-bottom: 1px solid var(--cream); transition: background 0.15s; display: flex; justify-content: space-between; align-items: center; }
+    #commune-suggestions li:last-child { border-bottom: none; }
+    #commune-suggestions li:hover { background: var(--cream); }
+    #commune-suggestions li small { color: var(--muted); font-size: 0.75rem; }
+
+    .surface-row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; }
+    .tol-pill { background: var(--cream); border: 1px solid var(--border); border-radius: 8px; padding: 10px; font-size: 0.8rem; color: var(--muted); white-space: nowrap; text-align: center; line-height: 1; }
+    .tol-pill strong { display: block; color: var(--gold); font-size: 0.92rem; font-weight: 600; }
+
+    input[type=range] { width: 100%; accent-color: var(--gold); background: transparent; border: none; padding: 0; box-shadow: none; }
+
+    .btn-search { width: 100%; background: var(--ink); color: var(--paper); border: none; border-radius: var(--radius); padding: 13px; font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: background 0.2s, transform 0.1s; margin-bottom: 14px; }
+    .btn-search:hover { background: #2a2620; }
+    .btn-search:active { transform: scale(0.98); }
+    .btn-search:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; transform: none; }
+
+    #status { font-size: 0.82rem; color: var(--muted); padding: 10px 13px; background: white; border: 1px solid var(--border); border-radius: 8px; text-align: center; display: none; margin-bottom: 14px; line-height: 1.5; }
+    #status.show { display: block; }
+    #status.err { color: var(--rust); border-color: rgba(192,66,42,0.3); background: rgba(192,66,42,0.04); }
+    #status.ok  { color: var(--sage); border-color: rgba(74,124,89,0.3); background: rgba(74,124,89,0.04); }
+
+    .spinner { display: inline-block; width: 12px; height: 12px; border: 2px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 6px; vertical-align: middle; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* progress bar */
+    .progress-wrap { height: 4px; background: var(--border); border-radius: 2px; margin-bottom: 14px; display: none; overflow: hidden; }
+    .progress-wrap.show { display: block; }
+    .progress-bar { height: 100%; background: var(--gold); border-radius: 2px; transition: width 0.3s ease; width: 0%; }
+
+    .results-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .results-label { font-size: 0.67rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+    .results-count { font-size: 0.75rem; font-weight: 600; color: var(--gold); }
+
+    #results-list { display: flex; flex-direction: column; gap: 7px; }
+
+    .card { background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 13px 14px; cursor: pointer; transition: border-color 0.18s, box-shadow 0.18s, transform 0.15s; position: relative; }
+    .card::after { content: ''; position: absolute; left: 0; top: 12px; bottom: 12px; width: 3px; border-radius: 0 2px 2px 0; background: var(--gold); opacity: 0; transition: opacity 0.2s; }
+    .card:hover { border-color: var(--gold); box-shadow: 0 4px 16px rgba(181,134,42,0.1); transform: translateX(2px); }
+    .card:hover::after, .card.active::after { opacity: 1; }
+    .card.active { border-color: var(--gold); background: #fffdf7; }
+
+    .card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 7px; }
+    .card-id { font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700; color: var(--ink); }
+    .match-tag { font-size: 0.7rem; font-weight: 600; padding: 3px 8px; border-radius: 20px; border: 1px solid; }
+    .match-high { background: rgba(74,124,89,0.1);  color: var(--sage); border-color: rgba(74,124,89,0.3); }
+    .match-med  { background: rgba(181,134,42,0.1); color: var(--gold); border-color: rgba(181,134,42,0.3); }
+    .match-low  { background: rgba(192,66,42,0.08); color: var(--rust); border-color: rgba(192,66,42,0.25); }
+
+    .card-meta { display: flex; gap: 14px; font-size: 0.79rem; color: var(--muted); flex-wrap: wrap; }
+    .card-meta strong { color: var(--ink); font-weight: 500; }
+    .card-bar-bg { height: 2px; background: var(--cream); border-radius: 2px; margin-top: 9px; overflow: hidden; }
+    .card-bar { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+
+    .map-wrap { position: relative; overflow: hidden; }
+    #map { width: 100%; height: 100%; }
+
+    .leaflet-popup-content-wrapper { background: var(--ink); color: var(--paper); border-radius: var(--radius); box-shadow: 0 8px 32px rgba(0,0,0,0.3); font-family: 'Instrument Sans', sans-serif; }
+    .leaflet-popup-tip { background: var(--ink); }
+    .leaflet-popup-content { margin: 14px 16px; font-size: 0.83rem; line-height: 1.7; }
+    .popup-id { font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--gold2); margin-bottom: 4px; }
+    .popup-links { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+    .popup-link { font-size: 0.78rem; color: var(--gold2); text-decoration: none; border: 1px solid rgba(212,168,67,0.4); border-radius: 6px; padding: 4px 10px; transition: background 0.2s; }
+    .popup-link:hover { background: rgba(212,168,67,0.15); }
+
+    #overlay { position: absolute; inset: 0; background: rgba(245,241,234,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; z-index: 600; transition: opacity 0.4s; }
+    #overlay.gone { opacity: 0; pointer-events: none; }
+    .overlay-icon { font-size: 2.8rem; }
+    .overlay-title { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 700; }
+    .overlay-sub { font-size: 0.83rem; color: var(--muted); text-align: center; max-width: 280px; line-height: 1.5; }
+
+    #map-count { position: absolute; top: 14px; right: 14px; background: var(--ink); color: var(--paper); border-radius: 8px; padding: 8px 14px; font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700; z-index: 500; display: none; box-shadow: var(--shadow); }
+    #map-count em { color: var(--gold2); font-style: normal; }
+
+    .map-footer { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); background: white; border: 1px solid var(--border); border-radius: 30px; padding: 6px 16px; font-size: 0.72rem; color: var(--muted); z-index: 500; white-space: nowrap; pointer-events: none; box-shadow: var(--shadow); }
+    .map-footer span { color: var(--gold); font-weight: 500; }
+
+    /* légende couleurs */
+    .legend { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+    .legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.72rem; color: var(--muted); }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+    @media (max-width: 768px) {
+      main { grid-template-columns: 1fr; grid-template-rows: auto 1fr; height: auto; }
+      .panel { max-height: 60vh; }
+      .map-wrap { height: 40vh; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Parcelle<em>ID</em></div>
+  <div class="header-sep"></div>
+  <div class="header-tag">V5 · Cadastre IGN</div>
+</header>
+
+<main>
+  <aside class="panel">
+    <div class="panel-scroll">
+
+      <div class="hero">
+        <div class="hero-eyebrow">🏠 Outil d'analyse d'annonces</div>
+        <h1>Retrouvez la parcelle d'une annonce immo</h1>
+        <p>Commune + surface de l'annonce → les parcelles correspondantes s'allument sur la carte.</p>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-label">📍 Localisation</div>
+        <div class="field">
+          <label>Commune</label>
+          <div class="ac-wrap">
+            <input type="text" id="commune-input" placeholder="Ex : Mérignac, Vannes…" autocomplete="off"/>
+            <ul id="commune-suggestions"></ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-label">📐 Contenance cadastrale</div>
+        <div class="field">
+          <label>Surface terrain (m²)</label>
+          <div class="surface-row">
+            <input type="number" id="surface-input" placeholder="Ex : 450" min="1"/>
+            <div class="tol-pill">±<strong id="tol-val">15</strong>%</div>
+          </div>
+          <input type="range" id="tol-range" min="0" max="50" value="15" step="1" style="margin-top:10px"/>
+          <div style="font-size:0.74rem;color:var(--muted);margin-top:6px">
+            Entre <span id="surf-min">—</span> et <span id="surf-max">—</span> m²
+          </div>
+        </div>
+        <div class="legend">
+          <div class="legend-item"><div class="legend-dot" style="background:#4a7c59"></div>≤ 5% écart</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#b5862a"></div>≤ 15%</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#c0422a"></div>> 15%</div>
+        </div>
+      </div>
+
+      <button class="btn-search" id="search-btn" onclick="doSearch()">
+        Afficher les parcelles correspondantes
+      </button>
+
+      <div class="progress-wrap" id="progress-wrap">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+
+      <div id="status"></div>
+
+      <div class="results-head">
+        <span class="results-label">Parcelles trouvées</span>
+        <span class="results-count" id="r-count"></span>
+      </div>
+      <div id="results-list">
+        <div style="font-size:0.82rem;color:var(--muted);text-align:center;padding:20px 0;border:1px dashed var(--border);border-radius:8px;">
+          Les résultats apparaîtront ici
+        </div>
+      </div>
+
+    </div>
+  </aside>
+
+  <div class="map-wrap">
+    <div id="map"></div>
+    <div id="overlay">
+      <div class="overlay-icon">🗺️</div>
+      <div class="overlay-title">La carte s'affiche ici</div>
+      <div class="overlay-sub">Renseignez commune + surface et lancez la recherche</div>
+    </div>
+    <div id="map-count"></div>
+    <div class="map-footer">Données : <span>IGN · Cadastre officiel français</span> — Usage non commercial</div>
+  </div>
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+<script>
+
+// ── Carte ────────────────────────────────────────────────
+const map = L.map('map', { zoomControl: true }).setView([46.6, 2.3], 5);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+  attribution: '© OpenStreetMap contributors © CARTO',
+  subdomains: 'abcd', maxZoom: 20
+}).addTo(map);
+
+let parcelsLayer = null;
+let communeLayer = null;
+let communePolygon = null;
+
+// ── Progress ─────────────────────────────────────────────
+function setProgress(pct) {
+  const wrap = document.getElementById('progress-wrap');
+  const bar  = document.getElementById('progress-bar');
+  wrap.classList.add('show');
+  bar.style.width = pct + '%';
+  if (pct >= 100) setTimeout(() => { wrap.classList.remove('show'); bar.style.width = '0%'; }, 600);
+}
+
+// ── Tolérance UI ─────────────────────────────────────────
+const tolRange  = document.getElementById('tol-range');
+const tolValEl  = document.getElementById('tol-val');
+const surfInput = document.getElementById('surface-input');
+const surfMinEl = document.getElementById('surf-min');
+const surfMaxEl = document.getElementById('surf-max');
+
+function updateTol() {
+  const tol  = parseInt(tolRange.value);
+  const surf = parseFloat(surfInput.value);
+  tolValEl.textContent = tol;
+  if (surf > 0) {
+    surfMinEl.textContent = tol === 0 ? Math.round(surf) : Math.round(surf * (1 - tol/100));
+    surfMaxEl.textContent = tol === 0 ? Math.round(surf) : Math.round(surf * (1 + tol/100));
+  } else { surfMinEl.textContent = '—'; surfMaxEl.textContent = '—'; }
+}
+tolRange.addEventListener('input', updateTol);
+surfInput.addEventListener('input', updateTol);
+updateTol();
+
+// ── Autocomplete communes ─────────────────────────────────
+const communeInput = document.getElementById('commune-input');
+const communeSugg  = document.getElementById('commune-suggestions');
+let selectedCommune = null;
+let acTimer;
+
+communeInput.addEventListener('input', () => {
+  selectedCommune = null;
+  clearTimeout(acTimer);
+  const q = communeInput.value.trim();
+  if (q.length < 2) { communeSugg.style.display = 'none'; return; }
+  acTimer = setTimeout(() => fetchCommunes(q), 280);
+});
+document.addEventListener('click', e => { if (!e.target.closest('.ac-wrap')) communeSugg.style.display = 'none'; });
+
+async function fetchCommunes(q) {
+  try {
+    const r = await fetch(`https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(q)}&fields=nom,code,codeDepartement,centre&boost=population&limit=8`);
+    const data = await r.json();
+    communeSugg.innerHTML = '';
+    if (!data.length) { communeSugg.style.display = 'none'; return; }
+    data.forEach(c => {
+      const li = document.createElement('li');
+      li.innerHTML = `<span>${c.nom}</span><small>${c.codeDepartement}</small>`;
+      li.addEventListener('click', () => {
+        communeInput.value = c.nom;
+        selectedCommune = { nom: c.nom, code: c.code, lat: c.centre?.coordinates[1], lng: c.centre?.coordinates[0] };
+        communeSugg.style.display = 'none';
+      });
+      communeSugg.appendChild(li);
+    });
+    communeSugg.style.display = 'block';
+  } catch { communeSugg.style.display = 'none'; }
+}
+
+// ── Status ───────────────────────────────────────────────
+function setStatus(msg, type = '') {
+  const el = document.getElementById('status');
+  el.innerHTML = msg;
+  el.className = 'show' + (type ? ' ' + type : '');
+}
+function clearStatus() { document.getElementById('status').className = ''; }
+
+// ── Couleurs selon écart ─────────────────────────────────
+function matchClass(pct) {
+  if (pct <= 5)  return 'match-high';
+  if (pct <= 15) return 'match-med';
+  return 'match-low';
+}
+function barColor(pct) {
+  if (pct <= 5)  return '#4a7c59';
+  if (pct <= 15) return '#b5862a';
+  return '#c0422a';
+}
+
+// ── Affiche les résultats ────────────────────────────────
+function renderCards(features, targetSurf) {
+  const list    = document.getElementById('results-list');
+  const countEl = document.getElementById('r-count');
+
+  if (!features.length) {
+    countEl.textContent = '0 résultat';
+    list.innerHTML = `<div style="font-size:0.82rem;color:var(--muted);text-align:center;padding:20px 0;border:1px dashed var(--border);border-radius:8px;">
+      Aucune parcelle trouvée.<br/>Essayez d'augmenter la tolérance.</div>`;
+    return;
+  }
+
+  countEl.textContent = features.length + ' parcelle' + (features.length > 1 ? 's' : '');
+  list.innerHTML = '';
+
+  features.forEach(f => {
+    const props   = f.properties || {};
+    // ✅ Compatibilité : l'API peut renvoyer "surface" ou "contenance"
+    const surf    = parseFloat(props.surface ?? props.contenance ?? 0);
+    const section = props.section || '—';
+    const numero  = props.numero  || '—';
+    const ecart   = targetSurf > 0 ? Math.abs(surf - targetSurf) / targetSurf * 100 : 0;
+
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card-top">
+        <div class="card-id">Section ${section} · N° ${numero}</div>
+        <div class="match-tag ${matchClass(ecart)}">±${ecart.toFixed(1)}%</div>
+      </div>
+      <div class="card-meta">
+        <span>Surface : <strong>${Math.round(surf)} m²</strong></span>
+      </div>
+      <div class="card-bar-bg">
+        <div class="card-bar" style="width:${Math.max(5, 100 - ecart * 4)}%;background:${barColor(ecart)}"></div>
+      </div>
+    `;
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+      if (!parcelsLayer) return;
+      parcelsLayer.eachLayer(layer => {
+        if (layer.feature === f) {
+          map.fitBounds(layer.getBounds(), { padding: [80, 80] });
+          layer.openPopup();
+        }
+      });
+    });
+    list.appendChild(card);
+  });
+}
+
+// ── Dessine les parcelles sur la carte ───────────────────
+function drawParcels(features, targetSurf) {
+  if (parcelsLayer) { map.removeLayer(parcelsLayer); parcelsLayer = null; }
+
+  parcelsLayer = L.geoJSON(features, {
+    style: f => {
+      // ✅ Compatibilité : l'API peut renvoyer "surface" ou "contenance"
+      const surf  = parseFloat(f.properties?.surface ?? f.properties?.contenance ?? 0);
+      const ecart = targetSurf > 0 ? Math.abs(surf - targetSurf) / targetSurf * 100 : 0;
+      return { color: barColor(ecart), weight: 2, opacity: 0.95, fillColor: barColor(ecart), fillOpacity: 0.22 };
+    },
+    onEachFeature: (f, layer) => {
+      const props   = f.properties || {};
+      // ✅ Compatibilité : l'API peut renvoyer "surface" ou "contenance"
+      const surf    = parseFloat(props.surface ?? props.contenance ?? 0);
+      const ecart   = targetSurf > 0 ? Math.abs(surf - targetSurf) / targetSurf * 100 : 0;
+      const section = props.section || '—';
+      const numero  = props.numero  || '—';
+
+      let lat = 0, lng = 0;
+      try { const b = layer.getBounds(); lat = b.getCenter().lat; lng = b.getCenter().lng; } catch {}
+
+      layer.bindPopup(`
+        <div class="popup-id">Section ${section} · N° ${numero}</div>
+        <div>Contenance : <strong>${Math.round(surf)} m²</strong></div>
+        <div>Écart : <strong>±${ecart.toFixed(1)}%</strong></div>
+        <div class="popup-links">
+          <a class="popup-link" href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}" target="_blank">🚶 Street View</a>
+          <a class="popup-link" href="https://www.google.com/maps/search/?api=1&query=${lat},${lng}" target="_blank">📍 Google Maps</a>
+        </div>
+      `);
+    }
+  }).addTo(map);
+
+  if (features.length) {
+    try { map.fitBounds(parcelsLayer.getBounds(), { padding: [40, 40] }); } catch {}
+  }
+}
+
+
+// ── ✅ CORRECTION PRINCIPALE : fetchParcellesByINSEE ─────
+// L'API renvoie une FeatureCollection → on lit fc.features (et NON data.map())
+async function fetchParcellesByINSEE(codeInsee, surfMin, surfMax) {
+  const surf = (surfMin + surfMax) / 2;
+  const tol  = surf > 0 ? Math.round((surfMax - surfMin) / surf * 100) : 0;
+
+  const url = `https://parcelleid.duckdns.org/parcelles?insee=${codeInsee}&surf=${Math.round(surf)}&tol=${tol}`;
+
+  let r;
+  try {
+    r = await fetch(url);
+  } catch (e) {
+    throw new Error('Impossible de joindre l\'API locale (http://127.0.0.1:8000). Vérifiez que uvicorn tourne.');
+  }
+
+  if (!r.ok) throw new Error(`Erreur API : ${r.status} ${r.statusText}`);
+
+  const fc = await r.json();
+
+  // ✅ fc est une FeatureCollection → on extrait fc.features
+  return (fc.features || []).filter(f => {
+    // Compatibilité : le champ surface peut s'appeler "surface" ou "contenance"
+    const s = parseFloat(f.properties?.surface ?? f.properties?.contenance ?? 0);
+    return s >= surfMin && s <= surfMax;
+  });
+}
+
+
+// ── Recherche principale ─────────────────────────────────
+async function doSearch() {
+  const surf    = parseFloat(surfInput.value);
+  const tol     = parseInt(tolRange.value);
+  const commune = selectedCommune;
+
+  if (!commune) { setStatus('⚠️ Sélectionnez une commune dans la liste.', 'err'); return; }
+  if (!surf || surf <= 0) { setStatus('⚠️ Saisissez une surface valide.', 'err'); return; }
+
+  const sMin = tol === 0 ? surf : surf * (1 - tol / 100);
+  const sMax = tol === 0 ? surf : surf * (1 + tol / 100);
+
+  const btn = document.getElementById('search-btn');
+  btn.disabled = true;
+  setProgress(5);
+  setStatus('<span class="spinner"></span>Chargement du contour de la commune…');
+
+  try {
+    // 1. Contour commune
+    const r = await fetch(`https://geo.api.gouv.fr/communes/${commune.code}?fields=contour&format=geojson&geometry=contour`);
+    if (!r.ok) throw new Error('Contour commune introuvable');
+    communePolygon = await r.json();
+
+    // Affiche contour sur la carte
+    if (communeLayer) map.removeLayer(communeLayer);
+    communeLayer = L.geoJSON(communePolygon, {
+      style: { color: '#b5862a', weight: 2, fillOpacity: 0.04, dashArray: '5,4', opacity: 0.7 }
+    }).addTo(map);
+
+    const lb = communeLayer.getBounds();
+    map.fitBounds(lb, { padding: [20, 20] });
+
+    setProgress(10);
+    setStatus('<span class="spinner"></span>Interrogation de l\'API cadastre locale…');
+
+    // 2. ✅ Fetch parcelles via l'API locale (FeatureCollection corrigée)
+    const features = await fetchParcellesByINSEE(commune.code, sMin, sMax);
+
+    // 3. Tri par écart croissant
+    features.sort((a, b) => {
+      const surfA = parseFloat(a.properties?.surface ?? a.properties?.contenance ?? 0);
+      const surfB = parseFloat(b.properties?.surface ?? b.properties?.contenance ?? 0);
+      const dA = Math.abs(surfA - surf);
+      const dB = Math.abs(surfB - surf);
+      return dA - dB;
+    });
+
+    setProgress(100);
+    document.getElementById('overlay').classList.add('gone');
+
+    const mc = document.getElementById('map-count');
+    mc.style.display = 'block';
+    mc.innerHTML = `<em>${features.length}</em> parcelle${features.length > 1 ? 's' : ''}`;
+
+    drawParcels(features, surf);
+    renderCards(features, surf);
+
+    if (features.length > 0) {
+      clearStatus();
+    } else {
+      setStatus('Aucune parcelle trouvée. Essayez d\'augmenter la tolérance.', 'err');
+    }
+
+  } catch (err) {
+    setStatus(`❌ ${err.message}`, 'err');
+    console.error(err);
+    setProgress(100);
+  }
+
+  btn.disabled = false;
+}
+
+communeInput.addEventListener('keydown', e => { if (e.key === 'Enter' && selectedCommune) doSearch(); });
+surfInput.addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
+
+</script>
+</body>
+</html>

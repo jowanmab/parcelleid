@@ -6,6 +6,7 @@
   <title>ParcelleID — Identifier une annonce immo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -114,7 +115,8 @@
     #map { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
 
     .leaflet-popup-content-wrapper { background: var(--ink); color: var(--paper); border-radius: var(--radius); box-shadow: 0 8px 32px rgba(0,0,0,0.3); font-family: 'Instrument Sans', sans-serif; }
-    .leaflet-popup-tip { background: var(--ink); }
+    .leaflet-popup-tip-container { width: 40px; height: 30px; }
+.leaflet-popup-tip { background: var(--ink); }
     .leaflet-popup-content { margin: 14px 16px; font-size: 0.83rem; line-height: 1.7; }
     .popup-id { font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--gold2); margin-bottom: 4px; }
     .popup-links { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
@@ -133,10 +135,40 @@
     .map-footer { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); background: white; border: 1px solid var(--border); border-radius: 30px; padding: 6px 16px; font-size: 0.72rem; color: var(--muted); z-index: 500; white-space: nowrap; pointer-events: none; box-shadow: var(--shadow); }
     .map-footer span { color: var(--gold); font-weight: 500; }
 
-    @media (max-width: 768px) {
-      main { grid-template-columns: 1fr; grid-template-rows: auto 1fr; height: auto; }
-      .panel { max-height: 60vh; }
-      .map-wrap { height: 40vh; }
+   @media (max-width: 768px) {
+      main { display: block; height: calc(100vh - 58px); position: relative; }
+      
+      .map-wrap { position: absolute; inset: 0; height: 100%; }
+      
+      .panel {
+        position: absolute; bottom: 0; left: 0; right: 0; z-index: 1000;
+        height: auto; max-height: 80vh; border-right: none;
+        border-top: 1px solid var(--border);
+        border-radius: 20px 20px 0 0;
+        box-shadow: 0 -4px 24px rgba(0,0,0,0.15);
+        transform: translateY(calc(100% - 60px));
+        transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+      }
+      .panel.open { transform: translateY(0); }
+
+      .panel-scroll { padding: 16px; }
+
+      .panel::before {
+        content: '';
+        display: block;
+        width: 40px; height: 4px;
+        background: var(--border);
+        border-radius: 2px;
+        margin: 12px auto 8px;
+        flex-shrink: 0;
+      }
+
+      .panel-handle {
+        height: 60px; display: flex; align-items: center;
+        justify-content: center; cursor: pointer; flex-shrink: 0;
+        font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem;
+        gap: 8px;
+      }
     }
   </style>
 </head>
@@ -149,7 +181,8 @@
 </header>
 
 <main>
-  <aside class="panel">
+  <aside class="panel" id="mobile-panel">
+    <div class="panel-handle" id="panel-handle">🔍 Rechercher une parcelle</div>
     <div class="panel-scroll">
 
       <div class="hero">
@@ -177,7 +210,7 @@
             <input type="number" id="surface-input" placeholder="Ex : 450" min="1"/>
             <div class="tol-pill">±<strong id="tol-val">15</strong>%</div>
           </div>
-          <input type="range" id="tol-range" min="0" max="50" value="15" step="1" style="margin-top:10px"/>
+          <input type="range" id="tol-range" min="0" max="50" value="2" step="1" style="margin-top:10px"/>
           <div style="font-size:0.74rem;color:var(--muted);margin-top:6px">
             Entre <span id="surf-min">—</span> et <span id="surf-max">—</span> m²
           </div>
@@ -215,7 +248,7 @@
       <div class="overlay-sub">Renseignez commune + surface et lancez la recherche</div>
     </div>
     <div id="map-count"></div>
-    <div class="map-footer">Données : <span>IGN · Cadastre officiel français</span> — Usage non commercial</div>
+    <div class="map-footer">Données : <span>IGN · Cadastre officiel français</span> — Licence Ouverte Etalab</div>
   </div>
 </main>
 
@@ -239,33 +272,62 @@ const satelliteIGN = L.tileLayer(
 carteIGN.addTo(map);
 
 // ── Bouton satellite style Google Maps ───────────────────
-const SatControl = L.Control.extend({
+const LayerControl = L.Control.extend({
   options: { position: 'bottomleft' },
   onAdd: function() {
-    const div = L.DomUtil.create('div');
-    div.style.cssText = `width:74px;cursor:pointer;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.35);border:2px solid white;font-family:'Instrument Sans',sans-serif;`;
+    const wrap = L.DomUtil.create('div');
+    wrap.style.cssText = `display:flex;flex-direction:column;gap:6px;`;
+
     let isSat = false;
-    function render() {
-      div.innerHTML = isSat ? `
-        <div style="background:#e8e0d0;padding:4px 0 3px;text-align:center;font-size:0.68rem;font-weight:600;color:#333;letter-spacing:0.03em;">Carte</div>
-        <img src="https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg&TILEMATRIXSET=PM&TILEMATRIX=5&TILEROW=11&TILECOL=16" style="width:74px;height:52px;object-fit:cover;display:block;filter:grayscale(0.3)"/>
-      ` : `
-        <img src="https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg&TILEMATRIXSET=PM&TILEMATRIX=5&TILEROW=11&TILECOL=16" style="width:74px;height:52px;object-fit:cover;display:block;"/>
-        <div style="background:rgba(0,0,0,0.55);padding:4px 0 3px;text-align:center;font-size:0.68rem;font-weight:600;color:white;letter-spacing:0.03em;">Satellite</div>
-      `;
+
+    const btnCarte = L.DomUtil.create('div', '', wrap);
+    const btnSat   = L.DomUtil.create('div', '', wrap);
+
+    function styleBtn(btn, active) {
+      btn.style.cssText = `width:64px;cursor:pointer;border-radius:8px;overflow:hidden;
+        box-shadow:0 2px 8px rgba(0,0,0,0.35);
+        border:2px solid ${active ? '#d4a843' : 'white'};
+        font-family:'Instrument Sans',sans-serif;`;
     }
-    render();
-    L.DomEvent.on(div, 'click', function() {
-      isSat = !isSat;
-      if (isSat) { map.removeLayer(carteIGN); satelliteIGN.addTo(map); }
-      else { map.removeLayer(satelliteIGN); carteIGN.addTo(map); }
-      render();
+
+    btnCarte.innerHTML = `
+      <img src="https://a.basemaps.cartocdn.com/rastertiles/voyager/5/16/11.png" style="width:64px;height:44px;object-fit:cover;display:block;"/>
+      <div style="background:rgba(0,0,0,0.55);padding:3px 0;text-align:center;font-size:0.65rem;font-weight:600;color:white;letter-spacing:0.03em;">Carte</div>
+    `;
+
+    btnSat.innerHTML = `
+      <img src="https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg&TILEMATRIXSET=PM&TILEMATRIX=5&TILEROW=11&TILECOL=16" style="width:64px;height:44px;object-fit:cover;display:block;"/>
+      <div style="background:rgba(0,0,0,0.55);padding:3px 0;text-align:center;font-size:0.65rem;font-weight:600;color:white;letter-spacing:0.03em;">Satellite</div>
+    `;
+
+    styleBtn(btnCarte, true);
+    styleBtn(btnSat, false);
+
+    L.DomEvent.on(btnCarte, 'click', function() {
+      if (isSat) {
+        map.removeLayer(satelliteIGN);
+        carteIGN.addTo(map);
+        isSat = false;
+        styleBtn(btnCarte, true);
+        styleBtn(btnSat, false);
+      }
     });
-    L.DomEvent.disableClickPropagation(div);
-    return div;
+
+    L.DomEvent.on(btnSat, 'click', function() {
+      if (!isSat) {
+        map.removeLayer(carteIGN);
+        satelliteIGN.addTo(map);
+        isSat = true;
+        styleBtn(btnCarte, false);
+        styleBtn(btnSat, true);
+      }
+    });
+
+    L.DomEvent.disableClickPropagation(wrap);
+    return wrap;
   }
 });
-new SatControl().addTo(map);
+new LayerControl().addTo(map);
 
 let parcelsLayer = null;
 let communeLayer = null;
@@ -376,6 +438,23 @@ function renderCards(features, targetSurf) {
         <div class="card-bar" style="width:${Math.max(5, 100 - ecart * 4)}%"></div>
       </div>
     `;
+    card.addEventListener('mouseenter', () => {
+      if (!parcelsLayer) return;
+      parcelsLayer.eachLayer(layer => {
+        if (layer.feature === f) {
+          layer.setStyle({ fillOpacity: 0.6, weight: 6, color: '#d4a843', fillColor: '#d4a843' });
+        }
+      });
+    });
+
+    card.addEventListener('mouseleave', () => {
+      if (!parcelsLayer) return;
+      parcelsLayer.eachLayer(layer => {
+        if (layer.feature === f) {
+          layer.setStyle({ fillOpacity: 0.22, weight: 2, color: '#6c47b6', fillColor: '#6c47b6' });
+        }
+      });
+    });
     card.addEventListener('click', () => {
       document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
       card.classList.add('active');
@@ -432,7 +511,6 @@ function drawParcels(features, targetSurf) {
         <div>Surface : <strong>${Math.round(surf)} m²</strong> · Écart : <strong>±${ecart.toFixed(1)}%</strong></div>
         <div class="popup-links">
           <a class="popup-link" id="sv-${uid}" href="#" target="_blank">🚶 Street View</a>
-          <a class="popup-link" href="https://www.google.com/maps/search/?api=1&query=${lat},${lng}" target="_blank">📍 Google Maps</a>
           <a class="popup-link" href="https://explore.data.gouv.fr/fr/immobilier?lng=${lng}&lat=${lat}&zoom=17" target="_blank">🏷️ Ventes DVF</a>
         </div>
       `);
@@ -543,6 +621,10 @@ async function doSearch() {
     drawParcels(features, surf);
     renderCards(features, surf);
 
+    if (mobilePanel && window.innerWidth <= 768) {
+      mobilePanel.classList.remove('open');
+    }
+
     if (features.length > 0) clearStatus();
     else setStatus('Aucune parcelle trouvée. Essayez d\'augmenter la tolérance.', 'err');
 
@@ -558,6 +640,19 @@ async function doSearch() {
 communeInput.addEventListener('keydown', e => { if (e.key === 'Enter' && selectedCommune) doSearch(); });
 surfInput.addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
 
+
+// ── Mobile ───────────────────────────────────────────────
+const mobilePanel = document.getElementById('mobile-panel');
+const panelHandle = document.getElementById('panel-handle');
+
+if (mobilePanel && window.innerWidth <= 768) {
+  mobilePanel.classList.add('open');
+}
+if (panelHandle) {
+  panelHandle.addEventListener('click', () => {
+    mobilePanel.classList.toggle('open');
+  });
+}
 </script>
 </body>
 </html>

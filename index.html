@@ -391,24 +391,32 @@ function drawThumb(canvas, feature, zoom) {
   const W = canvas.width, H = canvas.height;
   ctx.fillStyle = '#e5e7eb'; ctx.fillRect(0, 0, W, H);
 
-  // centroide de la feature
-  let sumLat = 0, sumLng = 0, count = 0;
   let coords;
   try {
     const geom = feature.geometry;
     coords = geom.type === 'MultiPolygon' ? geom.coordinates[0][0] : geom.coordinates[0];
   } catch(e) { return Promise.resolve(); }
   if (!coords || !coords.length) return Promise.resolve();
-  coords.forEach(c => { sumLng += c[0]; sumLat += c[1]; count++; });
-  const cLat = sumLat / count, cLng = sumLng / count;
+
+  // Centre via bounding box (plus précis que centroïde)
+  let minLat = Infinity, maxLat = -Infinity, minLng = Infinity, maxLng = -Infinity;
+  coords.forEach(c => { minLng = Math.min(minLng, c[0]); maxLng = Math.max(maxLng, c[0]); minLat = Math.min(minLat, c[1]); maxLat = Math.max(maxLat, c[1]); });
+  const cLat = (minLat + maxLat) / 2, cLng = (minLng + maxLng) / 2;
 
   const n = Math.pow(2, zoom);
-  const xTile = Math.floor((cLng + 180) / 360 * n);
-  const yTile = Math.floor((1 - Math.log(Math.tan(cLat * Math.PI / 180) + 1 / Math.cos(cLat * Math.PI / 180)) / Math.PI) / 2 * n);
-
-  // grille 3x3 de tuiles autour du centre
   const tileSize = 256;
-  const offX = Math.floor(W / 2 / tileSize), offY = Math.floor(H / 2 / tileSize);
+
+  // Conversion lat/lng → pixel monde
+  const lngToX = lng => (lng + 180) / 360 * n * tileSize;
+  const latToY = lat => (1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * n * tileSize;
+
+  const cPxX = lngToX(cLng);
+  const cPxY = latToY(cLat);
+
+  // Tuile centrale
+  const xTile = Math.floor(cPxX / tileSize);
+  const yTile = Math.floor(cPxY / tileSize);
+
   const promises = [];
   for (let dy = -1; dy <= 1; dy++) {
     for (let dx = -1; dx <= 1; dx++) {
@@ -416,6 +424,25 @@ function drawThumb(canvas, feature, zoom) {
       const url = `https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg&TILEMATRIXSET=PM&TILEMATRIX=${zoom}&TILEROW=${ty}&TILECOL=${tx}`;
       promises.push(new Promise(resolve => {
         const img = new Image(); img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          // Position de la tuile dans le canvas, centrée sur cPxX/cPxY
+          const drawX = (tx * tileSize - cPxX) + W / 2;
+          const drawY = (ty * tileSize - cPxY) + H / 2;
+          ctx.drawImage(img, Math.round(drawX), Math.round(drawY), tileSize, tileSize);
+          resolve();
+        };
+        img.onerror = resolve;
+        img.src = url;
+      }));
+    }
+  }
+
+  return Promise.all(promises).then(() => {
+    // Conversion lat/lng → pixel canvas
+    const toPixel = (lat, lng) => [
+      lngToX(lng) - cPxX + W / 2,
+      latToY(lat) - cPxY + H / 2
+    ];;
         img.onload = () => {
           const px = (dx + 1) * tileSize - (tileSize / 2 - W / 2 % tileSize);
           const py = (dy + 1) * tileSize - (tileSize / 2 - H / 2 % tileSize);
@@ -555,12 +582,18 @@ function loadMoreCards(targetSurf) {
 
   renderedCount += batch.length;
 
-  if (renderedCount < allFeatures.length) {
-    const btn = document.createElement('button');
-    btn.className = 'load-more';
-    btn.textContent = `Voir ${Math.min(BATCH, allFeatures.length - renderedCount)} résultats de plus (${allFeatures.length - renderedCount} restants)`;
-    btn.addEventListener('click', () => loadMoreCards(targetSurf));
-    list.appendChild(btn);
+if (renderedCount < allFeatures.length) {
+    const sentinel = document.createElement('div');
+    sentinel.id = 'scroll-sentinel';
+    sentinel.style.height = '10px';
+    list.appendChild(sentinel);
+    const scrollObs = new IntersectionObserver(entries => {
+      if (!entries[0].isIntersecting) return;
+      scrollObs.disconnect();
+      sentinel.remove();
+      loadMoreCards(targetSurf);
+    }, { threshold: 0.1 });
+    scrollObs.observe(sentinel);
   }
 }
 

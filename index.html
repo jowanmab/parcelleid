@@ -225,7 +225,7 @@
             <input type="number" id="surface-input" placeholder="Ex : 450" min="1"/>
             <div class="tol-pill">±<span id="tol-val">15</span>%</div>
           </div>
-          <input type="range" id="tol-range" min="0" max="50" value="15" step="1"/>
+          <input type="range" id="tol-range" min="0" max="50" value="1" step="1"/>
           <div style="font-size:0.7rem;color:var(--muted);margin-top:5px">
             Entre <span id="surf-min" style="color:var(--blue);font-weight:600">—</span>
             et <span id="surf-max" style="color:var(--blue);font-weight:600">—</span> m²
@@ -393,12 +393,7 @@ function drawThumb(canvas, feature, zoom) {
 
   // centroide de la feature
   let sumLat = 0, sumLng = 0, count = 0;
-  let coords;
-  try {
-    const geom = feature.geometry;
-    coords = geom.type === 'MultiPolygon' ? geom.coordinates[0][0] : geom.coordinates[0];
-  } catch(e) { return Promise.resolve(); }
-  if (!coords || !coords.length) return Promise.resolve();
+  const coords = feature.geometry.coordinates[0];
   coords.forEach(c => { sumLng += c[0]; sumLat += c[1]; count++; });
   const cLat = sumLat / count, cLng = sumLng / count;
 
@@ -553,11 +548,16 @@ function loadMoreCards(targetSurf) {
   renderedCount += batch.length;
 
   if (renderedCount < allFeatures.length) {
-    const btn = document.createElement('button');
-    btn.className = 'load-more';
-    btn.textContent = `Voir ${Math.min(BATCH, allFeatures.length - renderedCount)} résultats de plus (${allFeatures.length - renderedCount} restants)`;
-    btn.addEventListener('click', () => loadMoreCards(targetSurf));
-    list.appendChild(btn);
+    const sentinel = document.createElement('div');
+    sentinel.style.cssText = 'height:10px;grid-column:1/-1;';
+    list.appendChild(sentinel);
+    const scrollObs = new IntersectionObserver(entries => {
+      if (!entries[0].isIntersecting) return;
+      scrollObs.disconnect();
+      sentinel.remove();
+      loadMoreCards(targetSurf);
+    }, { threshold: 0.1 });
+    scrollObs.observe(sentinel);
   }
 }
 
@@ -860,5 +860,3 @@ checkVerifyToken();
 </script>
 </body>
 </html>
-
-

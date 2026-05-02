@@ -225,7 +225,7 @@
             <input type="number" id="surface-input" placeholder="Ex : 450" min="1"/>
             <div class="tol-pill">±<span id="tol-val">15</span>%</div>
           </div>
-          <input type="range" id="tol-range" min="0" max="50" value="1" step="1"/>
+          <input type="range" id="tol-range" min="0" max="50" value="15" step="1"/>
           <div style="font-size:0.7rem;color:var(--muted);margin-top:5px">
             Entre <span id="surf-min" style="color:var(--blue);font-weight:600">—</span>
             et <span id="surf-max" style="color:var(--blue);font-weight:600">—</span> m²
@@ -582,18 +582,12 @@ function loadMoreCards(targetSurf) {
 
   renderedCount += batch.length;
 
-if (renderedCount < allFeatures.length) {
-    const sentinel = document.createElement('div');
-    sentinel.id = 'scroll-sentinel';
-    sentinel.style.height = '10px';
-    list.appendChild(sentinel);
-    const scrollObs = new IntersectionObserver(entries => {
-      if (!entries[0].isIntersecting) return;
-      scrollObs.disconnect();
-      sentinel.remove();
-      loadMoreCards(targetSurf);
-    }, { threshold: 0.1 });
-    scrollObs.observe(sentinel);
+  if (renderedCount < allFeatures.length) {
+    const btn = document.createElement('button');
+    btn.className = 'load-more';
+    btn.textContent = `Voir ${Math.min(BATCH, allFeatures.length - renderedCount)} résultats de plus (${allFeatures.length - renderedCount} restants)`;
+    btn.addEventListener('click', () => loadMoreCards(targetSurf));
+    list.appendChild(btn);
   }
 }
 

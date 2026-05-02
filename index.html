@@ -537,7 +537,7 @@ function loadMoreCards(targetSurf) {
         coords.forEach(c => { lng += c[0]; lat += c[1]; });
         lat /= coords.length; lng /= coords.length;
       } catch {}
-      drawThumb(canvas, f, 18);
+      drawThumb(canvas, f, 19);
       fetchShortAddr(lat, lng).then(addr => { if (addr) addrBand.textContent = addr; });
     }, { threshold: 0.1 });
     observer.observe(card);

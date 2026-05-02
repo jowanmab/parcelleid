@@ -5,243 +5,197 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ParcelleID — Identifier une annonce immo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --ink:    #0f0e0d;
-      --paper:  #f5f1ea;
-      --cream:  #ede9e0;
-      --gold:   #b5862a;
-      --gold2:  #d4a843;
-      --rust:   #c0422a;
-      --sage:   #4a7c59;
-      --muted:  #7a7163;
-      --border: #ccc4b4;
-      --purple: #6c47b6;
-      --radius: 10px;
-      --shadow: 0 2px 16px rgba(15,14,13,0.10);
+      --blue:    #2563eb;
+      --blue-lt: #eff6ff;
+      --blue-bd: #bfdbfe;
+      --ink:     #111827;
+      --mid:     #6b7280;
+      --muted:   #9ca3af;
+      --border:  #e5e7eb;
+      --soft:    #f0f0ee;
+      --bg:      #f9fafb;
+      --white:   #ffffff;
+      --radius:  10px;
+      --shadow:  0 2px 8px rgba(0,0,0,0.06);
     }
-    body { font-family: 'Instrument Sans', sans-serif; background: var(--paper); color: var(--ink); min-height: 100vh; display: flex; flex-direction: column; }
-
-    header { background: var(--ink); color: var(--paper); padding: 0 32px; height: 58px; display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
-    .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.25rem; letter-spacing: -0.03em; }
-    .logo em { color: var(--gold2); font-style: normal; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; display: flex; flex-direction: column; }
+    header { background: var(--white); border-bottom: 1px solid var(--soft); padding: 0 32px; height: 58px; display: flex; align-items: center; gap: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); flex-shrink: 0; }
+    .logo { font-weight: 800; font-size: 1.2rem; color: var(--ink); letter-spacing: -0.03em; }
+    .logo span { color: var(--blue); }
     .header-sep { flex: 1; }
-    .header-tag { font-size: 0.7rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: #7a7163; border: 1px solid #333; padding: 4px 10px; border-radius: 20px; }
-
-    main { display: grid; grid-template-columns: 360px 1fr; height: calc(100vh - 58px); overflow: hidden; }
-
-    .panel { background: var(--cream); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; height: 100%; }
-    .panel-scroll { overflow-y: auto; flex: 1; padding: 28px 24px 32px; }
-
-    .hero { margin-bottom: 24px; }
-    .hero-eyebrow { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--gold); margin-bottom: 8px; }
-    .hero h1 { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 700; line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 10px; }
-    .hero p { font-size: 0.84rem; color: var(--muted); line-height: 1.6; }
-
-    .form-section { background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; margin-bottom: 14px; box-shadow: var(--shadow); }
-    .form-section-label { font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--gold); margin-bottom: 12px; }
-
-    label { display: block; font-size: 0.75rem; font-weight: 500; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
-    .field { margin-bottom: 14px; }
+    .header-tag { font-size: 0.68rem; color: var(--muted); border: 1px solid var(--border); padding: 4px 10px; border-radius: 20px; letter-spacing: 0.05em; }
+    main { display: grid; grid-template-columns: 340px 1fr; height: calc(100vh - 58px); overflow: hidden; }
+    .panel { background: var(--white); border-right: 1px solid var(--soft); display: flex; flex-direction: column; overflow: hidden; height: 100%; }
+    .panel-scroll { overflow-y: auto; flex: 1; padding: 24px 20px 32px; }
+    .hero { margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid #f3f4f6; }
+    .hero-eyebrow { font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--blue); margin-bottom: 8px; }
+    .hero h1 { font-size: 1.25rem; font-weight: 800; line-height: 1.3; letter-spacing: -0.02em; margin-bottom: 8px; }
+    .hero p { font-size: 0.8rem; color: var(--mid); line-height: 1.6; }
+    .form-section { background: var(--bg); border: 1px solid var(--soft); border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+    .form-label { font-size: 0.62rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 10px; }
+    label { display: block; font-size: 0.72rem; font-weight: 500; color: var(--mid); margin-bottom: 5px; }
+    .field { margin-bottom: 12px; }
     .field:last-child { margin-bottom: 0; }
-
-    input[type=text], input[type=number] {
-      width: 100%; background: var(--paper); border: 1px solid var(--border); border-radius: 8px;
-      padding: 10px 12px; font-family: 'Instrument Sans', sans-serif; font-size: 0.92rem;
-      color: var(--ink); outline: none; transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(181,134,42,0.12); background: white; }
-    input::placeholder { color: #b0a898; }
-
+    input[type=text], input[type=number] { width: 100%; background: var(--white); border: 1.5px solid var(--border); border-radius: 8px; padding: 10px 12px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.88rem; color: var(--ink); outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+    input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.08); }
+    input::placeholder { color: #d1d5db; }
     .ac-wrap { position: relative; }
-    #commune-suggestions {
-      position: absolute; top: calc(100% + 4px); left: 0; right: 0;
-      background: white; border: 1px solid var(--border); border-radius: 8px;
-      z-index: 2000; max-height: 210px; overflow-y: auto; display: none;
-      box-shadow: 0 8px 24px rgba(15,14,13,0.12);
-    }
-    #commune-suggestions li { list-style: none; padding: 10px 13px; font-size: 0.87rem; cursor: pointer; border-bottom: 1px solid var(--cream); transition: background 0.15s; display: flex; justify-content: space-between; align-items: center; }
+    #commune-suggestions { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--white); border: 1.5px solid var(--border); border-radius: 8px; z-index: 2000; max-height: 210px; overflow-y: auto; display: none; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+    #commune-suggestions li { list-style: none; padding: 10px 13px; font-size: 0.87rem; cursor: pointer; border-bottom: 1px solid var(--bg); transition: background 0.15s; display: flex; justify-content: space-between; align-items: center; }
     #commune-suggestions li:last-child { border-bottom: none; }
-    #commune-suggestions li:hover { background: var(--cream); }
+    #commune-suggestions li:hover { background: var(--bg); }
     #commune-suggestions li small { color: var(--muted); font-size: 0.75rem; }
-
-    .surface-row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; }
-    .tol-pill { background: var(--cream); border: 1px solid var(--border); border-radius: 8px; padding: 10px; font-size: 0.8rem; color: var(--muted); white-space: nowrap; text-align: center; line-height: 1; }
-    .tol-pill strong { display: block; color: var(--gold); font-size: 0.92rem; font-weight: 600; }
-
-    input[type=range] { width: 100%; accent-color: var(--gold); background: transparent; border: none; padding: 0; box-shadow: none; }
-
-    .btn-search { width: 100%; background: var(--ink); color: var(--paper); border: none; border-radius: var(--radius); padding: 13px; font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: background 0.2s, transform 0.1s; margin-bottom: 14px; }
-    .btn-search:hover { background: #2a2620; }
+    .surface-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; }
+    .tol-pill { background: var(--blue-lt); border: 1.5px solid var(--blue-bd); border-radius: 8px; padding: 10px 12px; font-size: 0.8rem; color: var(--blue); font-weight: 700; text-align: center; white-space: nowrap; }
+    input[type=range] { width: 100%; accent-color: var(--blue); background: transparent; border: none; padding: 0; margin-top: 10px; }
+    .btn-search { width: 100%; background: var(--ink); color: var(--white); border: none; border-radius: var(--radius); padding: 13px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: background 0.2s, transform 0.1s; margin-bottom: 12px; letter-spacing: -0.01em; }
+    .btn-search:hover { background: #1f2937; }
     .btn-search:active { transform: scale(0.98); }
     .btn-search:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; transform: none; }
-
-    #status { font-size: 0.82rem; color: var(--muted); padding: 10px 13px; background: white; border: 1px solid var(--border); border-radius: 8px; text-align: center; display: none; margin-bottom: 14px; line-height: 1.5; }
+    #status { font-size: 0.82rem; color: var(--mid); padding: 10px 13px; background: var(--white); border: 1px solid var(--border); border-radius: 8px; text-align: center; display: none; margin-bottom: 12px; line-height: 1.5; }
     #status.show { display: block; }
-    #status.err { color: var(--rust); border-color: rgba(192,66,42,0.3); background: rgba(192,66,42,0.04); }
-    #status.ok  { color: var(--sage); border-color: rgba(74,124,89,0.3); background: rgba(74,124,89,0.04); }
-
-    .spinner { display: inline-block; width: 12px; height: 12px; border: 2px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 6px; vertical-align: middle; }
+    #status.err { color: #dc2626; border-color: rgba(220,38,38,0.3); background: rgba(220,38,38,0.04); }
+    #status.ok  { color: #16a34a; border-color: rgba(22,163,74,0.3); background: rgba(22,163,74,0.04); }
+    .spinner { display: inline-block; width: 12px; height: 12px; border: 2px solid var(--border); border-top-color: var(--blue); border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 6px; vertical-align: middle; }
     @keyframes spin { to { transform: rotate(360deg); } }
-
-    .progress-wrap { height: 4px; background: var(--border); border-radius: 2px; margin-bottom: 14px; display: none; overflow: hidden; }
+    .progress-wrap { height: 3px; background: var(--border); border-radius: 2px; margin-bottom: 12px; display: none; overflow: hidden; }
     .progress-wrap.show { display: block; }
-    .progress-bar { height: 100%; background: var(--gold); border-radius: 2px; transition: width 0.3s ease; width: 0%; }
-
-    .results-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-    .results-label { font-size: 0.67rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
-    .results-count { font-size: 0.75rem; font-weight: 600; color: var(--gold); }
-
-    #results-list { display: flex; flex-direction: column; gap: 7px; }
-
-    .card { background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 13px 14px; cursor: pointer; transition: border-color 0.18s, box-shadow 0.18s, transform 0.15s; position: relative; }
-    .card::after { content: ''; position: absolute; left: 0; top: 12px; bottom: 12px; width: 3px; border-radius: 0 2px 2px 0; background: var(--purple); opacity: 0; transition: opacity 0.2s; }
-    .card:hover { border-color: var(--purple); box-shadow: 0 4px 16px rgba(108,71,182,0.1); transform: translateX(2px); }
-    .card:hover::after, .card.active::after { opacity: 1; }
-    .card.active { border-color: var(--purple); background: #faf8ff; }
-
-    .card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 7px; }
-    .card-id { font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700; color: var(--ink); }
-    .match-tag { font-size: 0.7rem; font-weight: 600; padding: 3px 8px; border-radius: 20px; border: 1px solid; background: rgba(108,71,182,0.1); color: var(--purple); border-color: rgba(108,71,182,0.3); }
-
-    .card-bar-bg { height: 2px; background: var(--cream); border-radius: 2px; margin-top: 9px; overflow: hidden; }
-    .card-bar { height: 100%; border-radius: 2px; transition: width 0.5s ease; background: var(--purple); }
-
+    .progress-bar { height: 100%; background: var(--blue); border-radius: 2px; transition: width 0.3s ease; width: 0%; }
+    .results-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .results-label { font-size: 0.62rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+    .results-count { font-size: 0.75rem; font-weight: 700; color: var(--blue); }
+    #results-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .card { cursor: pointer; margin: 0; padding: 0; }
+    .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px; }
+    .card-surf { font-size: 1rem; font-weight: 800; color: var(--ink); letter-spacing: -0.02em; }
+    .card-tag { font-size: 0.65rem; font-weight: 700; padding: 3px 8px; border-radius: 20px; background: #dbeafe; color: #1d4ed8; }
+    .card-bar-bg { height: 2px; background: #f3f4f6; border-radius: 2px; overflow: hidden; margin-top: 8px; }
+    .card-bar { height: 100%; background: var(--blue); border-radius: 2px; }
     .map-wrap { position: relative; overflow: hidden; height: 100%; }
     #map { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
-
-    .leaflet-popup-content-wrapper { background: var(--ink); color: var(--paper); border-radius: var(--radius); box-shadow: 0 8px 32px rgba(0,0,0,0.3); font-family: 'Instrument Sans', sans-serif; }
-    .leaflet-popup-tip-container { width: 40px; height: 30px; }
-.leaflet-popup-tip { background: var(--ink); }
+    .leaflet-popup-content-wrapper { background: var(--ink); color: var(--white); border-radius: var(--radius); box-shadow: 0 8px 32px rgba(0,0,0,0.25); font-family: 'Plus Jakarta Sans', sans-serif; }
+    .leaflet-popup-tip { background: var(--ink); }
     .leaflet-popup-content { margin: 14px 16px; font-size: 0.83rem; line-height: 1.7; }
-    .popup-id { font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--gold2); margin-bottom: 4px; }
+    .popup-id { font-size: 0.95rem; font-weight: 800; color: #93c5fd; margin-bottom: 4px; }
     .popup-links { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
-    .popup-link { font-size: 0.78rem; color: var(--gold2); text-decoration: none; border: 1px solid rgba(212,168,67,0.4); border-radius: 6px; padding: 4px 10px; transition: background 0.2s; }
-    .popup-link:hover { background: rgba(212,168,67,0.15); }
-
-    #overlay { position: absolute; inset: 0; background: rgba(245,241,234,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; z-index: 600; transition: opacity 0.4s; }
+    .popup-link { font-size: 0.78rem; color: #93c5fd; text-decoration: none; border: 1px solid rgba(147,197,253,0.4); border-radius: 6px; padding: 4px 10px; transition: background 0.2s; }
+    .popup-link:hover { background: rgba(147,197,253,0.15); }
+    #overlay { position: absolute; inset: 0; background: rgba(249,250,251,0.92); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; z-index: 600; transition: opacity 0.4s; }
     #overlay.gone { opacity: 0; pointer-events: none; }
     .overlay-icon { font-size: 2.8rem; }
-    .overlay-title { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 700; }
-    .overlay-sub { font-size: 0.83rem; color: var(--muted); text-align: center; max-width: 280px; line-height: 1.5; }
-
-    #map-count { position: absolute; top: 14px; right: 14px; background: var(--ink); color: var(--paper); border-radius: 8px; padding: 8px 14px; font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700; z-index: 500; display: none; box-shadow: var(--shadow); }
-    #map-count em { color: var(--gold2); font-style: normal; }
-
-    .map-footer { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); background: white; border: 1px solid var(--border); border-radius: 30px; padding: 6px 16px; font-size: 0.72rem; color: var(--muted); z-index: 500; white-space: nowrap; pointer-events: none; box-shadow: var(--shadow); }
-    .map-footer span { color: var(--gold); font-weight: 500; }
-
-   @media (max-width: 768px) {
+    .overlay-title { font-size: 1.3rem; font-weight: 800; letter-spacing: -0.02em; }
+    .overlay-sub { font-size: 0.83rem; color: var(--mid); text-align: center; max-width: 280px; line-height: 1.5; }
+    #map-count { position: absolute; top: 14px; right: 14px; background: var(--white); border: 1px solid var(--border); color: var(--ink); border-radius: 8px; padding: 7px 14px; font-size: 0.85rem; font-weight: 700; z-index: 500; display: none; box-shadow: var(--shadow); }
+    #map-count em { color: var(--blue); font-style: normal; }
+    .map-footer { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.95); border: 1px solid var(--border); border-radius: 30px; padding: 5px 16px; font-size: 0.68rem; color: var(--muted); z-index: 500; white-space: nowrap; pointer-events: none; backdrop-filter: blur(8px); }
+    .map-footer span { color: var(--blue); font-weight: 500; }
+    #measure-toolbar { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); z-index: 500; display: flex; align-items: center; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+    .measure-btn { display: flex; align-items: center; gap: 7px; padding: 8px 14px; font-size: 0.75rem; font-weight: 600; color: var(--mid); cursor: pointer; border: none; background: none; transition: background 0.15s, color 0.15s; white-space: nowrap; border-right: 1px solid var(--soft); font-family: 'Plus Jakarta Sans', sans-serif; }
+    .measure-btn:last-child { border-right: none; }
+    .measure-btn:hover { background: var(--bg); color: var(--ink); }
+    .measure-btn.active { background: var(--blue-lt); color: var(--blue); }
+    #measure-result { position: absolute; bottom: 46px; left: 50%; transform: translateX(-50%); z-index: 500; background: var(--white); color: var(--ink); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 18px; font-size: 0.82rem; display: none; gap: 14px; align-items: center; box-shadow: var(--shadow); white-space: nowrap; }
+    #measure-result.show { display: flex; }
+    #measure-result strong { color: var(--blue); font-size: 1rem; font-weight: 800; }
+    .measure-sep { width: 1px; height: 20px; background: var(--border); }
+    .measure-clear-btn { background: none; border: 1px solid var(--border); color: var(--mid); border-radius: 6px; padding: 3px 9px; font-size: 0.72rem; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.15s; }
+    .measure-clear-btn:hover { background: var(--bg); color: var(--ink); }
+    .measure-tooltip { background: var(--ink) !important; border: none !important; color: #93c5fd !important; font-family: 'Plus Jakarta Sans', sans-serif !important; font-size: 0.75rem !important; font-weight: 600 !important; border-radius: 6px !important; padding: 4px 9px !important; box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important; }
+    .measure-tooltip::before { display: none !important; }
+    #map.measuring { cursor: crosshair !important; }
+    #map.measuring .leaflet-interactive { cursor: crosshair !important; }
+    @media (max-width: 768px) {
       main { display: block; height: calc(100vh - 58px); position: relative; }
-      
       .map-wrap { position: absolute; inset: 0; height: 100%; }
-      
-      .panel {
-        position: absolute; bottom: 0; left: 0; right: 0; z-index: 1000;
-        height: auto; max-height: 80vh; border-right: none;
-        border-top: 1px solid var(--border);
-        border-radius: 20px 20px 0 0;
-        box-shadow: 0 -4px 24px rgba(0,0,0,0.15);
-        transform: translateY(calc(100% - 60px));
-        transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
-      }
+      .panel { position: absolute; bottom: 0; left: 0; right: 0; z-index: 1000; height: auto; max-height: 80vh; border-right: none; border-top: 1px solid var(--border); border-radius: 20px 20px 0 0; box-shadow: 0 -4px 24px rgba(0,0,0,0.1); transform: translateY(calc(100% - 60px)); transition: transform 0.35s cubic-bezier(0.4,0,0.2,1); }
       .panel.open { transform: translateY(0); }
-
+      .panel::before { content: ''; display: block; width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 12px auto 8px; }
+      .panel-handle { height: 60px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 700; font-size: 0.9rem; gap: 8px; }
       .panel-scroll { padding: 16px; }
-
-      .panel::before {
-        content: '';
-        display: block;
-        width: 40px; height: 4px;
-        background: var(--border);
-        border-radius: 2px;
-        margin: 12px auto 8px;
-        flex-shrink: 0;
-      }
-
-      .panel-handle {
-        height: 60px; display: flex; align-items: center;
-        justify-content: center; cursor: pointer; flex-shrink: 0;
-        font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem;
-        gap: 8px;
-      }
     }
   </style>
 </head>
 <body>
-
 <header>
-  <div class="logo">Parcelle<em>ID</em></div>
+  <div class="logo">Parcelle<span>ID</span></div>
   <div class="header-sep"></div>
   <div class="header-tag">V5 · Cadastre IGN</div>
 </header>
-
 <main>
   <aside class="panel" id="mobile-panel">
     <div class="panel-handle" id="panel-handle">🔍 Rechercher une parcelle</div>
     <div class="panel-scroll">
-
       <div class="hero">
         <div class="hero-eyebrow">🏠 Outil d'analyse d'annonces</div>
-        <h1>Retrouvez la parcelle d'une annonce immo</h1>
-        <p>Commune + surface de l'annonce → les parcelles correspondantes s'allument sur la carte.</p>
+        <h1>Retrouvez la parcelle de votre annonce immo</h1>
+        <p>Commune + surface → les parcelles correspondantes s'affichent sur la carte.</p>
       </div>
-
       <div class="form-section">
-        <div class="form-section-label">📍 Localisation</div>
+        <div class="form-label">📍 Localisation</div>
         <div class="field">
-          <label>Commune ou code postal</label>
           <div class="ac-wrap">
-            <input type="text" id="commune-input" placeholder="Ex : Mérignac, Vannes, 44000…" autocomplete="off"/>
+            <input type="text" id="commune-input" placeholder="Commune ou code postal…" autocomplete="off"/>
             <ul id="commune-suggestions"></ul>
           </div>
         </div>
       </div>
-
       <div class="form-section">
-        <div class="form-section-label">📐 Contenance cadastrale</div>
+        <div class="form-label">📐 Surface cadastrale</div>
         <div class="field">
-          <label>Surface terrain (m²)</label>
           <div class="surface-row">
             <input type="number" id="surface-input" placeholder="Ex : 450" min="1"/>
-            <div class="tol-pill">±<strong id="tol-val">15</strong>%</div>
+            <div class="tol-pill">±<span id="tol-val">15</span>%</div>
           </div>
-          <input type="range" id="tol-range" min="0" max="50" value="2" step="1" style="margin-top:10px"/>
-          <div style="font-size:0.74rem;color:var(--muted);margin-top:6px">
-            Entre <span id="surf-min">—</span> et <span id="surf-max">—</span> m²
+          <input type="range" id="tol-range" min="0" max="50" value="15" step="1"/>
+          <div style="font-size:0.72rem;color:var(--muted);margin-top:6px">
+            Entre <span id="surf-min" style="color:var(--blue);font-weight:600">—</span>
+            et <span id="surf-max" style="color:var(--blue);font-weight:600">—</span> m²
           </div>
         </div>
       </div>
-
-      <button class="btn-search" id="search-btn" onclick="doSearch()">
-        Afficher les parcelles correspondantes
-      </button>
-
-      <div class="progress-wrap" id="progress-wrap">
-        <div class="progress-bar" id="progress-bar"></div>
-      </div>
-
+      <button class="btn-search" id="search-btn" onclick="doSearch()">Afficher les parcelles correspondantes</button>
+      <div class="progress-wrap" id="progress-wrap"><div class="progress-bar" id="progress-bar"></div></div>
       <div id="status"></div>
-
       <div class="results-head">
         <span class="results-label">Parcelles trouvées</span>
         <span class="results-count" id="r-count"></span>
       </div>
       <div id="results-list">
-        <div style="font-size:0.82rem;color:var(--muted);text-align:center;padding:20px 0;border:1px dashed var(--border);border-radius:8px;">
-          Les résultats apparaîtront ici
-        </div>
+        <div style="font-size:0.8rem;color:var(--muted);text-align:center;padding:20px 0;border:1px dashed var(--border);border-radius:8px;">Les résultats apparaîtront ici</div>
       </div>
-
     </div>
   </aside>
-
   <div class="map-wrap">
     <div id="map"></div>
+    <div id="measure-toolbar">
+      <button class="measure-btn" id="btn-measure-dist" onclick="toggleMeasureMode('distance')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="8" x2="2" y2="16"/><line x1="22" y1="8" x2="22" y2="16"/><line x1="8" y1="10" x2="8" y2="14"/><line x1="14" y1="10" x2="14" y2="14"/></svg>
+        Distance
+      </button>
+      <button class="measure-btn" id="btn-measure-area" onclick="toggleMeasureMode('area')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+        Superficie
+      </button>
+      <button class="measure-btn" onclick="stopMeasure()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        Annuler
+      </button>
+    </div>
+    <div id="measure-result">
+      <span id="measure-label">Distance</span>
+      <div class="measure-sep"></div>
+      <span><strong id="measure-val">—</strong></span>
+      <div class="measure-sep" id="measure-sep2" style="display:none"></div>
+      <span id="measure-area-wrap" style="display:none">Superficie : <strong id="measure-area-val">—</strong></span>
+      <div class="measure-sep"></div>
+      <button class="measure-clear-btn" onclick="clearMeasure()">✕ Effacer</button>
+    </div>
     <div id="overlay">
       <div class="overlay-icon">🗺️</div>
       <div class="overlay-title">La carte s'affiche ici</div>
@@ -251,125 +205,63 @@
     <div class="map-footer">Données : <span>IGN · Cadastre officiel français</span> — Licence Ouverte Etalab</div>
   </div>
 </main>
-
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
 <script>
-
-// ── Carte ────────────────────────────────────────────────
 const map = L.map('map', { zoomControl: true, maxZoom: 22 }).setView([46.6, 2.3], 5);
+const tileVoyager = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { attribution: '© OpenStreetMap contributors © CARTO', subdomains: 'abcd', maxZoom: 20 });
+const tileSatellite = L.tileLayer('https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}', { attribution: '© IGN BD Ortho', maxZoom: 22, maxNativeZoom: 19 });
+tileVoyager.addTo(map);
 
-const carteIGN = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-  attribution: '© OpenStreetMap contributors © CARTO',
-  subdomains: 'abcd', maxZoom: 20
-});
-
-const satelliteIGN = L.tileLayer(
-  'https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}',
-  { attribution: '© IGN BD Ortho', maxZoom: 22, maxNativeZoom: 19 }
-);
-
-carteIGN.addTo(map);
-
-// ── Bouton satellite style Google Maps ───────────────────
 const LayerControl = L.Control.extend({
   options: { position: 'bottomleft' },
-  onAdd: function() {
+  onAdd() {
     const wrap = L.DomUtil.create('div');
-    wrap.style.cssText = `display:flex;flex-direction:column;gap:6px;`;
-
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:6px;';
     let isSat = false;
-
-    const btnCarte = L.DomUtil.create('div', '', wrap);
-    const btnSat   = L.DomUtil.create('div', '', wrap);
-
-    function styleBtn(btn, active) {
-      btn.style.cssText = `width:64px;cursor:pointer;border-radius:8px;overflow:hidden;
-        box-shadow:0 2px 8px rgba(0,0,0,0.35);
-        border:2px solid ${active ? '#d4a843' : 'white'};
-        font-family:'Instrument Sans',sans-serif;`;
-    }
-
-    btnCarte.innerHTML = `
-      <img src="https://a.basemaps.cartocdn.com/rastertiles/voyager/5/16/11.png" style="width:64px;height:44px;object-fit:cover;display:block;"/>
-      <div style="background:rgba(0,0,0,0.55);padding:3px 0;text-align:center;font-size:0.65rem;font-weight:600;color:white;letter-spacing:0.03em;">Carte</div>
-    `;
-
-    btnSat.innerHTML = `
-      <img src="https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg&TILEMATRIXSET=PM&TILEMATRIX=5&TILEROW=11&TILECOL=16" style="width:64px;height:44px;object-fit:cover;display:block;"/>
-      <div style="background:rgba(0,0,0,0.55);padding:3px 0;text-align:center;font-size:0.65rem;font-weight:600;color:white;letter-spacing:0.03em;">Satellite</div>
-    `;
-
-    styleBtn(btnCarte, true);
-    styleBtn(btnSat, false);
-
-    L.DomEvent.on(btnCarte, 'click', function() {
-      if (isSat) {
-        map.removeLayer(satelliteIGN);
-        carteIGN.addTo(map);
-        isSat = false;
-        styleBtn(btnCarte, true);
-        styleBtn(btnSat, false);
-      }
-    });
-
-    L.DomEvent.on(btnSat, 'click', function() {
-      if (!isSat) {
-        map.removeLayer(carteIGN);
-        satelliteIGN.addTo(map);
-        isSat = true;
-        styleBtn(btnCarte, false);
-        styleBtn(btnSat, true);
-      }
-    });
-
+    const mkBtn = (imgSrc, label) => {
+      const el = L.DomUtil.create('div', '', wrap);
+      el.style.cssText = 'width:68px;cursor:pointer;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.15);border:2px solid;';
+      el.innerHTML = `<img src="${imgSrc}" style="width:68px;height:46px;object-fit:cover;display:block;"/><div style="font-size:0.6rem;font-weight:700;text-align:center;padding:3px 0;letter-spacing:0.06em;text-transform:uppercase;">${label}</div>`;
+      return el;
+    };
+    const btnCarte = mkBtn('https://a.basemaps.cartocdn.com/rastertiles/voyager/5/16/11.png', 'Carte');
+    const btnSat   = mkBtn('https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg&TILEMATRIXSET=PM&TILEMATRIX=5&TILEROW=11&TILECOL=16', 'Satellite');
+    const styleBtn = (btn, active) => {
+      btn.style.borderColor = active ? '#2563eb' : '#e5e7eb';
+      btn.querySelector('div').style.cssText = `font-size:0.6rem;font-weight:700;text-align:center;padding:3px 0;letter-spacing:0.06em;text-transform:uppercase;background:${active ? '#2563eb' : 'rgba(255,255,255,0.9)'};color:${active ? 'white' : '#6b7280'};`;
+    };
+    styleBtn(btnCarte, true); styleBtn(btnSat, false);
+    L.DomEvent.on(btnCarte, 'click', () => { if (isSat) { map.removeLayer(tileSatellite); tileVoyager.addTo(map); isSat = false; styleBtn(btnCarte, true); styleBtn(btnSat, false); } });
+    L.DomEvent.on(btnSat,   'click', () => { if (!isSat) { map.removeLayer(tileVoyager); tileSatellite.addTo(map); isSat = true; styleBtn(btnCarte, false); styleBtn(btnSat, true); } });
     L.DomEvent.disableClickPropagation(wrap);
     return wrap;
   }
 });
 new LayerControl().addTo(map);
 
-let parcelsLayer = null;
-let communeLayer = null;
+let parcelsLayer = null, communeLayer = null;
 
-// ── Progress ─────────────────────────────────────────────
 function setProgress(pct) {
-  const wrap = document.getElementById('progress-wrap');
-  const bar  = document.getElementById('progress-bar');
-  wrap.classList.add('show');
-  bar.style.width = pct + '%';
+  const wrap = document.getElementById('progress-wrap'), bar = document.getElementById('progress-bar');
+  wrap.classList.add('show'); bar.style.width = pct + '%';
   if (pct >= 100) setTimeout(() => { wrap.classList.remove('show'); bar.style.width = '0%'; }, 600);
 }
 
-// ── Tolérance UI ─────────────────────────────────────────
-const tolRange  = document.getElementById('tol-range');
-const tolValEl  = document.getElementById('tol-val');
-const surfInput = document.getElementById('surface-input');
-const surfMinEl = document.getElementById('surf-min');
-const surfMaxEl = document.getElementById('surf-max');
-
+const tolRange = document.getElementById('tol-range'), surfInput = document.getElementById('surface-input');
 function updateTol() {
-  const tol  = parseInt(tolRange.value);
-  const surf = parseFloat(surfInput.value);
-  tolValEl.textContent = tol;
+  const tol = parseInt(tolRange.value), surf = parseFloat(surfInput.value);
+  document.getElementById('tol-val').textContent = tol;
   if (surf > 0) {
-    surfMinEl.textContent = tol === 0 ? Math.round(surf) : Math.round(surf * (1 - tol/100));
-    surfMaxEl.textContent = tol === 0 ? Math.round(surf) : Math.round(surf * (1 + tol/100));
-  } else { surfMinEl.textContent = '—'; surfMaxEl.textContent = '—'; }
+    document.getElementById('surf-min').textContent = Math.round(surf * (1 - tol / 100));
+    document.getElementById('surf-max').textContent = Math.round(surf * (1 + tol / 100));
+  } else { document.getElementById('surf-min').textContent = '—'; document.getElementById('surf-max').textContent = '—'; }
 }
-tolRange.addEventListener('input', updateTol);
-surfInput.addEventListener('input', updateTol);
-updateTol();
+tolRange.addEventListener('input', updateTol); surfInput.addEventListener('input', updateTol); updateTol();
 
-// ── Autocomplete communes ─────────────────────────────────
-const communeInput = document.getElementById('commune-input');
-const communeSugg  = document.getElementById('commune-suggestions');
-let selectedCommune = null;
-let acTimer;
-
+const communeInput = document.getElementById('commune-input'), communeSugg = document.getElementById('commune-suggestions');
+let selectedCommune = null, acTimer;
 communeInput.addEventListener('input', () => {
-  selectedCommune = null;
-  clearTimeout(acTimer);
+  selectedCommune = null; clearTimeout(acTimer);
   const q = communeInput.value.trim();
   if (q.length < 2) { communeSugg.style.display = 'none'; return; }
   acTimer = setTimeout(() => fetchCommunes(q), 280);
@@ -379,280 +271,403 @@ document.addEventListener('click', e => { if (!e.target.closest('.ac-wrap')) com
 async function fetchCommunes(q) {
   try {
     const isCP = /^\d{3,5}$/.test(q);
-    const url = isCP
-      ? `https://geo.api.gouv.fr/communes?codePostal=${encodeURIComponent(q)}&fields=nom,code,codeDepartement,centre&limit=20`
-      : `https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(q)}&fields=nom,code,codeDepartement,centre&boost=population&limit=8`;
-    const r = await fetch(url);
-    const data = await r.json();
+    const url = isCP ? `https://geo.api.gouv.fr/communes?codePostal=${encodeURIComponent(q)}&fields=nom,code,codeDepartement,centre&limit=20` : `https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(q)}&fields=nom,code,codeDepartement,centre&boost=population&limit=8`;
+    const data = await fetch(url).then(r => r.json());
     communeSugg.innerHTML = '';
     if (!data.length) { communeSugg.style.display = 'none'; return; }
     data.forEach(c => {
       const li = document.createElement('li');
       li.innerHTML = `<span>${c.nom}</span><small>${c.codeDepartement}</small>`;
-      li.addEventListener('click', () => {
-        communeInput.value = c.nom;
-        selectedCommune = { nom: c.nom, code: c.code, lat: c.centre?.coordinates[1], lng: c.centre?.coordinates[0] };
-        communeSugg.style.display = 'none';
-      });
+      li.addEventListener('click', () => { communeInput.value = c.nom; selectedCommune = { nom: c.nom, code: c.code, lat: c.centre?.coordinates[1], lng: c.centre?.coordinates[0] }; communeSugg.style.display = 'none'; });
       communeSugg.appendChild(li);
     });
     communeSugg.style.display = 'block';
   } catch { communeSugg.style.display = 'none'; }
 }
 
-// ── Status ───────────────────────────────────────────────
-function setStatus(msg, type = '') {
-  const el = document.getElementById('status');
-  el.innerHTML = msg;
-  el.className = 'show' + (type ? ' ' + type : '');
-}
+function setStatus(msg, type = '') { const el = document.getElementById('status'); el.innerHTML = msg; el.className = 'show' + (type ? ' ' + type : ''); }
 function clearStatus() { document.getElementById('status').className = ''; }
 
-// ── Affiche les résultats ────────────────────────────────
-function renderCards(features, targetSurf) {
-  const list    = document.getElementById('results-list');
-  const countEl = document.getElementById('r-count');
+let _allFeatures = [], _displayedCount = 0, _targetSurf = 0;
+const PAGE_SIZE = 10;
 
-  if (!features.length) {
-    countEl.textContent = '0 résultat';
-    list.innerHTML = `<div style="font-size:0.82rem;color:var(--muted);text-align:center;padding:20px 0;border:1px dashed var(--border);border-radius:8px;">Aucune parcelle trouvée.<br/>Essayez d'augmenter la tolérance.</div>`;
-    return;
+function makeCard(f) {
+  const surf  = parseFloat(f.properties?.surface ?? f.properties?.contenance ?? 0);
+  const ecart = _targetSurf > 0 ? Math.abs(surf - _targetSurf) / _targetSurf * 100 : 0;
+
+  const uid = Math.random().toString(36).slice(2, 8);
+  let lat = 0, lng = 0;
+  if (parcelsLayer) {
+    parcelsLayer.eachLayer(l => {
+      if (l.feature === f) {
+        try { lat = l.getBounds().getCenter().lat; lng = l.getBounds().getCenter().lng; } catch {}
+      }
+    });
   }
 
+// Extrait les coordonnées du polygone
+  let ring = [];
+  try {
+    const geom = f.geometry;
+    ring = geom.type === 'MultiPolygon' ? geom.coordinates[0][0] : geom.coordinates[0];
+  } catch {}
+
+  // Bbox de la parcelle
+  let minLng = Infinity, maxLng = -Infinity, minLat = Infinity, maxLat = -Infinity;
+  ring.forEach(([pLng, pLat]) => {
+    if (pLng < minLng) minLng = pLng; if (pLng > maxLng) maxLng = pLng;
+    if (pLat < minLat) minLat = pLat; if (pLat > maxLat) maxLat = pLat;
+  });
+  const centerLng = (minLng + maxLng) / 2;
+  const centerLat = (minLat + maxLat) / 2;
+
+  // Zoom adaptatif
+  const tileSize = 256;
+  const CANVAS_SIZE = 256; // taille finale du canvas
+  let zoom = 19;
+  for (let z = 19; z >= 14; z--) {
+    const sc = Math.pow(2, z);
+    const pxW = Math.abs(maxLng - minLng) / 360 * sc * tileSize;
+    const pxH = Math.abs(maxLat - minLat) * sc * tileSize / 360;
+    if (pxW < CANVAS_SIZE * 0.5 && pxH < CANVAS_SIZE * 0.5) { zoom = z; break; }
+  }
+
+  const scale = Math.pow(2, zoom);
+
+  // Pixel flottant du centre
+  function lngLatToWorld(pLng, pLat) {
+    const x = (pLng + 180) / 360 * scale * tileSize;
+    const sinLat = Math.sin(pLat * Math.PI / 180);
+    const y = (0.5 - Math.log((1 + sinLat) / (1 - sinLat)) / (4 * Math.PI)) * scale * tileSize;
+    return { x, y };
+  }
+
+  const centerWorld = lngLatToWorld(centerLng, centerLat);
+
+  // Offset pour centrer la parcelle dans le canvas
+  const offsetX = centerWorld.x - CANVAS_SIZE / 2;
+  const offsetY = centerWorld.y - CANVAS_SIZE / 2;
+
+  // Tuiles nécessaires (grille 3x3 autour du centre)
+  const centerTileX = Math.floor(centerWorld.x / tileSize);
+  const centerTileY = Math.floor(centerWorld.y / tileSize);
+  const tiles = [];
+  for (let dy = -1; dy <= 1; dy++) {
+    for (let dx = -1; dx <= 1; dx++) {
+      const tx = centerTileX + dx;
+      const ty = centerTileY + dy;
+      tiles.push({
+        tx, ty,
+        url: `https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg&TILEMATRIXSET=PM&TILEMATRIX=${zoom}&TILEROW=${ty}&TILECOL=${tx}`,
+        drawX: tx * tileSize - offsetX,
+        drawY: ty * tileSize - offsetY,
+      });
+    }
+  }
+
+  // Path SVG du contour (dans l'espace canvas)
+  const polyCoords = ring.map(([pLng, pLat]) => {
+    const w = lngLatToWorld(pLng, pLat);
+    return { x: w.x - offsetX, y: w.y - offsetY };
+  });
+  const svgPath = polyCoords.length
+    ? 'M' + polyCoords.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join('L') + 'Z'
+    : '';
+
+  const card = document.createElement('div'); card.className = 'card';
+  card.style.cssText = `
+    position:relative;
+    border-radius:12px;
+    overflow:hidden;
+    cursor:pointer;
+    aspect-ratio:1/1;
+    border:2px solid transparent;
+    transition:border-color 0.15s, box-shadow 0.15s;
+    margin:0;
+    padding:0;
+  `;
+
+  card.innerHTML = `
+  <canvas width="256" height="256" id="canvas-${uid}" style="width:100%;height:100%;display:block;background:#e5e7eb;"></canvas>
+    <svg viewBox="0 0 256 256" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;">
+      ${svgPath ? `<path d="${svgPath}" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linejoin="round"/>` : ''}
+    </svg>
+    <div style="
+      position:absolute;inset:0;
+      background:linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0) 50%);
+      pointer-events:none;">
+    </div>
+ <div id="addr-card-${uid}" style="
+      position:absolute;top:0;left:0;right:0;
+      padding:6px 8px;
+      background:linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%);
+      color:white;font-size:0.72rem;font-weight:600;
+      text-shadow:0 1px 3px rgba(0,0,0,0.6);
+      pointer-events:none;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+      …
+    </div>
+    <div style="
+      position:absolute;bottom:0;left:0;right:0;
+      padding:8px;
+      display:flex;justify-content:space-between;align-items:flex-end;
+      pointer-events:none;">
+      <span style="color:white;font-weight:800;font-size:0.85rem;text-shadow:0 1px 3px rgba(0,0,0,0.5);">
+        ${Math.round(surf)} m²
+      </span>
+      <span style="
+        background:${ecart <= 5 ? '#16a34a' : ecart <= 15 ? '#2563eb' : '#dc2626'};
+        color:white;font-size:0.62rem;font-weight:700;
+        padding:2px 7px;border-radius:20px;
+        text-shadow:none;">
+        ±${ecart.toFixed(1)}%
+      </span>
+    </div>
+  `;
+
+  const highlight = on => {
+    card.style.borderColor = on ? '#2563eb' : 'transparent';
+    card.style.boxShadow   = on ? '0 0 0 3px rgba(37,99,235,0.25)' : 'none';
+    if (!parcelsLayer) return;
+    parcelsLayer.eachLayer(l => { if (l.feature === f) l.setStyle(on ? { fillOpacity: 0, weight: 4, color: '#2563eb', fillColor: '#2563eb' } : { fillOpacity: 0, weight: 2, color: '#2563eb', fillColor: '#2563eb' }); });
+  };
+
+  card.addEventListener('mouseenter', () => highlight(true));
+  card.addEventListener('mouseleave', () => { if (!card.classList.contains('active')) highlight(false); });
+card.addEventListener('click', () => {
+    // Remet toutes les parcelles en bleu normal
+    if (parcelsLayer) parcelsLayer.eachLayer(l => l.setStyle({ color: '#2563eb', weight: 2, fillOpacity: 0, opacity: 0.9 }));
+    document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+    card.classList.add('active');
+    if (!parcelsLayer) return;
+    parcelsLayer.eachLayer(l => {
+      if (l.feature === f) {
+        // Parcelle sélectionnée : orange vif, contour épais
+        l.setStyle({ color: '#f97316', weight: 4, fillColor: '#f97316', fillOpacity: 0.15, opacity: 1 });
+        l.bringToFront();
+        map.fitBounds(l.getBounds(), { padding: [80, 80] });
+        l.getPopup().setLatLng(L.latLng(l.getBounds().getNorth(), l.getBounds().getCenter().lng)).openOn(map);
+      }
+    });
+  });
+  // Dessine les tuiles satellite sur le canvas
+setTimeout(() => {
+    const canvas = document.getElementById(`canvas-${uid}`);
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    tiles.forEach(t => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => ctx.drawImage(img, t.drawX, t.drawY, tileSize, tileSize);
+      img.src = t.url;
+    });
+
+    // Récupère l'adresse et l'affiche en haut (sans CP ni ville)
+    fetch(`https://api-adresse.data.gouv.fr/reverse/?lon=${lng}&lat=${lat}&limit=1`)
+      .then(r => r.json())
+      .then(d => {
+        const el = document.getElementById(`addr-card-${uid}`);
+        if (!el) return;
+        const label = d.features?.[0]?.properties?.label || '';
+        // Supprime le code postal (5 chiffres) et la ville (dernier mot après CP)
+        const clean = label.replace(/\s*\d{5}\s+\S+.*$/, '').trim();
+        el.textContent = clean || '—';
+      })
+      .catch(() => {});
+  }, 0);
+
+  return card;
+}
+
+function loadMoreCards() {
+  const list = document.getElementById('results-list');
+  const next = _allFeatures.slice(_displayedCount, _displayedCount + PAGE_SIZE);
+  next.forEach(f => list.appendChild(makeCard(f)));
+  _displayedCount += next.length;
+}
+
+function renderCards(features, targetSurf) {
+  const list = document.getElementById('results-list'), countEl = document.getElementById('r-count');
+  if (!features.length) { countEl.textContent = '0 résultat'; list.innerHTML = `<div style="font-size:0.8rem;color:var(--muted);text-align:center;padding:20px 0;border:1px dashed var(--border);border-radius:8px;">Aucune parcelle trouvée.<br/>Essayez d'augmenter la tolérance.</div>`; return; }
   countEl.textContent = features.length + ' parcelle' + (features.length > 1 ? 's' : '');
   list.innerHTML = '';
+  _allFeatures = features;
+  _targetSurf  = targetSurf;
+  _displayedCount = 0;
+  loadMoreCards();
 
-  features.forEach(f => {
-    const props  = f.properties || {};
-    const surf   = parseFloat(props.surface ?? props.contenance ?? 0);
-    const ecart  = targetSurf > 0 ? Math.abs(surf - targetSurf) / targetSurf * 100 : 0;
+  const panelScroll = document.querySelector('.panel-scroll');
+  panelScroll.onscroll = () => {
+    if (_displayedCount < _allFeatures.length &&
+        panelScroll.scrollTop + panelScroll.clientHeight >= panelScroll.scrollHeight - 80) {
+      loadMoreCards();
+    }
+  };
+}
 
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `
-      <div class="card-top">
-        <div class="card-id">${Math.round(surf)} m²</div>
-        <div class="match-tag">±${ecart.toFixed(1)}%</div>
-      </div>
-      <div class="card-bar-bg">
-        <div class="card-bar" style="width:${Math.max(5, 100 - ecart * 4)}%"></div>
-      </div>
-    `;
-    card.addEventListener('mouseenter', () => {
-      if (!parcelsLayer) return;
-      parcelsLayer.eachLayer(layer => {
-        if (layer.feature === f) {
-          layer.setStyle({ fillOpacity: 0.6, weight: 6, color: '#d4a843', fillColor: '#d4a843' });
-        }
-      });
-    });
-
-    card.addEventListener('mouseleave', () => {
-      if (!parcelsLayer) return;
-      parcelsLayer.eachLayer(layer => {
-        if (layer.feature === f) {
-          layer.setStyle({ fillOpacity: 0.22, weight: 2, color: '#6c47b6', fillColor: '#6c47b6' });
-        }
-      });
-    });
-    card.addEventListener('click', () => {
-      document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
-      card.classList.add('active');
-      if (!parcelsLayer) return;
-      parcelsLayer.eachLayer(layer => {
-        if (layer.feature === f) {
-          map.fitBounds(layer.getBounds(), { padding: [80, 80] });
-          const northLat = layer.getBounds().getNorth();
-          const centerLng = layer.getBounds().getCenter().lng;
-          layer.getPopup().setLatLng(L.latLng(northLat, centerLng)).openOn(map);
-        }
-      });
-    });
-    list.appendChild(card);
+function bindParcelClick(layer) {
+  layer.on('click', function() {
+    if (measureMode) return;
+    // Remet toutes les parcelles en bleu normal
+    if (parcelsLayer) parcelsLayer.eachLayer(l => l.setStyle({ color: '#2563eb', weight: 2, fillOpacity: 0, opacity: 0.9 }));
+    // Met la parcelle cliquée en orange
+    layer.setStyle({ color: '#f97316', weight: 4, fillColor: '#f97316', fillOpacity: 0.15, opacity: 1 });
+    layer.bringToFront();
+    layer.getPopup().setLatLng(L.latLng(layer.getBounds().getNorth(), layer.getBounds().getCenter().lng)).openOn(map);
   });
 }
 
-// ── Heading Street View ──────────────────────────────────
-async function getHeading(lat, lng) {
-  try {
-    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&zoom=17&format=json`);
-    const d = await r.json();
-    const roadLat = parseFloat(d.lat);
-    const roadLng = parseFloat(d.lon);
-    const dLng = (lng - roadLng) * Math.cos(lat * Math.PI / 180);
-    const dLat = lat - roadLat;
-    return (Math.atan2(dLng, dLat) * 180 / Math.PI + 360) % 360;
-  } catch { return 0; }
-}
-
-// ── Dessine les parcelles sur la carte ───────────────────
 function drawParcels(features, targetSurf) {
   if (parcelsLayer) { map.removeLayer(parcelsLayer); parcelsLayer = null; }
-
   parcelsLayer = L.geoJSON(features, {
-    style: () => ({
-      color: '#6c47b6', weight: 2, opacity: 0.95,
-      fillColor: '#6c47b6', fillOpacity: 0.22
-    }),
+    style: () => ({ color: '#2563eb', weight: 2, opacity: 0.9, fillColor: '#2563eb', fillOpacity: 0 }),
     onEachFeature: (f, layer) => {
-      const props  = f.properties || {};
-      const surf   = parseFloat(props.surface ?? props.contenance ?? 0);
-      const ecart  = targetSurf > 0 ? Math.abs(surf - targetSurf) / targetSurf * 100 : 0;
-      const uid    = Math.random().toString(36).slice(2, 8);
-
+      const surf = parseFloat(f.properties?.surface ?? f.properties?.contenance ?? 0);
+      const ecart = targetSurf > 0 ? Math.abs(surf - targetSurf) / targetSurf * 100 : 0;
+      const uid = Math.random().toString(36).slice(2, 8);
       let lat = 0, lng = 0;
-      try {
-        lat = layer.getBounds().getCenter().lat;
-        lng = layer.getBounds().getCenter().lng;
-      } catch {}
-
-      layer.bindPopup(`
-        <div class="popup-id" id="addr-${uid}">📍 Chargement adresse…</div>
-        <div>Surface : <strong>${Math.round(surf)} m²</strong> · Écart : <strong>±${ecart.toFixed(1)}%</strong></div>
-        <div class="popup-links">
-          <a class="popup-link" id="sv-${uid}" href="#" target="_blank">🚶 Street View</a>
-          <a class="popup-link" href="https://explore.data.gouv.fr/fr/immobilier?lng=${lng}&lat=${lat}&zoom=17" target="_blank">🏷️ Ventes DVF</a>
-        </div>
-      `);
-
-      layer.on('click', function() {
-        const northLat = layer.getBounds().getNorth();
-        const centerLng = layer.getBounds().getCenter().lng;
-        layer.getPopup().setLatLng(L.latLng(northLat, centerLng)).openOn(map);
-      });
-
+      try { lat = layer.getBounds().getCenter().lat; lng = layer.getBounds().getCenter().lng; } catch {}
+      layer.bindPopup(`<div class="popup-id" id="addr-${uid}">📍 Chargement adresse…</div><div>Surface : <strong>${Math.round(surf)} m²</strong> · Écart : <strong>±${ecart.toFixed(1)}%</strong></div><div class="popup-links"><a class="popup-link" id="sv-${uid}" href="#" target="_blank">🚶 Street View</a><a class="popup-link" href="https://explore.data.gouv.fr/fr/immobilier?lng=${lng}&lat=${lat}&zoom=17" target="_blank">🏷️ Ventes DVF</a></div>`);
+      bindParcelClick(layer);
       layer.on('popupopen', async () => {
         try {
-          const ra = await fetch(`https://api-adresse.data.gouv.fr/reverse/?lon=${lng}&lat=${lat}&limit=1&type=housenumber`);
-          const da = await ra.json();
-          const addrEl = document.getElementById(`addr-${uid}`);
-          if (addrEl && da.features?.length) {
-            addrEl.textContent = da.features[0].properties.label;
-          } else {
-            const ra2 = await fetch(`https://api-adresse.data.gouv.fr/reverse/?lon=${lng}&lat=${lat}&limit=1`);
-            const da2 = await ra2.json();
-            if (addrEl && da2.features?.length) {
-              addrEl.textContent = da2.features[0].properties.label;
-            } else if (addrEl) {
-              addrEl.textContent = '📍 Adresse non trouvée';
-            }
-          }
+          const tryAddr = async (params) => { const d = await fetch(`https://api-adresse.data.gouv.fr/reverse/?lon=${lng}&lat=${lat}&limit=1${params}`).then(r => r.json()); return d.features?.[0]?.properties?.label || null; };
+          const addr = await tryAddr('&type=housenumber') || await tryAddr('');
+          const el = document.getElementById(`addr-${uid}`); if (el) el.textContent = addr || '📍 Adresse non trouvée';
         } catch {}
-
-        const heading = await getHeading(lat, lng);
-        const svLink = document.getElementById(`sv-${uid}`);
-        if (svLink) svLink.href = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}&heading=${Math.round(heading)}&pitch=0&fov=80`;
+        try {
+          const d = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&zoom=17&format=json`).then(r => r.json());
+          const dLng = (lng - parseFloat(d.lon)) * Math.cos(lat * Math.PI / 180);
+          const heading = (Math.atan2(dLng, lat - parseFloat(d.lat)) * 180 / Math.PI + 360) % 360;
+          const el = document.getElementById(`sv-${uid}`); if (el) el.href = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}&heading=${Math.round(heading)}&pitch=0&fov=80`;
+        } catch {}
       });
     }
   }).addTo(map);
-
-  if (features.length) {
-    try { map.fitBounds(parcelsLayer.getBounds(), { padding: [40, 40] }); } catch {}
-  }
+  if (features.length) { try { map.fitBounds(parcelsLayer.getBounds(), { padding: [40, 40] }); } catch {} }
 }
 
-// ── API Parcelles ─────────────────────────────────────────
-async function fetchParcellesByINSEE(codeInsee, surfMin, surfMax) {
-  const surf = (surfMin + surfMax) / 2;
-  const tol  = surf > 0 ? Math.round((surfMax - surfMin) / surf * 100) : 0;
-  const url  = `https://parcelleid.duckdns.org/parcelles?insee=${codeInsee}&surf=${Math.round(surf)}&tol=${tol}`;
-
-  let r;
-  try {
-    r = await fetch(url);
-  } catch {
-    throw new Error('Impossible de joindre l\'API. Vérifiez que uvicorn tourne.');
-  }
-  if (!r.ok) throw new Error(`Erreur API : ${r.status} ${r.statusText}`);
-
+async function fetchParcelles(codeInsee, surfMin, surfMax) {
+  const surf = (surfMin + surfMax) / 2, tol = surf > 0 ? Math.round((surfMax - surfMin) / surf * 100) : 0;
+  const r = await fetch(`https://parcelleid.duckdns.org/parcelles?insee=${codeInsee}&surf=${Math.round(surf)}&tol=${tol}`).catch(() => { throw new Error("Impossible de joindre l'API."); });
+  if (!r.ok) throw new Error(`Erreur API : ${r.status}`);
   const fc = await r.json();
-  return (fc.features || []).filter(f => {
-    const s = parseFloat(f.properties?.surface ?? f.properties?.contenance ?? 0);
-    return s >= surfMin && s <= surfMax;
-  });
+  return (fc.features || []).filter(f => { const s = parseFloat(f.properties?.surface ?? f.properties?.contenance ?? 0); return s >= surfMin && s <= surfMax; });
 }
 
-// ── Recherche principale ─────────────────────────────────
 async function doSearch() {
-  const surf    = parseFloat(surfInput.value);
-  const tol     = parseInt(tolRange.value);
-  const commune = selectedCommune;
-
+  const surf = parseFloat(surfInput.value), tol = parseInt(tolRange.value), commune = selectedCommune;
   if (!commune) { setStatus('⚠️ Sélectionnez une commune dans la liste.', 'err'); return; }
   if (!surf || surf <= 0) { setStatus('⚠️ Saisissez une surface valide.', 'err'); return; }
-
-  const sMin = tol === 0 ? surf : surf * (1 - tol / 100);
-  const sMax = tol === 0 ? surf : surf * (1 + tol / 100);
-
-  const btn = document.getElementById('search-btn');
-  btn.disabled = true;
-  setProgress(5);
-  setStatus('<span class="spinner"></span>Chargement du contour de la commune…');
-
+  const sMin = surf * (1 - tol / 100), sMax = surf * (1 + tol / 100);
+  const btn = document.getElementById('search-btn'); btn.disabled = true;
+  setProgress(5); setStatus('<span class="spinner"></span>Chargement du contour de la commune…');
   try {
-    const r = await fetch(`https://geo.api.gouv.fr/communes/${commune.code}?fields=contour&format=geojson&geometry=contour`);
-    if (!r.ok) throw new Error('Contour commune introuvable');
-    const communeGeo = await r.json();
-
+    const communeGeo = await fetch(`https://geo.api.gouv.fr/communes/${commune.code}?fields=contour&format=geojson&geometry=contour`).then(r => { if (!r.ok) throw new Error('Contour commune introuvable'); return r.json(); });
     if (communeLayer) map.removeLayer(communeLayer);
-    communeLayer = L.geoJSON(communeGeo, {
-      style: { color: '#b5862a', weight: 2, fillOpacity: 0.04, dashArray: '5,4', opacity: 0.7 }
-    }).addTo(map);
+    communeLayer = L.geoJSON(communeGeo, { style: { color: '#2563eb', weight: 1.5, fillOpacity: 0.03, dashArray: '5,4', opacity: 0.4 } }).addTo(map);
     map.fitBounds(communeLayer.getBounds(), { padding: [20, 20] });
-
-    setProgress(10);
-    setStatus('<span class="spinner"></span>Interrogation de l\'API cadastre…');
-
-    const features = await fetchParcellesByINSEE(commune.code, sMin, sMax);
-
-    features.sort((a, b) => {
-      const sA = parseFloat(a.properties?.surface ?? a.properties?.contenance ?? 0);
-      const sB = parseFloat(b.properties?.surface ?? b.properties?.contenance ?? 0);
-      return Math.abs(sA - surf) - Math.abs(sB - surf);
-    });
-
-    setProgress(100);
-    document.getElementById('overlay').classList.add('gone');
-
-    const mc = document.getElementById('map-count');
-    mc.style.display = 'block';
-    mc.innerHTML = `<em>${features.length}</em> parcelle${features.length > 1 ? 's' : ''}`;
-
-    drawParcels(features, surf);
-    renderCards(features, surf);
-
-    if (mobilePanel && window.innerWidth <= 768) {
-      mobilePanel.classList.remove('open');
-    }
-
-    if (features.length > 0) clearStatus();
-    else setStatus('Aucune parcelle trouvée. Essayez d\'augmenter la tolérance.', 'err');
-
-  } catch (err) {
-    setStatus(`❌ ${err.message}`, 'err');
-    console.error(err);
-    setProgress(100);
-  }
-
+    setProgress(10); setStatus('<span class="spinner"></span>Interrogation de l\'API cadastre…');
+    const features = await fetchParcelles(commune.code, sMin, sMax);
+    features.sort((a, b) => { const sA = parseFloat(a.properties?.surface ?? a.properties?.contenance ?? 0), sB = parseFloat(b.properties?.surface ?? b.properties?.contenance ?? 0); return Math.abs(sA - surf) - Math.abs(sB - surf); });
+    setProgress(100); document.getElementById('overlay').classList.add('gone');
+    const mc = document.getElementById('map-count'); mc.style.display = 'block'; mc.innerHTML = `<em>${features.length}</em> parcelle${features.length > 1 ? 's' : ''}`;
+    drawParcels(features, surf); renderCards(features, surf);
+    if (window.innerWidth <= 768) document.getElementById('mobile-panel').classList.remove('open');
+    if (features.length > 0) clearStatus(); else setStatus("Aucune parcelle trouvée. Essayez d'augmenter la tolérance.", 'err');
+  } catch (err) { setStatus(`❌ ${err.message}`, 'err'); setProgress(100); }
   btn.disabled = false;
 }
 
 communeInput.addEventListener('keydown', e => { if (e.key === 'Enter' && selectedCommune) doSearch(); });
 surfInput.addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
 
-
-// ── Mobile ───────────────────────────────────────────────
 const mobilePanel = document.getElementById('mobile-panel');
-const panelHandle = document.getElementById('panel-handle');
+if (window.innerWidth <= 768) mobilePanel.classList.add('open');
+document.getElementById('panel-handle').addEventListener('click', () => mobilePanel.classList.toggle('open'));
 
-if (mobilePanel && window.innerWidth <= 768) {
-  mobilePanel.classList.add('open');
+// ── OUTIL DE MESURE ──────────────────────────────────────
+let measureMode = null, measurePoints = [], measureLines = [], liveTooltip = null;
+
+function haversineM(a, b) {
+  const R = 6371000, toRad = x => x * Math.PI / 180, dLat = toRad(b.lat - a.lat), dLng = toRad(b.lng - a.lng);
+  const x = Math.sin(dLat/2)**2 + Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
 }
-if (panelHandle) {
-  panelHandle.addEventListener('click', () => {
-    mobilePanel.classList.toggle('open');
-  });
+function totalDist(pts) { let d = 0; for (let i = 1; i < pts.length; i++) d += haversineM(pts[i-1], pts[i]); return d; }
+function polyAreaM2(pts) {
+  if (pts.length < 3) return 0;
+  const R = 6371000, ref = pts[0].lat * Math.PI / 180;
+  const xy = pts.map(p => ({ x: p.lng * Math.PI / 180 * R * Math.cos(ref), y: p.lat * Math.PI / 180 * R }));
+  let area = 0;
+  for (let i = 0; i < xy.length; i++) { const j = (i + 1) % xy.length; area += xy[i].x * xy[j].y - xy[j].x * xy[i].y; }
+  return Math.abs(area / 2);
 }
+const fmtDist = m => m >= 1000 ? (m/1000).toFixed(2)+' km' : Math.round(m)+' m';
+const fmtArea = m2 => m2 >= 10000 ? (m2/10000).toFixed(2)+' ha' : Math.round(m2)+' m²';
+
+function updateMeasureResult() {
+  const box = document.getElementById('measure-result');
+  if (!measurePoints.length) { box.classList.remove('show'); return; }
+  box.classList.add('show');
+  document.getElementById('measure-label').textContent = measureMode === 'area' ? '📐 Périmètre' : '📏 Distance';
+  document.getElementById('measure-val').textContent = fmtDist(totalDist(measurePoints));
+  const hasArea = measureMode === 'area' && measurePoints.length >= 3;
+  document.getElementById('measure-area-wrap').style.display = hasArea ? 'inline' : 'none';
+  document.getElementById('measure-sep2').style.display = hasArea ? 'inline-block' : 'none';
+  if (hasArea) document.getElementById('measure-area-val').textContent = fmtArea(polyAreaM2(measurePoints));
+}
+
+function redrawMeasure(live) {
+  measureLines.forEach(l => map.removeLayer(l)); measureLines = [];
+  if (liveTooltip) { map.removeLayer(liveTooltip); liveTooltip = null; }
+  if (!measurePoints.length) return;
+  const pts = live ? [...measurePoints, live] : [...measurePoints];
+  const color = measureMode === 'distance' ? '#2563eb' : '#16a34a';
+  if (pts.length >= 2) measureLines.push(L.polyline(pts, { color, weight: 2.5, opacity: 0.9 }).addTo(map));
+  if (measureMode === 'area' && pts.length >= 3) measureLines.push(L.polygon(pts, { color, weight: 2, fillColor: color, fillOpacity: 0.12 }).addTo(map));
+  measurePoints.forEach((pt, i) => measureLines.push(L.circleMarker(pt, { radius: i === 0 ? 7 : 5, color, weight: 2, fillColor: i === 0 ? color : 'white', fillOpacity: 1 }).addTo(map)));
+  if (live && measurePoints.length) {
+    const last = measurePoints[measurePoints.length - 1];
+    liveTooltip = L.tooltip({ permanent: true, direction: 'top', offset: [0, -6], className: 'measure-tooltip' }).setLatLng([(last.lat + live.lat) / 2, (last.lng + live.lng) / 2]).setContent(fmtDist(haversineM(last, live))).addTo(map);
+  }
+  if (!live && measurePoints.length >= 2) {
+    const last = measurePoints[measurePoints.length - 1];
+    measureLines.push(L.tooltip({ permanent: true, direction: 'top', offset: [0, -10], className: 'measure-tooltip' }).setLatLng(last).setContent(fmtDist(totalDist(measurePoints))).addTo(map));
+  }
+}
+
+function toggleMeasureMode(mode) {
+  if (measureMode === mode) { stopMeasure(); return; }
+  clearMeasure(); measureMode = mode;
+  map.getContainer().classList.add('measuring'); map.closePopup();
+  document.getElementById('btn-measure-dist').classList.toggle('active', mode === 'distance');
+  document.getElementById('btn-measure-area').classList.toggle('active', mode === 'area');
+  if (parcelsLayer) parcelsLayer.eachLayer(l => l.off('click'));
+  map.on('click', onMeasureClick); map.on('mousemove', onMeasureMove); map.on('dblclick', onMeasureDblClick);
+  map.doubleClickZoom.disable();
+}
+
+function stopMeasure() {
+  measureMode = null; map.getContainer().classList.remove('measuring');
+  map.off('click', onMeasureClick); map.off('mousemove', onMeasureMove); map.off('dblclick', onMeasureDblClick);
+  map.doubleClickZoom.enable();
+  document.getElementById('btn-measure-dist').classList.remove('active');
+  document.getElementById('btn-measure-area').classList.remove('active');
+  if (liveTooltip) { map.removeLayer(liveTooltip); liveTooltip = null; }
+  if (parcelsLayer) parcelsLayer.eachLayer(l => bindParcelClick(l));
+  redrawMeasure(null); updateMeasureResult();
+}
+
+function clearMeasure() {
+  measurePoints = []; measureLines.forEach(l => map.removeLayer(l)); measureLines = [];
+  if (liveTooltip) { map.removeLayer(liveTooltip); liveTooltip = null; }
+  document.getElementById('measure-result').classList.remove('show');
+}
+
+function onMeasureClick(e) { L.DomEvent.stopPropagation(e); map.closePopup(); measurePoints.push(e.latlng); redrawMeasure(null); updateMeasureResult(); }
+function onMeasureMove(e) { if (measurePoints.length) redrawMeasure(e.latlng); }
+function onMeasureDblClick(e) { L.DomEvent.stopPropagation(e); if (measureMode === 'distance' && measurePoints.length) measurePoints.pop(); stopMeasure(); }
 </script>
 </body>
 </html>

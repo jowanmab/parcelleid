@@ -110,6 +110,32 @@
     .measure-tooltip::before { display: none !important; }
     #map.measuring { cursor: crosshair !important; }
     #map.measuring .leaflet-interactive { cursor: crosshair !important; }
+    /* ── AUTH MODAL ── */
+    .auth-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 9000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+    .auth-overlay.hidden { display: none; }
+    .auth-box { background: var(--white); border-radius: 16px; padding: 32px 28px; width: 100%; max-width: 380px; box-shadow: 0 24px 64px rgba(0,0,0,0.18); }
+    .auth-title { font-size: 1.2rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 4px; }
+    .auth-sub { font-size: 0.78rem; color: var(--mid); margin-bottom: 24px; }
+    .auth-input { width: 100%; background: var(--bg); border: 1.5px solid var(--border); border-radius: 8px; padding: 11px 13px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.88rem; color: var(--ink); outline: none; margin-bottom: 12px; transition: border-color 0.2s; }
+    .auth-input:focus { border-color: var(--blue); }
+    .auth-btn { width: 100%; background: var(--blue); color: white; border: none; border-radius: 8px; padding: 12px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: background 0.2s; margin-top: 4px; }
+    .auth-btn:hover { background: #1d4ed8; }
+    .auth-switch { font-size: 0.78rem; color: var(--mid); text-align: center; margin-top: 16px; }
+    .auth-switch a { color: var(--blue); cursor: pointer; font-weight: 600; text-decoration: none; }
+    .auth-msg { font-size: 0.8rem; padding: 9px 12px; border-radius: 8px; margin-bottom: 12px; display: none; }
+    .auth-msg.err { background: rgba(220,38,38,0.07); color: #dc2626; border: 1px solid rgba(220,38,38,0.2); display: block; }
+    .auth-msg.ok  { background: rgba(22,163,74,0.07); color: #16a34a; border: 1px solid rgba(22,163,74,0.2); display: block; }
+    .auth-close { float: right; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--muted); margin-top: -4px; }
+    /* ── USER BADGE header ── */
+    .user-badge { font-size: 0.78rem; font-weight: 600; color: var(--mid); border: 1px solid var(--border); padding: 5px 12px; border-radius: 20px; cursor: pointer; transition: background 0.15s; display: flex; align-items: center; gap: 6px; }
+    .user-badge:hover { background: var(--bg); }
+    .user-badge .plan-pill { font-size: 0.62rem; font-weight: 700; padding: 2px 7px; border-radius: 10px; background: var(--blue); color: white; text-transform: uppercase; }
+    .user-badge .plan-pill.pro { background: #f97316; }
+    /* ── CREDITS ── */
+    .credits-bar { font-size: 0.72rem; color: var(--mid); padding: 8px 12px; background: var(--blue-lt); border: 1px solid var(--blue-bd); border-radius: 8px; margin-bottom: 12px; display: none; }
+    .credits-bar.show { display: block; }
+    .credits-bar strong { color: var(--blue); }
+
     @media (max-width: 768px) {
       main { display: block; height: calc(100vh - 58px); position: relative; }
       .map-wrap { position: absolute; inset: 0; height: 100%; }
@@ -126,6 +152,9 @@
   <div class="logo">Parcelle<span>ID</span></div>
   <div class="header-sep"></div>
   <div class="header-tag">V5 · Cadastre IGN</div>
+  <div id="auth-header">
+    <button class="user-badge" id="btn-login-header" onclick="openAuth('login')">Se connecter</button>
+  </div>
 </header>
 <main>
   <aside class="panel" id="mobile-panel">
@@ -205,6 +234,41 @@
     <div class="map-footer">Données : <span>IGN · Cadastre officiel français</span> — Licence Ouverte Etalab</div>
   </div>
 </main>
+<!-- CREDITS BAR -->
+<div class="credits-bar" id="credits-bar">
+  🔍 Crédits restants : <strong id="credits-count">—</strong> / 5
+  &nbsp;·&nbsp; <a href="#" style="color:var(--blue);font-weight:600" onclick="alert('Packs bientôt disponibles !')">Acheter des crédits →</a>
+</div>
+
+<!-- AUTH MODAL -->
+<div class="auth-overlay hidden" id="auth-overlay">
+  <div class="auth-box">
+    <button class="auth-close" onclick="closeAuth()">✕</button>
+    <div id="auth-login-view">
+      <div class="auth-title">Connexion</div>
+      <div class="auth-sub">Accédez à votre compte ParcelleID</div>
+      <div class="auth-msg" id="login-msg"></div>
+      <input class="auth-input" type="email" id="login-email" placeholder="Email"/>
+      <input class="auth-input" type="password" id="login-pwd" placeholder="Mot de passe"/>
+      <button class="auth-btn" onclick="doLogin()">Se connecter</button>
+      <div class="auth-switch">Pas de compte ? <a onclick="switchAuth('register')">Créer un compte</a></div>
+    </div>
+    <div id="auth-register-view" style="display:none">
+      <div class="auth-title">Créer un compte</div>
+      <div class="auth-sub">5 recherches gratuites pour commencer</div>
+      <div class="auth-msg" id="register-msg"></div>
+      <input class="auth-input" type="email" id="reg-email" placeholder="Email"/>
+      <input class="auth-input" type="password" id="reg-pwd" placeholder="Mot de passe (8 car. min)"/>
+      <button class="auth-btn" onclick="doRegister()">Créer mon compte</button>
+      <div class="auth-switch">Déjà un compte ? <a onclick="switchAuth('login')">Se connecter</a></div>
+    </div>
+    <div id="auth-verify-view" style="display:none">
+      <div class="auth-title">✉️ Vérifiez votre email</div>
+      <div class="auth-sub" id="verify-sub">Un lien de confirmation a été envoyé à votre adresse.</div>
+    </div>
+  </div>
+</div>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 const map = L.map('map', { zoomControl: true, maxZoom: 22 }).setView([46.6, 2.3], 5);
@@ -664,6 +728,109 @@ function clearMeasure() {
   if (liveTooltip) { map.removeLayer(liveTooltip); liveTooltip = null; }
   document.getElementById('measure-result').classList.remove('show');
 }
+
+// ── AUTH ─────────────────────────────────────────────────
+const API = 'https://parcelleid.duckdns.org';
+let authUser = null;
+
+function getToken() { return localStorage.getItem('access_token'); }
+function saveTokens(access, refresh) { localStorage.setItem('access_token', access); if (refresh) localStorage.setItem('refresh_token', refresh); }
+function clearTokens() { localStorage.removeItem('access_token'); localStorage.removeItem('refresh_token'); }
+
+async function refreshAccessToken() {
+  const rt = localStorage.getItem('refresh_token'); if (!rt) return false;
+  try {
+    const r = await fetch(`${API}/auth/refresh`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({refresh_token: rt}) });
+    if (!r.ok) { clearTokens(); return false; }
+    const d = await r.json(); localStorage.setItem('access_token', d.access_token); return true;
+  } catch { return false; }
+}
+
+async function authFetch(url, opts = {}) {
+  opts.headers = { ...opts.headers, 'Authorization': `Bearer ${getToken()}` };
+  let r = await fetch(url, opts);
+  if (r.status === 401) { const ok = await refreshAccessToken(); if (ok) { opts.headers['Authorization'] = `Bearer ${getToken()}`; r = await fetch(url, opts); } }
+  return r;
+}
+
+async function loadMe() {
+  if (!getToken()) return;
+  try {
+    const r = await authFetch(`${API}/auth/me`);
+    if (!r.ok) { clearTokens(); updateAuthUI(null); return; }
+    authUser = await r.json();
+    updateAuthUI(authUser);
+  } catch {}
+}
+
+function updateAuthUI(user) {
+  const hdr = document.getElementById('auth-header');
+  const cb = document.getElementById('credits-bar');
+  if (!user) {
+    hdr.innerHTML = `<button class="user-badge" onclick="openAuth('login')">Se connecter</button>`;
+    cb.classList.remove('show'); return;
+  }
+  const isPro = user.plan === 'pro';
+  hdr.innerHTML = `<div class="user-badge" onclick="doLogout()"><span>${user.email.split('@')[0]}</span><span class="plan-pill ${isPro?'pro':''}">${isPro?'Pro':'Free'}</span></div>`;
+  if (!isPro) {
+    cb.classList.add('show');
+    document.getElementById('credits-count').textContent = user.credits;
+  } else { cb.classList.remove('show'); }
+}
+
+function openAuth(view) { document.getElementById('auth-overlay').classList.remove('hidden'); switchAuth(view); }
+function closeAuth() { document.getElementById('auth-overlay').classList.add('hidden'); }
+function switchAuth(view) {
+  document.getElementById('auth-login-view').style.display = view === 'login' ? '' : 'none';
+  document.getElementById('auth-register-view').style.display = view === 'register' ? '' : 'none';
+  document.getElementById('auth-verify-view').style.display = view === 'verify' ? '' : 'none';
+}
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pwd = document.getElementById('login-pwd').value;
+  const msg = document.getElementById('login-msg');
+  msg.className = 'auth-msg'; msg.textContent = '';
+  try {
+    const r = await fetch(`${API}/auth/login`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({email, password: pwd}) });
+    const d = await r.json();
+    if (!r.ok) { msg.className = 'auth-msg err'; msg.textContent = d.detail || 'Erreur de connexion'; return; }
+    saveTokens(d.access_token, d.refresh_token);
+    await loadMe(); closeAuth();
+  } catch { msg.className = 'auth-msg err'; msg.textContent = 'Erreur réseau'; }
+}
+
+async function doRegister() {
+  const email = document.getElementById('reg-email').value.trim();
+  const pwd = document.getElementById('reg-pwd').value;
+  const msg = document.getElementById('register-msg');
+  msg.className = 'auth-msg'; msg.textContent = '';
+  try {
+    const r = await fetch(`${API}/auth/register`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({email, password: pwd}) });
+    const d = await r.json();
+    if (!r.ok) { msg.className = 'auth-msg err'; msg.textContent = d.detail || 'Erreur'; return; }
+    document.getElementById('verify-sub').textContent = `Un lien de confirmation a été envoyé à ${email}.`;
+    switchAuth('verify');
+  } catch { msg.className = 'auth-msg err'; msg.textContent = 'Erreur réseau'; }
+}
+
+function doLogout() { clearTokens(); authUser = null; updateAuthUI(null); }
+
+// Vérification email via URL ?verify=TOKEN
+async function checkVerifyToken() {
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('verify'); if (!token) return;
+  try {
+    const r = await fetch(`${API}/auth/verify-email?token=${token}`, { method: 'POST' });
+    const d = await r.json();
+    if (r.ok) { openAuth('login'); document.getElementById('login-msg').className = 'auth-msg ok'; document.getElementById('login-msg').textContent = '✅ Email vérifié ! Vous pouvez vous connecter.'; }
+  } catch {}
+  window.history.replaceState({}, '', window.location.pathname);
+}
+
+// Init
+loadMe();
+checkVerifyToken();
 
 function onMeasureClick(e) { L.DomEvent.stopPropagation(e); map.closePopup(); measurePoints.push(e.latlng); redrawMeasure(null); updateMeasureResult(); }
 function onMeasureMove(e) { if (measurePoints.length) redrawMeasure(e.latlng); }

@@ -533,9 +533,11 @@ function loadMoreCards(targetSurf) {
       observer.disconnect();
       let lat = 0, lng = 0;
       try {
-        const coords = f.geometry.coordinates[0];
-        coords.forEach(c => { lng += c[0]; lat += c[1]; });
-        lat /= coords.length; lng /= coords.length;
+        const geom = f.geometry;
+        const coords = geom.type === 'MultiPolygon' ? geom.coordinates[0][0] : geom.coordinates[0];
+        let minLat = Infinity, maxLat = -Infinity, minLng = Infinity, maxLng = -Infinity;
+        coords.forEach(c => { minLng = Math.min(minLng, c[0]); maxLng = Math.max(maxLng, c[0]); minLat = Math.min(minLat, c[1]); maxLat = Math.max(maxLat, c[1]); });
+        lat = (minLat + maxLat) / 2; lng = (minLng + maxLng) / 2;
       } catch {}
       drawThumb(canvas, f, 19);
       fetchShortAddr(lat, lng).then(addr => { if (addr) addrBand.textContent = addr; });

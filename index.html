@@ -123,7 +123,10 @@
     .measure-tooltip::before { display: none !important; }
     #map.measuring { cursor: crosshair !important; }
     #map.measuring .leaflet-interactive { cursor: crosshair !important; }
+<<<<<<< HEAD
     /* AUTH */
+=======
+>>>>>>> 9ada9356b9414eac68e51bd0ee2544cb28fca0a2
     .auth-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 9000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
     .auth-overlay.hidden { display: none; }
     .auth-box { background: var(--white); border-radius: 16px; padding: 32px 28px; width: 100%; max-width: 380px; box-shadow: 0 24px 64px rgba(0,0,0,0.18); }
@@ -143,7 +146,11 @@
     .user-badge:hover { background: var(--bg); }
     .plan-pill { font-size: 0.62rem; font-weight: 700; padding: 2px 7px; border-radius: 10px; background: var(--blue); color: white; text-transform: uppercase; }
     .plan-pill.pro { background: var(--orange); }
+<<<<<<< HEAD
     .credits-bar { font-size: 0.72rem; color: var(--mid); padding: 8px 12px; background: var(--blue-lt); border: 1px solid var(--blue-bd); border-radius: 8px; margin-bottom: 10px; display: none; }
+=======
+    .credits-bar { font-size: 0.72rem; color: var(--mid); padding: 8px 12px; background: var(--blue-lt); border: 1px solid var(--blue-bd); border-radius: 8px; margin-bottom: 12px; display: none; }
+>>>>>>> 9ada9356b9414eac68e51bd0ee2544cb28fca0a2
     .credits-bar.show { display: block; }
     .credits-bar strong { color: var(--blue); }
     @media (max-width: 768px) {
@@ -173,62 +180,93 @@
     <button class="auth-close" onclick="closeAuth()">&#x2715;</button>
     <div id="auth-login-view">
       <div class="auth-title">Connexion</div>
+<<<<<<< HEAD
       <div class="auth-sub">Accédez à votre compte ParcelleID</div>
+=======
+      <div class="auth-sub">Accedez a votre compte ParcelleID</div>
+>>>>>>> 9ada9356b9414eac68e51bd0ee2544cb28fca0a2
       <div class="auth-msg" id="login-msg"></div>
       <input class="auth-input" type="email" id="login-email" placeholder="Email"/>
       <input class="auth-input" type="password" id="login-pwd" placeholder="Mot de passe"/>
       <button class="auth-btn" onclick="doLogin()">Se connecter</button>
+<<<<<<< HEAD
       <div class="auth-switch">Pas de compte ? <a onclick="switchAuth('register')">Créer un compte</a></div>
     </div>
     <div id="auth-register-view" style="display:none">
       <div class="auth-title">Créer un compte</div>
+=======
+      <div class="auth-switch">Pas de compte ? <a onclick="switchAuth('register')">Creer un compte</a></div>
+    </div>
+    <div id="auth-register-view" style="display:none">
+      <div class="auth-title">Creer un compte</div>
+>>>>>>> 9ada9356b9414eac68e51bd0ee2544cb28fca0a2
       <div class="auth-sub">5 recherches gratuites pour commencer</div>
       <div class="auth-msg" id="register-msg"></div>
       <input class="auth-input" type="email" id="reg-email" placeholder="Email"/>
       <input class="auth-input" type="password" id="reg-pwd" placeholder="Mot de passe (8 car. min)"/>
+<<<<<<< HEAD
       <button class="auth-btn" onclick="doRegister()">Créer mon compte</button>
       <div class="auth-switch">Déjà un compte ? <a onclick="switchAuth('login')">Se connecter</a></div>
     </div>
     <div id="auth-verify-view" style="display:none">
       <div class="auth-title">✉️ Vérifiez votre email</div>
       <div class="auth-sub" id="verify-sub">Un lien de confirmation a été envoyé à votre adresse.</div>
+=======
+      <button class="auth-btn" onclick="doRegister()">Creer mon compte</button>
+      <div class="auth-switch">Deja un compte ? <a onclick="switchAuth('login')">Se connecter</a></div>
+    </div>
+    <div id="auth-verify-view" style="display:none">
+      <div class="auth-title">Verifiez votre email</div>
+      <div class="auth-sub" id="verify-sub">Un lien de confirmation a ete envoye a votre adresse.</div>
+>>>>>>> 9ada9356b9414eac68e51bd0ee2544cb28fca0a2
     </div>
   </div>
 </div>
 
 <main>
   <aside class="panel" id="mobile-panel">
-    <div class="panel-handle" id="panel-handle">🔍 Rechercher une parcelle</div>
+    <div class="panel-handle" id="panel-handle">Rechercher une parcelle</div>
     <div class="panel-scroll">
       <div class="credits-bar" id="credits-bar">
+<<<<<<< HEAD
         🔍 Crédits restants : <strong id="credits-count">—</strong> / 5
         &nbsp;·&nbsp; <a href="#" style="color:var(--blue);font-weight:600" onclick="alert('Packs bientôt disponibles !')">Acheter →</a>
+=======
+        Credits restants : <strong id="credits-count">--</strong> / 5
+        &nbsp;&#183;&nbsp; <a href="#" style="color:var(--blue);font-weight:600" onclick="alert('Packs bientot disponibles !')">Acheter</a>
+>>>>>>> 9ada9356b9414eac68e51bd0ee2544cb28fca0a2
       </div>
       <div class="hero">
-        <div class="hero-eyebrow">🏠 Outil d'analyse d'annonces</div>
+        <div class="hero-eyebrow">Outil d'analyse d'annonces</div>
         <h1>Retrouvez la parcelle de votre annonce immo</h1>
-        <p>Commune + surface → les parcelles correspondantes s'affichent sur la carte.</p>
+        <p>Commune + surface les parcelles correspondantes s'affichent sur la carte.</p>
       </div>
       <div class="form-section">
-        <div class="form-label">📍 Localisation</div>
+        <div class="form-label">Localisation</div>
         <div class="field">
           <div class="ac-wrap">
-            <input type="text" id="commune-input" placeholder="Commune ou code postal…" autocomplete="off"/>
+            <input type="text" id="commune-input" placeholder="Commune ou code postal" autocomplete="off"/>
             <ul id="commune-suggestions"></ul>
           </div>
         </div>
       </div>
       <div class="form-section">
-        <div class="form-label">📐 Surface cadastrale</div>
+        <div class="form-label">Surface cadastrale</div>
         <div class="field">
           <div class="surface-row">
             <input type="number" id="surface-input" placeholder="Ex : 450" min="1"/>
-            <div class="tol-pill">±<span id="tol-val">15</span>%</div>
+            <div class="tol-pill">+-<span id="tol-val">15</span>%</div>
           </div>
           <input type="range" id="tol-range" min="0" max="50" value="15" step="1"/>
+<<<<<<< HEAD
           <div style="font-size:0.7rem;color:var(--muted);margin-top:5px">
             Entre <span id="surf-min" style="color:var(--blue);font-weight:600">—</span>
             et <span id="surf-max" style="color:var(--blue);font-weight:600">—</span> m²
+=======
+          <div style="font-size:0.72rem;color:var(--muted);margin-top:6px">
+            Entre <span id="surf-min" style="color:var(--blue);font-weight:600">--</span>
+            et <span id="surf-max" style="color:var(--blue);font-weight:600">--</span> m2
+>>>>>>> 9ada9356b9414eac68e51bd0ee2544cb28fca0a2
           </div>
         </div>
       </div>
@@ -239,17 +277,22 @@
       <div class="progress-wrap" id="progress-wrap"><div class="progress-bar" id="progress-bar"></div></div>
       <div id="status"></div>
       <div class="results-head">
-        <span class="results-label">Parcelles trouvées</span>
+        <span class="results-label">Parcelles trouvees</span>
         <span class="results-count" id="r-count"></span>
       </div>
       <div id="results-list">
+<<<<<<< HEAD
         <div style="font-size:0.8rem;color:var(--muted);text-align:center;padding:20px 0;border:1px dashed var(--border);border-radius:8px;grid-column:1/-1;">Les résultats apparaîtront ici</div>
+=======
+        <div style="font-size:0.8rem;color:var(--muted);text-align:center;padding:20px 0;border:1px dashed var(--border);border-radius:8px;">Les resultats apparaitront ici</div>
+>>>>>>> 9ada9356b9414eac68e51bd0ee2544cb28fca0a2
       </div>
     </div>
   </aside>
   <div class="map-wrap">
     <div id="map"></div>
     <div id="measure-toolbar">
+<<<<<<< HEAD
       <button class="measure-btn" id="btn-measure-dist" onclick="toggleMeasureMode('distance')">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="8" x2="2" y2="16"/><line x1="22" y1="8" x2="22" y2="16"/></svg>
         Distance
@@ -262,23 +305,28 @@
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         Annuler
       </button>
+=======
+      <button class="measure-btn" id="btn-measure-dist" onclick="toggleMeasureMode('distance')">Distance</button>
+      <button class="measure-btn" id="btn-measure-area" onclick="toggleMeasureMode('area')">Superficie</button>
+      <button class="measure-btn" onclick="stopMeasure()">Annuler</button>
+>>>>>>> 9ada9356b9414eac68e51bd0ee2544cb28fca0a2
     </div>
     <div id="measure-result">
       <span id="measure-label">Distance</span>
       <div class="measure-sep"></div>
-      <span><strong id="measure-val">—</strong></span>
+      <span><strong id="measure-val">--</strong></span>
       <div class="measure-sep" id="measure-sep2" style="display:none"></div>
-      <span id="measure-area-wrap" style="display:none">Superficie : <strong id="measure-area-val">—</strong></span>
+      <span id="measure-area-wrap" style="display:none">Superficie : <strong id="measure-area-val">--</strong></span>
       <div class="measure-sep"></div>
-      <button class="measure-clear-btn" onclick="clearMeasure()">✕ Effacer</button>
+      <button class="measure-clear-btn" onclick="clearMeasure()">Effacer</button>
     </div>
     <div id="overlay">
-      <div class="overlay-icon">🗺️</div>
+      <div class="overlay-icon">&#x1F5FA;</div>
       <div class="overlay-title">La carte s'affiche ici</div>
       <div class="overlay-sub">Renseignez commune + surface et lancez la recherche</div>
     </div>
     <div id="map-count"></div>
-    <div class="map-footer">Données : <span>IGN · Cadastre officiel français</span> — Licence Ouverte Etalab</div>
+    <div class="map-footer">Donnees : <span>IGN - Cadastre officiel francais</span> - Licence Ouverte Etalab</div>
   </div>
 </main>
 
@@ -286,8 +334,8 @@
 <script>
 // ── CARTE ─────────────────────────────────────────────────
 const map = L.map('map', { zoomControl: true, maxZoom: 22 }).setView([46.6, 2.3], 5);
-const tileVoyager = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { attribution: '© OpenStreetMap contributors © CARTO', subdomains: 'abcd', maxZoom: 20 });
-const tileSatellite = L.tileLayer('https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}', { attribution: '© IGN BD Ortho', maxZoom: 22, maxNativeZoom: 19 });
+const tileVoyager = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { attribution: 'OpenStreetMap CARTO', subdomains: 'abcd', maxZoom: 20 });
+const tileSatellite = L.tileLayer('https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}', { attribution: 'IGN BD Ortho', maxZoom: 22, maxNativeZoom: 19 });
 tileVoyager.addTo(map);
 
 const LayerControl = L.Control.extend({
@@ -299,14 +347,14 @@ const LayerControl = L.Control.extend({
     const mkBtn = (imgSrc, label) => {
       const el = L.DomUtil.create('div', '', wrap);
       el.style.cssText = 'width:68px;cursor:pointer;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.15);border:2px solid;';
-      el.innerHTML = `<img src="${imgSrc}" style="width:68px;height:46px;object-fit:cover;display:block;"/><div style="font-size:0.6rem;font-weight:700;text-align:center;padding:3px 0;letter-spacing:0.06em;text-transform:uppercase;">${label}</div>`;
+      el.innerHTML = '<img src="' + imgSrc + '" style="width:68px;height:46px;object-fit:cover;display:block;"/><div style="font-size:0.6rem;font-weight:700;text-align:center;padding:3px 0;letter-spacing:0.06em;text-transform:uppercase;">' + label + '</div>';
       return el;
     };
     const btnCarte = mkBtn('https://a.basemaps.cartocdn.com/rastertiles/voyager/5/16/11.png', 'Carte');
     const btnSat   = mkBtn('https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg&TILEMATRIXSET=PM&TILEMATRIX=5&TILEROW=11&TILECOL=16', 'Satellite');
     const styleBtn = (btn, active) => {
       btn.style.borderColor = active ? '#2563eb' : '#e5e7eb';
-      btn.querySelector('div').style.cssText = `font-size:0.6rem;font-weight:700;text-align:center;padding:3px 0;letter-spacing:0.06em;text-transform:uppercase;background:${active ? '#2563eb' : 'rgba(255,255,255,0.9)'};color:${active ? 'white' : '#6b7280'};`;
+      btn.querySelector('div').style.cssText = 'font-size:0.6rem;font-weight:700;text-align:center;padding:3px 0;letter-spacing:0.06em;text-transform:uppercase;background:' + (active ? '#2563eb' : 'rgba(255,255,255,0.9)') + ';color:' + (active ? 'white' : '#6b7280') + ';';
     };
     styleBtn(btnCarte, true); styleBtn(btnSat, false);
     L.DomEvent.on(btnCarte, 'click', () => { if (isSat) { map.removeLayer(tileSatellite); tileVoyager.addTo(map); isSat = false; styleBtn(btnCarte, true); styleBtn(btnSat, false); } });
@@ -342,7 +390,7 @@ function updateTol() {
   if (surf > 0) {
     document.getElementById('surf-min').textContent = Math.round(surf * (1 - tol / 100));
     document.getElementById('surf-max').textContent = Math.round(surf * (1 + tol / 100));
-  } else { document.getElementById('surf-min').textContent = '—'; document.getElementById('surf-max').textContent = '—'; }
+  } else { document.getElementById('surf-min').textContent = '--'; document.getElementById('surf-max').textContent = '--'; }
 }
 tolRange.addEventListener('input', updateTol); surfInput.addEventListener('input', updateTol); updateTol();
 
@@ -360,26 +408,36 @@ document.addEventListener('click', e => { if (!e.target.closest('.ac-wrap')) com
 async function fetchCommunes(q) {
   try {
     const isCP = /^\d{3,5}$/.test(q);
+<<<<<<< HEAD
     const url = isCP
       ? `https://geo.api.gouv.fr/communes?codePostal=${encodeURIComponent(q)}&fields=nom,code,codeDepartement,centre&limit=20`
       : `https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(q)}&fields=nom,code,codeDepartement,centre&boost=population&limit=8`;
+=======
+    const url = isCP ? 'https://geo.api.gouv.fr/communes?codePostal=' + encodeURIComponent(q) + '&fields=nom,code,codeDepartement,centre&limit=20' : 'https://geo.api.gouv.fr/communes?nom=' + encodeURIComponent(q) + '&fields=nom,code,codeDepartement,centre&boost=population&limit=8';
+>>>>>>> 9ada9356b9414eac68e51bd0ee2544cb28fca0a2
     const data = await fetch(url).then(r => r.json());
     communeSugg.innerHTML = '';
     if (!data.length) { communeSugg.style.display = 'none'; return; }
     data.forEach(c => {
       const li = document.createElement('li');
+<<<<<<< HEAD
       li.innerHTML = `<span>${c.nom}</span><small>${c.codeDepartement}</small>`;
       li.addEventListener('click', () => {
         communeInput.value = c.nom;
         selectedCommune = { nom: c.nom, code: c.code, lat: c.centre?.coordinates[1], lng: c.centre?.coordinates[0] };
         communeSugg.style.display = 'none';
       });
+=======
+      li.innerHTML = '<span>' + c.nom + '</span><small>' + c.codeDepartement + '</small>';
+      li.addEventListener('click', () => { communeInput.value = c.nom; selectedCommune = { nom: c.nom, code: c.code, lat: c.centre && c.centre.coordinates[1], lng: c.centre && c.centre.coordinates[0] }; communeSugg.style.display = 'none'; });
+>>>>>>> 9ada9356b9414eac68e51bd0ee2544cb28fca0a2
       communeSugg.appendChild(li);
     });
     communeSugg.style.display = 'block';
   } catch { communeSugg.style.display = 'none'; }
 }
 
+<<<<<<< HEAD
 // ── STATUS ───────────────────────────────────────────────
 function setStatus(msg, type = '') { const el = document.getElementById('status'); el.innerHTML = msg; el.className = 'show' + (type ? ' ' + type : ''); }
 function clearStatus() { document.getElementById('status').className = ''; }
@@ -437,6 +495,28 @@ function drawThumb(canvas, feature, zoom) {
     coords.forEach((c, i) => {
       const [px, py] = toPixel(c[1], c[0]);
       i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+=======
+function setStatus(msg, type) { type = type || ''; const el = document.getElementById('status'); el.innerHTML = msg; el.className = 'show' + (type ? ' ' + type : ''); }
+function clearStatus() { document.getElementById('status').className = ''; }
+
+function renderCards(features, targetSurf) {
+  const list = document.getElementById('results-list'), countEl = document.getElementById('r-count');
+  if (!features.length) { countEl.textContent = '0 resultat'; list.innerHTML = '<div style="font-size:0.8rem;color:var(--muted);text-align:center;padding:20px 0;border:1px dashed var(--border);border-radius:8px;">Aucune parcelle trouvee. Essayez d\'augmenter la tolerance.</div>'; return; }
+  countEl.textContent = features.length + ' parcelle' + (features.length > 1 ? 's' : '');
+  list.innerHTML = '';
+  features.forEach(f => {
+    const surf = parseFloat((f.properties && (f.properties.surface || f.properties.contenance)) || 0);
+    const ecart = targetSurf > 0 ? Math.abs(surf - targetSurf) / targetSurf * 100 : 0;
+    const card = document.createElement('div'); card.className = 'card';
+    card.innerHTML = '<div class="card-top"><div class="card-surf">' + Math.round(surf) + ' m2</div><div class="card-tag">+-' + ecart.toFixed(1) + '%</div></div><div class="card-bar-bg"><div class="card-bar" style="width:' + Math.max(5, 100 - ecart * 4) + '%"></div></div>';
+    const highlight = function(on) { if (!parcelsLayer) return; parcelsLayer.eachLayer(function(l) { if (l.feature === f) l.setStyle(on ? { fillOpacity: 0.45, weight: 4, color: '#2563eb', fillColor: '#2563eb' } : { fillOpacity: 0.18, weight: 2, color: '#2563eb', fillColor: '#2563eb' }); }); };
+    card.addEventListener('mouseenter', function() { highlight(true); });
+    card.addEventListener('mouseleave', function() { highlight(false); });
+    card.addEventListener('click', function() {
+      document.querySelectorAll('.card').forEach(function(c) { c.classList.remove('active'); }); card.classList.add('active');
+      if (!parcelsLayer) return;
+      parcelsLayer.eachLayer(function(l) { if (l.feature === f) { map.fitBounds(l.getBounds(), { padding: [80, 80] }); l.getPopup().setLatLng(L.latLng(l.getBounds().getNorth(), l.getBounds().getCenter().lng)).openOn(map); } });
+>>>>>>> 9ada9356b9414eac68e51bd0ee2544cb28fca0a2
     });
     ctx.closePath();
     ctx.fillStyle = 'rgba(37,99,235,0.18)';
@@ -573,6 +653,7 @@ function drawParcels(features, targetSurf) {
   if (parcelsLayer) { map.removeLayer(parcelsLayer); parcelsLayer = null; }
   activeFeature = null;
   parcelsLayer = L.geoJSON(features, {
+<<<<<<< HEAD
     style: () => ({ ...STYLE_DEFAULT }),
     onEachFeature: (f, layer) => {
       const surf = parseFloat(f.properties?.surface ?? f.properties?.contenance ?? 0);
@@ -583,49 +664,60 @@ function drawParcels(features, targetSurf) {
       layer.bindPopup(`<div class="popup-id" id="addr-${uid}">📍 Chargement adresse…</div><div>Surface : <strong>${Math.round(surf)} m²</strong> · Écart : <strong>±${ecart.toFixed(1)}%</strong></div><div class="popup-links"><a class="popup-link" id="sv-${uid}" href="#" target="_blank">🚶 Street View</a><a class="popup-link" href="https://explore.data.gouv.fr/fr/immobilier?lng=${lng}&lat=${lat}&zoom=17" target="_blank">🏷️ Ventes DVF</a></div>`);
       layer.on('mouseover', function() { if (layer.feature !== activeFeature) layer.setStyle(STYLE_HOVER); });
       layer.on('mouseout',  function() { if (layer.feature !== activeFeature) layer.setStyle(STYLE_DEFAULT); });
+=======
+    style: function() { return { color: '#2563eb', weight: 2, opacity: 0.9, fillColor: '#2563eb', fillOpacity: 0.18 }; },
+    onEachFeature: function(f, layer) {
+      const surf = parseFloat((f.properties && (f.properties.surface || f.properties.contenance)) || 0);
+      const ecart = targetSurf > 0 ? Math.abs(surf - targetSurf) / targetSurf * 100 : 0;
+      const uid = Math.random().toString(36).slice(2, 8);
+      let lat = 0, lng = 0;
+      try { lat = layer.getBounds().getCenter().lat; lng = layer.getBounds().getCenter().lng; } catch(e) {}
+      layer.bindPopup('<div class="popup-id" id="addr-' + uid + '">Chargement adresse...</div><div>Surface : <strong>' + Math.round(surf) + ' m2</strong> - Ecart : <strong>+-' + ecart.toFixed(1) + '%</strong></div><div class="popup-links"><a class="popup-link" id="sv-' + uid + '" href="#" target="_blank">Street View</a><a class="popup-link" href="https://explore.data.gouv.fr/fr/immobilier?lng=' + lng + '&lat=' + lat + '&zoom=17" target="_blank">Ventes DVF</a></div>');
+>>>>>>> 9ada9356b9414eac68e51bd0ee2544cb28fca0a2
       bindParcelClick(layer);
-      layer.on('popupopen', async () => {
+      layer.on('popupopen', async function() {
         try {
-          const tryAddr = async (params) => { const d = await fetch(`https://api-adresse.data.gouv.fr/reverse/?lon=${lng}&lat=${lat}&limit=1${params}`).then(r => r.json()); return d.features?.[0]?.properties?.label || null; };
+          const tryAddr = async function(params) { const d = await fetch('https://api-adresse.data.gouv.fr/reverse/?lon=' + lng + '&lat=' + lat + '&limit=1' + params).then(function(r) { return r.json(); }); return d.features && d.features[0] && d.features[0].properties && d.features[0].properties.label || null; };
           const addr = await tryAddr('&type=housenumber') || await tryAddr('');
-          const el = document.getElementById(`addr-${uid}`); if (el) el.textContent = addr || '📍 Adresse non trouvée';
-        } catch {}
+          const el = document.getElementById('addr-' + uid); if (el) el.textContent = addr || 'Adresse non trouvee';
+        } catch(e) {}
         try {
-          const d = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&zoom=17&format=json`).then(r => r.json());
+          const d = await fetch('https://nominatim.openstreetmap.org/reverse?lat=' + lat + '&lon=' + lng + '&zoom=17&format=json').then(function(r) { return r.json(); });
           const dLng = (lng - parseFloat(d.lon)) * Math.cos(lat * Math.PI / 180);
           const heading = (Math.atan2(dLng, lat - parseFloat(d.lat)) * 180 / Math.PI + 360) % 360;
-          const el = document.getElementById(`sv-${uid}`); if (el) el.href = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}&heading=${Math.round(heading)}&pitch=0&fov=80`;
-        } catch {}
+          const el = document.getElementById('sv-' + uid); if (el) el.href = 'https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=' + lat + ',' + lng + '&heading=' + Math.round(heading) + '&pitch=0&fov=80';
+        } catch(e) {}
       });
     }
   }).addTo(map);
-  if (features.length) { try { map.fitBounds(parcelsLayer.getBounds(), { padding: [40, 40] }); } catch {} }
+  if (features.length) { try { map.fitBounds(parcelsLayer.getBounds(), { padding: [40, 40] }); } catch(e) {} }
 }
 
 // ── FETCH PARCELLES ───────────────────────────────────────
 async function fetchParcelles(codeInsee, surfMin, surfMax) {
   const surf = (surfMin + surfMax) / 2, tol = surf > 0 ? Math.round((surfMax - surfMin) / surf * 100) : 0;
-  const r = await fetch(`https://parcelleid.duckdns.org/parcelles?insee=${codeInsee}&surf=${Math.round(surf)}&tol=${tol}`).catch(() => { throw new Error("Impossible de joindre l'API."); });
-  if (!r.ok) throw new Error(`Erreur API : ${r.status}`);
+  const r = await fetch('https://parcelleid.duckdns.org/parcelles?insee=' + codeInsee + '&surf=' + Math.round(surf) + '&tol=' + tol).catch(function() { throw new Error("Impossible de joindre l'API."); });
+  if (!r.ok) throw new Error('Erreur API : ' + r.status);
   const fc = await r.json();
-  return (fc.features || []).filter(f => { const s = parseFloat(f.properties?.surface ?? f.properties?.contenance ?? 0); return s >= surfMin && s <= surfMax; });
+  return (fc.features || []).filter(function(f) { const s = parseFloat((f.properties && (f.properties.surface || f.properties.contenance)) || 0); return s >= surfMin && s <= surfMax; });
 }
 
 // ── SEARCH ───────────────────────────────────────────────
 async function doSearch() {
   const surf = parseFloat(surfInput.value), tol = parseInt(tolRange.value), commune = selectedCommune;
-  if (!commune) { setStatus('⚠️ Sélectionnez une commune dans la liste.', 'err'); return; }
-  if (!surf || surf <= 0) { setStatus('⚠️ Saisissez une surface valide.', 'err'); return; }
+  if (!commune) { setStatus('Selectionnez une commune dans la liste.', 'err'); return; }
+  if (!surf || surf <= 0) { setStatus('Saisissez une surface valide.', 'err'); return; }
   const sMin = surf * (1 - tol / 100), sMax = surf * (1 + tol / 100);
   const btn = document.getElementById('search-btn'); btn.disabled = true;
-  setProgress(5); setStatus('<span class="spinner"></span>Chargement du contour de la commune…');
+  setProgress(5); setStatus('<span class="spinner"></span>Chargement du contour de la commune...');
   try {
-    const communeGeo = await fetch(`https://geo.api.gouv.fr/communes/${commune.code}?fields=contour&format=geojson&geometry=contour`).then(r => { if (!r.ok) throw new Error('Contour commune introuvable'); return r.json(); });
+    const communeGeo = await fetch('https://geo.api.gouv.fr/communes/' + commune.code + '?fields=contour&format=geojson&geometry=contour').then(function(r) { if (!r.ok) throw new Error('Contour commune introuvable'); return r.json(); });
     if (communeLayer) map.removeLayer(communeLayer);
     communeLayer = L.geoJSON(communeGeo, { style: { color: '#2563eb', weight: 1.5, fillOpacity: 0.03, dashArray: '5,4', opacity: 0.4 } }).addTo(map);
     map.fitBounds(communeLayer.getBounds(), { padding: [20, 20] });
-    setProgress(10); setStatus('<span class="spinner"></span>Interrogation de l\'API cadastre…');
+    setProgress(10); setStatus('<span class="spinner"></span>Interrogation de l\'API cadastre...');
     const features = await fetchParcelles(commune.code, sMin, sMax);
+<<<<<<< HEAD
     features.sort((a, b) => {
       const sA = parseFloat(a.properties?.surface ?? a.properties?.contenance ?? 0);
       const sB = parseFloat(b.properties?.surface ?? b.properties?.contenance ?? 0);
@@ -636,12 +728,19 @@ async function doSearch() {
     const mc = document.getElementById('map-count'); mc.style.display = 'block'; mc.innerHTML = `<em>${features.length}</em> parcelle${features.length > 1 ? 's' : ''}`;
     drawParcels(features, surf);
     renderCards(features, surf);
+=======
+    features.sort(function(a, b) { const sA = parseFloat((a.properties && (a.properties.surface || a.properties.contenance)) || 0), sB = parseFloat((b.properties && (b.properties.surface || b.properties.contenance)) || 0); return Math.abs(sA - surf) - Math.abs(sB - surf); });
+    setProgress(100); document.getElementById('overlay').classList.add('gone');
+    const mc = document.getElementById('map-count'); mc.style.display = 'block'; mc.innerHTML = '<em>' + features.length + '</em> parcelle' + (features.length > 1 ? 's' : '');
+    drawParcels(features, surf); renderCards(features, surf);
+>>>>>>> 9ada9356b9414eac68e51bd0ee2544cb28fca0a2
     if (window.innerWidth <= 768) document.getElementById('mobile-panel').classList.remove('open');
-    if (features.length > 0) clearStatus(); else setStatus("Aucune parcelle trouvée. Essayez d'augmenter la tolérance.", 'err');
-  } catch (err) { setStatus(`❌ ${err.message}`, 'err'); setProgress(100); }
+    if (features.length > 0) clearStatus(); else setStatus("Aucune parcelle trouvee. Essayez d'augmenter la tolerance.", 'err');
+  } catch (err) { setStatus('Erreur : ' + err.message, 'err'); setProgress(100); }
   btn.disabled = false;
 }
 
+<<<<<<< HEAD
 // ── RESET ────────────────────────────────────────────────
 function doReset() {
   document.getElementById('commune-input').value = '';
@@ -662,36 +761,43 @@ function doReset() {
 
 communeInput.addEventListener('keydown', e => { if (e.key === 'Enter' && selectedCommune) doSearch(); });
 surfInput.addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
+=======
+communeInput.addEventListener('keydown', function(e) { if (e.key === 'Enter' && selectedCommune) doSearch(); });
+surfInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') doSearch(); });
+>>>>>>> 9ada9356b9414eac68e51bd0ee2544cb28fca0a2
 
 const mobilePanel = document.getElementById('mobile-panel');
 if (window.innerWidth <= 768) mobilePanel.classList.add('open');
-document.getElementById('panel-handle').addEventListener('click', () => mobilePanel.classList.toggle('open'));
+document.getElementById('panel-handle').addEventListener('click', function() { mobilePanel.classList.toggle('open'); });
 
+<<<<<<< HEAD
 // ── OUTIL DE MESURE ───────────────────────────────────────
+=======
+>>>>>>> 9ada9356b9414eac68e51bd0ee2544cb28fca0a2
 let measureMode = null, measurePoints = [], measureLines = [], liveTooltip = null;
 
 function haversineM(a, b) {
-  const R = 6371000, toRad = x => x * Math.PI / 180, dLat = toRad(b.lat - a.lat), dLng = toRad(b.lng - a.lng);
-  const x = Math.sin(dLat/2)**2 + Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLng/2)**2;
+  const R = 6371000, toRad = function(x) { return x * Math.PI / 180; }, dLat = toRad(b.lat - a.lat), dLng = toRad(b.lng - a.lng);
+  const x = Math.sin(dLat/2)*Math.sin(dLat/2) + Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLng/2)*Math.sin(dLng/2);
   return R * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
 }
 function totalDist(pts) { let d = 0; for (let i = 1; i < pts.length; i++) d += haversineM(pts[i-1], pts[i]); return d; }
 function polyAreaM2(pts) {
   if (pts.length < 3) return 0;
   const R = 6371000, ref = pts[0].lat * Math.PI / 180;
-  const xy = pts.map(p => ({ x: p.lng * Math.PI / 180 * R * Math.cos(ref), y: p.lat * Math.PI / 180 * R }));
+  const xy = pts.map(function(p) { return { x: p.lng * Math.PI / 180 * R * Math.cos(ref), y: p.lat * Math.PI / 180 * R }; });
   let area = 0;
   for (let i = 0; i < xy.length; i++) { const j = (i + 1) % xy.length; area += xy[i].x * xy[j].y - xy[j].x * xy[i].y; }
   return Math.abs(area / 2);
 }
-const fmtDist = m => m >= 1000 ? (m/1000).toFixed(2)+' km' : Math.round(m)+' m';
-const fmtArea = m2 => m2 >= 10000 ? (m2/10000).toFixed(2)+' ha' : Math.round(m2)+' m²';
+function fmtDist(m) { return m >= 1000 ? (m/1000).toFixed(2)+' km' : Math.round(m)+' m'; }
+function fmtArea(m2) { return m2 >= 10000 ? (m2/10000).toFixed(2)+' ha' : Math.round(m2)+' m2'; }
 
 function updateMeasureResult() {
   const box = document.getElementById('measure-result');
   if (!measurePoints.length) { box.classList.remove('show'); return; }
   box.classList.add('show');
-  document.getElementById('measure-label').textContent = measureMode === 'area' ? '📐 Périmètre' : '📏 Distance';
+  document.getElementById('measure-label').textContent = measureMode === 'area' ? 'Perimetre' : 'Distance';
   document.getElementById('measure-val').textContent = fmtDist(totalDist(measurePoints));
   const hasArea = measureMode === 'area' && measurePoints.length >= 3;
   document.getElementById('measure-area-wrap').style.display = hasArea ? 'inline' : 'none';
@@ -700,14 +806,14 @@ function updateMeasureResult() {
 }
 
 function redrawMeasure(live) {
-  measureLines.forEach(l => map.removeLayer(l)); measureLines = [];
+  measureLines.forEach(function(l) { map.removeLayer(l); }); measureLines = [];
   if (liveTooltip) { map.removeLayer(liveTooltip); liveTooltip = null; }
   if (!measurePoints.length) return;
-  const pts = live ? [...measurePoints, live] : [...measurePoints];
+  const pts = live ? measurePoints.concat([live]) : measurePoints.slice();
   const color = measureMode === 'distance' ? '#2563eb' : '#16a34a';
-  if (pts.length >= 2) measureLines.push(L.polyline(pts, { color, weight: 2.5, opacity: 0.9 }).addTo(map));
-  if (measureMode === 'area' && pts.length >= 3) measureLines.push(L.polygon(pts, { color, weight: 2, fillColor: color, fillOpacity: 0.12 }).addTo(map));
-  measurePoints.forEach((pt, i) => measureLines.push(L.circleMarker(pt, { radius: i === 0 ? 7 : 5, color, weight: 2, fillColor: i === 0 ? color : 'white', fillOpacity: 1 }).addTo(map)));
+  if (pts.length >= 2) measureLines.push(L.polyline(pts, { color: color, weight: 2.5, opacity: 0.9 }).addTo(map));
+  if (measureMode === 'area' && pts.length >= 3) measureLines.push(L.polygon(pts, { color: color, weight: 2, fillColor: color, fillOpacity: 0.12 }).addTo(map));
+  measurePoints.forEach(function(pt, i) { measureLines.push(L.circleMarker(pt, { radius: i === 0 ? 7 : 5, color: color, weight: 2, fillColor: i === 0 ? color : 'white', fillOpacity: 1 }).addTo(map)); });
   if (live && measurePoints.length) {
     const last = measurePoints[measurePoints.length - 1];
     liveTooltip = L.tooltip({ permanent: true, direction: 'top', offset: [0, -6], className: 'measure-tooltip' }).setLatLng([(last.lat + live.lat) / 2, (last.lng + live.lng) / 2]).setContent(fmtDist(haversineM(last, live))).addTo(map);
@@ -724,7 +830,7 @@ function toggleMeasureMode(mode) {
   map.getContainer().classList.add('measuring'); map.closePopup();
   document.getElementById('btn-measure-dist').classList.toggle('active', mode === 'distance');
   document.getElementById('btn-measure-area').classList.toggle('active', mode === 'area');
-  if (parcelsLayer) parcelsLayer.eachLayer(l => l.off('click'));
+  if (parcelsLayer) parcelsLayer.eachLayer(function(l) { l.off('click'); });
   map.on('click', onMeasureClick); map.on('mousemove', onMeasureMove); map.on('dblclick', onMeasureDblClick);
   map.doubleClickZoom.disable();
 }
@@ -736,12 +842,12 @@ function stopMeasure() {
   document.getElementById('btn-measure-dist').classList.remove('active');
   document.getElementById('btn-measure-area').classList.remove('active');
   if (liveTooltip) { map.removeLayer(liveTooltip); liveTooltip = null; }
-  if (parcelsLayer) parcelsLayer.eachLayer(l => bindParcelClick(l));
+  if (parcelsLayer) parcelsLayer.eachLayer(function(l) { bindParcelClick(l); });
   redrawMeasure(null); updateMeasureResult();
 }
 
 function clearMeasure() {
-  measurePoints = []; measureLines.forEach(l => map.removeLayer(l)); measureLines = [];
+  measurePoints = []; measureLines.forEach(function(l) { map.removeLayer(l); }); measureLines = [];
   if (liveTooltip) { map.removeLayer(liveTooltip); liveTooltip = null; }
   document.getElementById('measure-result').classList.remove('show');
 }
@@ -750,7 +856,10 @@ function onMeasureClick(e) { L.DomEvent.stopPropagation(e); map.closePopup(); me
 function onMeasureMove(e) { if (measurePoints.length) redrawMeasure(e.latlng); }
 function onMeasureDblClick(e) { L.DomEvent.stopPropagation(e); if (measureMode === 'distance' && measurePoints.length) measurePoints.pop(); stopMeasure(); }
 
+<<<<<<< HEAD
 // ── AUTH ─────────────────────────────────────────────────
+=======
+>>>>>>> 9ada9356b9414eac68e51bd0ee2544cb28fca0a2
 const API = 'https://parcelleid.duckdns.org';
 let authUser = null;
 
@@ -761,6 +870,7 @@ function clearTokens() { localStorage.removeItem('access_token'); localStorage.r
 async function refreshAccessToken() {
   const rt = localStorage.getItem('refresh_token'); if (!rt) return false;
   try {
+<<<<<<< HEAD
     const r = await fetch(`${API}/auth/refresh`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({refresh_token: rt}) });
     if (!r.ok) { clearTokens(); return false; }
     const d = await r.json(); localStorage.setItem('access_token', d.access_token); return true;
@@ -771,23 +881,45 @@ async function authFetch(url, opts = {}) {
   opts.headers = { ...opts.headers, 'Authorization': `Bearer ${getToken()}` };
   let r = await fetch(url, opts);
   if (r.status === 401) { const ok = await refreshAccessToken(); if (ok) { opts.headers['Authorization'] = `Bearer ${getToken()}`; r = await fetch(url, opts); } }
+=======
+    const r = await fetch(API + '/auth/refresh', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({refresh_token: rt}) });
+    if (!r.ok) { clearTokens(); return false; }
+    const d = await r.json(); localStorage.setItem('access_token', d.access_token); return true;
+  } catch(e) { return false; }
+}
+
+async function authFetch(url, opts) {
+  opts = opts || {};
+  opts.headers = Object.assign({}, opts.headers, {'Authorization': 'Bearer ' + getToken()});
+  let r = await fetch(url, opts);
+  if (r.status === 401) { const ok = await refreshAccessToken(); if (ok) { opts.headers['Authorization'] = 'Bearer ' + getToken(); r = await fetch(url, opts); } }
+>>>>>>> 9ada9356b9414eac68e51bd0ee2544cb28fca0a2
   return r;
 }
 
 async function loadMe() {
   if (!getToken()) return;
   try {
+<<<<<<< HEAD
     const r = await authFetch(`${API}/auth/me`);
     if (!r.ok) { clearTokens(); updateAuthUI(null); return; }
     authUser = await r.json();
     updateAuthUI(authUser);
   } catch {}
+=======
+    const r = await authFetch(API + '/auth/me');
+    if (!r.ok) { clearTokens(); updateAuthUI(null); return; }
+    authUser = await r.json();
+    updateAuthUI(authUser);
+  } catch(e) {}
+>>>>>>> 9ada9356b9414eac68e51bd0ee2544cb28fca0a2
 }
 
 function updateAuthUI(user) {
   const hdr = document.getElementById('auth-header');
   const cb = document.getElementById('credits-bar');
   if (!user) {
+<<<<<<< HEAD
     hdr.innerHTML = `<button class="user-badge" onclick="openAuth('login')">Se connecter</button>`;
     cb.classList.remove('show'); return;
   }
@@ -795,6 +927,17 @@ function updateAuthUI(user) {
   hdr.innerHTML = `<div class="user-badge" onclick="doLogout()" style="cursor:pointer"><span>${user.email.split('@')[0]}</span><span class="plan-pill ${isPro?'pro':''}">${isPro?'Pro':'Free'}</span></div>`;
   if (!isPro) { cb.classList.add('show'); document.getElementById('credits-count').textContent = user.credits; }
   else { cb.classList.remove('show'); }
+=======
+    hdr.innerHTML = '<button class="user-badge" onclick="openAuth(\'login\')">Se connecter</button>';
+    cb.classList.remove('show'); return;
+  }
+  const isPro = user.plan === 'pro';
+  hdr.innerHTML = '<div class="user-badge" onclick="doLogout()" style="cursor:pointer"><span>' + user.email.split('@')[0] + '</span><span class="plan-pill ' + (isPro ? 'pro' : '') + '">' + (isPro ? 'Pro' : 'Free') + '</span></div>';
+  if (!isPro) {
+    cb.classList.add('show');
+    document.getElementById('credits-count').textContent = user.credits;
+  } else { cb.classList.remove('show'); }
+>>>>>>> 9ada9356b9414eac68e51bd0ee2544cb28fca0a2
 }
 
 function openAuth(view) { document.getElementById('auth-overlay').classList.remove('hidden'); switchAuth(view); }
@@ -811,12 +954,20 @@ async function doLogin() {
   const msg = document.getElementById('login-msg');
   msg.className = 'auth-msg'; msg.textContent = '';
   try {
+<<<<<<< HEAD
     const r = await fetch(`${API}/auth/login`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({email, password: pwd}) });
+=======
+    const r = await fetch(API + '/auth/login', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({email: email, password: pwd}) });
+>>>>>>> 9ada9356b9414eac68e51bd0ee2544cb28fca0a2
     const d = await r.json();
     if (!r.ok) { msg.className = 'auth-msg err'; msg.textContent = d.detail || 'Erreur de connexion'; return; }
     saveTokens(d.access_token, d.refresh_token);
     await loadMe(); closeAuth();
+<<<<<<< HEAD
   } catch { msg.className = 'auth-msg err'; msg.textContent = 'Erreur réseau'; }
+=======
+  } catch(e) { msg.className = 'auth-msg err'; msg.textContent = 'Erreur reseau'; }
+>>>>>>> 9ada9356b9414eac68e51bd0ee2544cb28fca0a2
 }
 
 async function doRegister() {
@@ -825,12 +976,21 @@ async function doRegister() {
   const msg = document.getElementById('register-msg');
   msg.className = 'auth-msg'; msg.textContent = '';
   try {
+<<<<<<< HEAD
     const r = await fetch(`${API}/auth/register`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({email, password: pwd}) });
     const d = await r.json();
     if (!r.ok) { msg.className = 'auth-msg err'; msg.textContent = d.detail || 'Erreur'; return; }
     document.getElementById('verify-sub').textContent = `Un lien de confirmation a été envoyé à ${email}.`;
     switchAuth('verify');
   } catch { msg.className = 'auth-msg err'; msg.textContent = 'Erreur réseau'; }
+=======
+    const r = await fetch(API + '/auth/register', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({email: email, password: pwd}) });
+    const d = await r.json();
+    if (!r.ok) { msg.className = 'auth-msg err'; msg.textContent = d.detail || 'Erreur'; return; }
+    document.getElementById('verify-sub').textContent = 'Un lien de confirmation a ete envoye a ' + email + '.';
+    switchAuth('verify');
+  } catch(e) { msg.className = 'auth-msg err'; msg.textContent = 'Erreur reseau'; }
+>>>>>>> 9ada9356b9414eac68e51bd0ee2544cb28fca0a2
 }
 
 function doLogout() { clearTokens(); authUser = null; updateAuthUI(null); }
@@ -839,14 +999,24 @@ async function checkVerifyToken() {
   const params = new URLSearchParams(window.location.search);
   const token = params.get('verify'); if (!token) return;
   try {
+<<<<<<< HEAD
     const r = await fetch(`${API}/auth/verify-email?token=${token}`, { method: 'POST' });
+=======
+    const r = await fetch(API + '/auth/verify-email?token=' + token, { method: 'POST' });
+>>>>>>> 9ada9356b9414eac68e51bd0ee2544cb28fca0a2
     if (r.ok) {
       openAuth('login');
       const m = document.getElementById('login-msg');
       m.className = 'auth-msg ok';
+<<<<<<< HEAD
       m.textContent = '✅ Email vérifié ! Vous pouvez vous connecter.';
     }
   } catch {}
+=======
+      m.textContent = 'Email verifie ! Vous pouvez vous connecter.';
+    }
+  } catch(e) {}
+>>>>>>> 9ada9356b9414eac68e51bd0ee2544cb28fca0a2
   window.history.replaceState({}, '', window.location.pathname);
 }
 

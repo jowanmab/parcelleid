@@ -428,14 +428,17 @@ function drawThumb(canvas, feature, zoom) {
     }
   }
 
+  // Calculer le pixel exact du centre dans la tuile centrale
+  const cX = ((cLng + 180) / 360 * n - xTile) * tileSize;
+  const cY = ((1 - Math.log(Math.tan(cLat * Math.PI / 180) + 1 / Math.cos(cLat * Math.PI / 180)) / Math.PI) / 2 * n - yTile) * tileSize;
+
   return Promise.all(promises).then(() => {
-    // dessiner le contour de la parcelle
     const toPixel = (lat, lng) => {
       const x = (lng + 180) / 360 * n;
       const y = (1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * n;
       return [
-        (x - xTile) * tileSize + W / 2,
-        (y - yTile) * tileSize + H / 2
+        (x - xTile) * tileSize - cX + W / 2,
+        (y - yTile) * tileSize - cY + H / 2
       ];
     };
     ctx.beginPath();

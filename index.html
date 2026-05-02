@@ -393,7 +393,12 @@ function drawThumb(canvas, feature, zoom) {
 
   // centroide de la feature
   let sumLat = 0, sumLng = 0, count = 0;
-  const coords = feature.geometry.coordinates[0];
+  let coords;
+  try {
+    const geom = feature.geometry;
+    coords = geom.type === 'MultiPolygon' ? geom.coordinates[0][0] : geom.coordinates[0];
+  } catch(e) { return Promise.resolve(); }
+  if (!coords || !coords.length) return Promise.resolve();
   coords.forEach(c => { sumLng += c[0]; sumLat += c[1]; count++; });
   const cLat = sumLat / count, cLng = sumLng / count;
 

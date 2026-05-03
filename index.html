@@ -288,9 +288,10 @@
 const map = L.map('map', { zoomControl: true, maxZoom: 22 }).setView([46.6, 2.3], 5);
 const tileVoyager = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { attribution: '© OpenStreetMap contributors © CARTO', subdomains: 'abcd', maxZoom: 20 });
 const tileSatellite = L.tileLayer('https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}', { attribution: '© IGN BD Ortho', maxZoom: 22, maxNativeZoom: 19 });
-const tilePLU = L.tileLayer.wms('https://data.geopf.fr/wms-r/ows', {
-  layers: 'URBANISMES_SURCHARGED', format: 'image/png', transparent: true,
-  version: '1.3.0', opacity: 0.6, attribution: '© Géoportail Urbanisme', maxZoom: 22
+const tilePLU = L.tileLayer.wms('https://data.geopf.fr/wms-v/ows', {
+  layers: 'zone_urba', format: 'image/png', transparent: true,
+  version: '1.3.0', opacity: 0.7, attribution: '© Géoportail Urbanisme', maxZoom: 22,
+  crs: L.CRS.EPSG4326
 });
 let pluActive = false;
 tileVoyager.addTo(map);

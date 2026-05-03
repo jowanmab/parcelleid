@@ -73,8 +73,8 @@
     .results-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
     .results-label { font-size: 0.62rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
     .results-count { font-size: 0.73rem; font-weight: 700; color: var(--blue); }
-    /* CARDS 2 colonnes style Airbnb */
-    #results-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    /* CARDS 1 colonne style Airbnb */
+    #results-list { display: grid; grid-template-columns: 1fr; gap: 8px; }
     .card { background: var(--white); border: 1.5px solid var(--soft); border-radius: var(--radius); cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s, transform 0.12s; overflow: hidden; }
     .card:hover { border-color: var(--blue-bd); box-shadow: 0 2px 12px rgba(37,99,235,0.08); transform: translateY(-1px); }
     .card.active { border-color: var(--orange); box-shadow: 0 2px 12px rgba(249,115,22,0.15); }

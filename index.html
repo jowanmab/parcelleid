@@ -288,6 +288,11 @@
 const map = L.map('map', { zoomControl: true, maxZoom: 22 }).setView([46.6, 2.3], 5);
 const tileVoyager = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { attribution: '© OpenStreetMap contributors © CARTO', subdomains: 'abcd', maxZoom: 20 });
 const tileSatellite = L.tileLayer('https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}', { attribution: '© IGN BD Ortho', maxZoom: 22, maxNativeZoom: 19 });
+const tilePLU = L.tileLayer.wms('https://wxs.ign.fr/gpu/geoportail/r/wms', {
+  layers: 'URBANISMES_SURCHARGED', format: 'image/png', transparent: true,
+  version: '1.3.0', opacity: 0.6, attribution: '© Géoportail Urbanisme', maxZoom: 22
+});
+let pluActive = false;
 tileVoyager.addTo(map);
 
 const LayerControl = L.Control.extend({
@@ -311,6 +316,13 @@ const LayerControl = L.Control.extend({
     styleBtn(btnCarte, true); styleBtn(btnSat, false);
     L.DomEvent.on(btnCarte, 'click', () => { if (isSat) { map.removeLayer(tileSatellite); tileVoyager.addTo(map); isSat = false; styleBtn(btnCarte, true); styleBtn(btnSat, false); } });
     L.DomEvent.on(btnSat,   'click', () => { if (!isSat) { map.removeLayer(tileVoyager); tileSatellite.addTo(map); isSat = true; styleBtn(btnCarte, false); styleBtn(btnSat, true); } });
+    const btnPLU = mkBtn('https://www.geoportail-urbanisme.gouv.fr/assets/images/logo-gpu.png', 'PLU');
+    styleBtn(btnPLU, false);
+    L.DomEvent.on(btnPLU, 'click', () => {
+      pluActive = !pluActive;
+      if (pluActive) { tilePLU.addTo(map); styleBtn(btnPLU, true); }
+      else { map.removeLayer(tilePLU); styleBtn(btnPLU, false); }
+    });
     L.DomEvent.disableClickPropagation(wrap);
     return wrap;
   }

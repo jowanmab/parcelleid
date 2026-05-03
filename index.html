@@ -324,7 +324,7 @@ let activeFeature = null;
 const BATCH = 10;
 
 const STYLE_DEFAULT  = { color: '#2563eb', weight: 2, opacity: 0.9, fillColor: '#2563eb', fillOpacity: 0.18 };
-const STYLE_HOVER    = { color: '#2563eb', weight: 3, fillOpacity: 0.35 };
+const STYLE_HOVER    = { color: '#f97316', weight: 3, opacity: 1, fillColor: '#f97316', fillOpacity: 0.25 };
 const STYLE_SELECTED = { color: '#f97316', weight: 3, opacity: 1, fillColor: '#f97316', fillOpacity: 0.25 };
 
 // ── PROGRESS ──────────────────────────────────────────────
@@ -526,6 +526,19 @@ function loadMoreCards(targetSurf) {
     body.innerHTML = `<div class="card-surf">${Math.round(surf)} m²</div><span class="card-tag ${tagClass}">±${ecart.toFixed(1)}%</span>`;
 
     card.appendChild(thumb); card.appendChild(body);
+
+    card.addEventListener('mouseenter', () => {
+      if (!parcelsLayer) return;
+      parcelsLayer.eachLayer(l => {
+        if (l.feature === f && l.feature !== activeFeature) l.setStyle(STYLE_HOVER);
+      });
+    });
+    card.addEventListener('mouseleave', () => {
+      if (!parcelsLayer) return;
+      parcelsLayer.eachLayer(l => {
+        if (l.feature === f && l.feature !== activeFeature) l.setStyle(STYLE_DEFAULT);
+      });
+    });
 
     // Lazy load miniature + adresse via IntersectionObserver
     const observer = new IntersectionObserver(entries => {

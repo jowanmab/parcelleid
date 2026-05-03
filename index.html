@@ -540,6 +540,36 @@ function loadMoreCards(targetSurf) {
       });
     });
 
+    // Tooltip survol carte - lazy chargement au premier survol
+    let thumbCache = null;
+    if (parcelsLayer) {
+      parcelsLayer.eachLayer(l => {
+        if (l.feature === f) {
+          l.on('mouseover', function(e) {
+            if (measureMode) return;
+            if (!thumbCache) {
+              thumbCache = document.createElement('canvas');
+              thumbCache.width = 200; thumbCache.height = 200;
+              drawThumb(thumbCache, f, 19).then(() => {
+                L.popup({ className: 'thumb-popup', closeButton: false, offset: [0, -10] })
+                  .setLatLng(e.latlng)
+                  .setContent(thumbCache)
+                  .openOn(map);
+              });
+            } else {
+              L.popup({ className: 'thumb-popup', closeButton: false, offset: [0, -10] })
+                .setLatLng(e.latlng)
+                .setContent(thumbCache)
+                .openOn(map);
+            }
+          });
+          l.on('mouseout', function() {
+            map.closePopup();
+          });
+        }
+      });
+    }
+
     // Lazy load miniature + adresse via IntersectionObserver
     const observer = new IntersectionObserver(entries => {
       if (!entries[0].isIntersecting) return;

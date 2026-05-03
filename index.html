@@ -321,8 +321,20 @@ const LayerControl = L.Control.extend({
       btn.querySelector('div').style.cssText = `font-size:0.6rem;font-weight:700;text-align:center;padding:3px 0;letter-spacing:0.06em;text-transform:uppercase;background:${active ? '#2563eb' : 'rgba(255,255,255,0.9)'};color:${active ? 'white' : '#6b7280'};`;
     };
     styleBtn(btnCarte, true); styleBtn(btnSat, false);
-    L.DomEvent.on(btnCarte, 'click', () => { if (isSat) { map.removeLayer(tileSatellite); tileVoyager.addTo(map); isSat = false; styleBtn(btnCarte, true); styleBtn(btnSat, false); } });
-    L.DomEvent.on(btnSat,   'click', () => { if (!isSat) { map.removeLayer(tileVoyager); tileSatellite.addTo(map); isSat = true; styleBtn(btnCarte, false); styleBtn(btnSat, true); } });
+    L.DomEvent.on(btnCarte, 'click', () => {
+      if (isSat) {
+        map.removeLayer(tileSatellite); tileVoyager.addTo(map); isSat = false;
+        styleBtn(btnCarte, true); styleBtn(btnSat, false);
+        if (pluActive) { map.removeLayer(tilePLU); tilePLU.addTo(map); }
+      }
+    });
+    L.DomEvent.on(btnSat, 'click', () => {
+      if (!isSat) {
+        map.removeLayer(tileVoyager); tileSatellite.addTo(map); isSat = true;
+        styleBtn(btnCarte, false); styleBtn(btnSat, true);
+        if (pluActive) { map.removeLayer(tilePLU); tilePLU.addTo(map); }
+      }
+    });
     const btnPLU = mkBtn('https://www.geoportail-urbanisme.gouv.fr/assets/images/logo-gpu.png', 'PLU');
     styleBtn(btnPLU, false);
     L.DomEvent.on(btnPLU, 'click', () => {

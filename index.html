@@ -740,7 +740,14 @@ function redrawMeasure(live) {
   const pts = live ? [...measurePoints, live] : [...measurePoints];
   const color = measureMode === 'distance' ? '#2563eb' : '#16a34a';
   if (pts.length >= 2) measureLines.push(L.polyline(pts, { color, weight: 2.5, opacity: 0.9 }).addTo(map));
-  if (measureMode === 'area' && pts.length >= 3) measureLines.push(L.polygon(pts, { color, weight: 2, fillColor: color, fillOpacity: 0.12 }).addTo(map));
+  if (measureMode === 'area' && pts.length >= 3) {
+    measureLines.push(L.polygon(pts, { color, weight: 2, fillColor: color, fillOpacity: 0.12 }).addTo(map));
+    if (!live && pts.length >= 3) {
+      const area = polyAreaM2(measurePoints);
+      const center = pts.reduce((acc, p) => [acc[0] + p.lat / pts.length, acc[1] + p.lng / pts.length], [0, 0]);
+      measureLines.push(L.tooltip({ permanent: true, direction: 'center', className: 'measure-tooltip' }).setLatLng(center).setContent(fmtArea(area)).addTo(map));
+    }
+  }
   measurePoints.forEach((pt, i) => measureLines.push(L.circleMarker(pt, { radius: i === 0 ? 7 : 5, color, weight: 2, fillColor: i === 0 ? color : 'white', fillOpacity: 1 }).addTo(map)));
   if (live && measurePoints.length) {
     const last = measurePoints[measurePoints.length - 1];

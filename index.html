@@ -396,7 +396,7 @@
             <input type="number" id="surface-input" placeholder="Ex : 450" min="1"/>
             <div class="tol-pill">±<span id="tol-val">15</span>%</div>
           </div>
-          <input type="range" id="tol-range" min="0" max="50" value="15" step="1"/>
+          <input type="range" id="tol-range" min="0" max="25" value="3" step="1"/>
           <div style="font-size:0.7rem;color:var(--muted);margin-top:5px">
             Entre <span id="surf-min" style="color:var(--blue);font-weight:600">—</span>
             et <span id="surf-max" style="color:var(--blue);font-weight:600">—</span> m²
@@ -908,7 +908,7 @@ async function doSearch() {
 function doReset() {
   document.getElementById('commune-input').value = '';
   document.getElementById('surface-input').value = '';
-  document.getElementById('tol-range').value = 15;
+  document.getElementById('tol-range').value = 3;
   selectedCommune = null; allFeatures = []; renderedCount = 0; activeFeature = null;
   updateTol();
   if (parcelsLayer) { map.removeLayer(parcelsLayer); parcelsLayer = null; }

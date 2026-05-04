@@ -31,8 +31,9 @@
 
     /* ── HEADER ── */
     header { background: var(--white); border-bottom: 1px solid var(--soft); padding: 0 16px 0 16px; height: 52px; display: flex; align-items: center; gap: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); flex-shrink: 0; z-index: 800; position: relative; }
-    .logo { font-weight: 800; font-size: 1.15rem; color: var(--ink); letter-spacing: -0.03em; }
-    .logo span { color: var(--blue); }
+    .logo { font-weight: 800; font-size: 1.15rem; color: var(--ink); letter-spacing: -0.03em; display: flex; align-items: center; gap: 4px; }
+    .logo .logo-id { background: var(--blue); color: #fff; font-size: 0.72rem; font-weight: 800; padding: 2px 6px; border-radius: 5px; letter-spacing: 0.01em; }
+    .logo-sub { font-size: 0.65rem; color: var(--muted); font-weight: 400; margin-left: 2px; }
     .header-sep { flex: 1; }
     .header-tag { font-size: 0.64rem; color: var(--muted); border: 1px solid var(--border); padding: 3px 8px; border-radius: 20px; letter-spacing: 0.05em; }
     .user-badge { font-size: 0.78rem; font-weight: 600; color: var(--mid); border: 1px solid var(--border); padding: 5px 12px; border-radius: 20px; cursor: pointer; transition: background 0.15s; display: flex; align-items: center; gap: 6px; background: none; font-family: 'Plus Jakarta Sans', sans-serif; white-space: nowrap; }
@@ -56,7 +57,7 @@
 
     /* ── FORM ── */
     .form-section { background: var(--bg); border: 1px solid var(--soft); border-radius: 12px; padding: 13px; margin-bottom: 10px; }
-    .form-label { font-size: 0.61rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 8px; }
+    .form-label { font-size: 0.75rem; font-weight: 500; color: var(--mid); margin-bottom: 8px; }
     .field { margin-bottom: 10px; }
     .field:last-child { margin-bottom: 0; }
     input[type=text], input[type=number] { width: 100%; background: var(--white); border: 1.5px solid var(--border); border-radius: 8px; padding: 9px 11px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.86rem; color: var(--ink); outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
@@ -72,8 +73,8 @@
     .tol-pill { background: var(--blue-lt); border: 1.5px solid var(--blue-bd); border-radius: 8px; padding: 9px 11px; font-size: 0.78rem; color: var(--blue); font-weight: 700; text-align: center; white-space: nowrap; }
     input[type=range] { width: 100%; accent-color: var(--blue); background: transparent; border: none; padding: 0; margin-top: 8px; }
     .btn-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-bottom: 10px; }
-    .btn-search { background: var(--ink); color: var(--white); border: none; border-radius: var(--radius); padding: 12px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: background 0.2s, transform 0.1s; letter-spacing: -0.01em; }
-    .btn-search:hover { background: #1f2937; }
+    .btn-search { background: var(--blue); color: var(--white); border: none; border-radius: var(--radius); padding: 12px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: background 0.2s, transform 0.1s; letter-spacing: -0.01em; }
+    .btn-search:hover { background: #1d4ed8; }
     .btn-search:active { transform: scale(0.98); }
     .btn-search:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; transform: none; }
     .btn-reset { background: var(--white); color: var(--mid); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 12px 14px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: background 0.15s; white-space: nowrap; }
@@ -103,10 +104,12 @@
     .card-thumb canvas { position: absolute; top: 0; left: 0; width: 100% !important; height: 100% !important; display: block; }
     .card-addr { position: absolute; top: 0; left: 0; right: 0; padding: 4px 6px; background: rgba(0,0,0,0.55); color: white; font-size: 0.58rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; z-index: 1; }
     .card-body { padding: 8px 9px; }
+    .card-body-row { display: flex; align-items: baseline; justify-content: space-between; gap: 4px; }
     .card-surf { font-size: 0.92rem; font-weight: 800; color: var(--ink); letter-spacing: -0.02em; }
-    .card-tag { display: inline-block; font-size: 0.6rem; font-weight: 700; padding: 2px 6px; border-radius: 20px; margin-top: 3px; }
-    .card-tag.green { background: #dcfce7; color: #16a34a; }
-    .card-tag.yellow { background: #fef9c3; color: #ca8a04; }
+    .card-ref { font-size: 0.62rem; color: var(--muted); margin-top: 2px; }
+    .card-tag { display: inline-block; font-size: 0.6rem; font-weight: 700; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; }
+    .card-tag.green { background: #dcfce7; color: #15803d; }
+    .card-tag.yellow { background: #fef9c3; color: #a16207; }
     .card-tag.red { background: #fee2e2; color: #dc2626; }
     .load-more { width: 100%; grid-column: 1/-1; background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 10px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.82rem; font-weight: 600; color: var(--mid); cursor: pointer; transition: background 0.15s; margin-top: 2px; }
     .load-more:hover { background: var(--bg); color: var(--ink); }
@@ -116,13 +119,14 @@
     #map { position: absolute; inset: 0; }
 
     /* ── LEAFLET POPUP ── */
-    .leaflet-popup-content-wrapper { background: var(--ink); color: var(--white); border-radius: var(--radius); box-shadow: 0 8px 32px rgba(0,0,0,0.25); font-family: 'Plus Jakarta Sans', sans-serif; }
-    .leaflet-popup-tip { background: var(--ink); }
+    .leaflet-popup-content-wrapper { background: var(--white); color: var(--ink); border-radius: var(--radius); box-shadow: 0 4px 24px rgba(0,0,0,0.12); font-family: 'Plus Jakarta Sans', sans-serif; border: 1px solid var(--border); }
+    .leaflet-popup-tip { background: var(--white); }
     .leaflet-popup-content { margin: 13px 15px; font-size: 0.82rem; line-height: 1.7; }
-    .popup-id { font-size: 0.92rem; font-weight: 800; color: #93c5fd; margin-bottom: 4px; }
-    .popup-links { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
-    .popup-link { font-size: 0.76rem; color: #93c5fd; text-decoration: none; border: 1px solid rgba(147,197,253,0.4); border-radius: 6px; padding: 4px 10px; transition: background 0.2s; }
-    .popup-link:hover { background: rgba(147,197,253,0.15); }
+    .popup-id { font-size: 0.88rem; font-weight: 700; color: var(--ink); margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+    .popup-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--orange); display: inline-block; flex-shrink: 0; }
+    .popup-links { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+    .popup-link { font-size: 0.73rem; color: var(--blue); text-decoration: none; border: 1px solid var(--blue-bd); background: var(--blue-lt); border-radius: 5px; padding: 4px 10px; transition: background 0.2s; font-weight: 500; }
+    .popup-link:hover { background: var(--blue-bd); }
 
     /* ── OVERLAY ── */
     #overlay { position: absolute; inset: 0; background: rgba(249,250,251,0.92); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; z-index: 600; transition: opacity 0.4s; }
@@ -313,7 +317,7 @@
 <body>
 
 <header>
-  <div class="logo">Parcelle<span>ID</span></div>
+  <div class="logo">Parcelle<span class="logo-id">ID</span><span class="logo-sub">Cadastre France</span></div>
   <div class="header-sep"></div>
   <div class="header-tag">V5 · Cadastre IGN</div>
   <div id="auth-header">
@@ -376,7 +380,7 @@
       </div>
 
       <div class="form-section">
-        <div class="form-label">📍 Localisation</div>
+        <div class="form-label">Commune ou code postal</div>
         <div class="field">
           <div class="ac-wrap">
             <input type="text" id="commune-input" placeholder="Commune ou code postal…" autocomplete="off"/>
@@ -386,7 +390,7 @@
       </div>
 
       <div class="form-section">
-        <div class="form-label">📐 Surface cadastrale</div>
+        <div class="form-label">Surface cadastrale</div>
         <div class="field">
           <div class="surface-row">
             <input type="number" id="surface-input" placeholder="Ex : 450" min="1"/>
@@ -451,8 +455,8 @@
 
     <div id="overlay">
       <div class="overlay-icon">🗺️</div>
-      <div class="overlay-title">La carte s'affiche ici</div>
-      <div class="overlay-sub">Renseignez commune + surface et lancez la recherche</div>
+      <div class="overlay-title">Trouvez votre parcelle</div>
+      <div class="overlay-sub">Entrez une commune et une surface pour démarrer</div>
     </div>
 
     <div id="map-count"></div>
@@ -755,7 +759,11 @@ function loadMoreCards(targetSurf) {
     const addrBand = document.createElement('div'); addrBand.className = 'card-addr'; addrBand.textContent = '…';
     thumb.appendChild(canvas); thumb.appendChild(addrBand);
     const body = document.createElement('div'); body.className = 'card-body';
-    body.innerHTML = `<div class="card-surf">${Math.round(surf)} m²</div><span class="card-tag ${tagClass}">±${ecart.toFixed(1)}%</span>`;
+    const section = f.properties?.section || '';
+    const numero  = f.properties?.numero  || f.properties?.numero_plan || '';
+    const commune = f.properties?.commune || '';
+    const ref = [section, numero].filter(Boolean).join(' ') + (commune ? ' · ' + commune : '');
+    body.innerHTML = `<div class="card-body-row"><div class="card-surf">${Math.round(surf)} m²</div><span class="card-tag ${tagClass}">±${ecart.toFixed(1)}%</span></div>${ref ? '<div class="card-ref">' + ref + '</div>' : ''}`;
     card.appendChild(thumb); card.appendChild(body);
     card.addEventListener('mouseenter', () => { if (!parcelsLayer) return; parcelsLayer.eachLayer(l => { if (l.feature === f && l.feature !== activeFeature) l.setStyle(STYLE_HOVER); }); });
     card.addEventListener('mouseleave', () => { if (!parcelsLayer) return; parcelsLayer.eachLayer(l => { if (l.feature === f && l.feature !== activeFeature) l.setStyle(STYLE_DEFAULT); }); });
@@ -824,12 +832,12 @@ function drawParcels(features, targetSurf) {
       const uid = Math.random().toString(36).slice(2, 8);
       let lat = 0, lng = 0;
       try { lat = layer.getBounds().getCenter().lat; lng = layer.getBounds().getCenter().lng; } catch {}
-      const popupHtml = '<div class="popup-id" id="addr-' + uid + '">📍 Chargement adresse…</div>'
-        + '<div>Surface : <strong>' + Math.round(surf) + ' m²</strong> · Écart : <strong>±' + ecart.toFixed(1) + '%</strong></div>'
+      const popupHtml = '<div class="popup-id"><span class="popup-dot"></span><span id="addr-' + uid + '">Chargement adresse…</span></div>'
+        + '<div style="color:var(--mid)">Surface : <strong style="color:var(--ink)">' + Math.round(surf) + ' m²</strong> · Écart : <strong style="color:' + (ecart <= 5 ? '#15803d' : ecart <= 15 ? '#a16207' : '#dc2626') + '">±' + ecart.toFixed(1) + '%</strong></div>'
         + '<div class="popup-links">'
-        + '<a class="popup-link" id="sv-' + uid + '" href="#" target="_blank">🚶 Street View</a>'
-        + '<a class="popup-link" href="https://explore.data.gouv.fr/fr/immobilier?lng=' + lng + '&lat=' + lat + '&zoom=17" target="_blank">🏷️ Ventes DVF</a>'
-        + '<a class="popup-link" id="geo-' + uid + '" href="#" target="_blank">🗺️ Géoportail</a>'
+        + '<a class="popup-link" id="sv-' + uid + '" href="#" target="_blank">Street View</a>'
+        + '<a class="popup-link" href="https://explore.data.gouv.fr/fr/immobilier?lng=' + lng + '&lat=' + lat + '&zoom=17" target="_blank">Ventes DVF</a>'
+        + '<a class="popup-link" id="geo-' + uid + '" href="#" target="_blank">Géoportail</a>'
         + '</div>';
       layer.bindPopup(popupHtml);
       layer.on('mouseover', function() { if (layer.feature !== activeFeature) layer.setStyle(STYLE_HOVER); });
@@ -839,7 +847,7 @@ function drawParcels(features, targetSurf) {
         try {
           const tryAddr = async (params) => { const d = await fetch(`https://api-adresse.data.gouv.fr/reverse/?lon=${lng}&lat=${lat}&limit=1${params}`).then(r => r.json()); return d.features?.[0]?.properties?.label || null; };
           const addr = await tryAddr('&type=housenumber') || await tryAddr('');
-          const el = document.getElementById(`addr-${uid}`); if (el) el.textContent = addr || '📍 Adresse non trouvée';
+          const el = document.getElementById(`addr-${uid}`); if (el) el.textContent = addr || 'Adresse non trouvée';
         } catch {}
         try {
           const d = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&zoom=17&format=json`).then(r => r.json());

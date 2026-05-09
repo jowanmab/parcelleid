@@ -8,6 +8,75 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  /* ── DPE BUTTONS ── */
+    .dpe-class-buttons {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .dpe-class-btn {
+      padding: 10px 6px;
+      border: 2px solid var(--border);
+      background: var(--white);
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--mid);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .dpe-class-btn:hover {
+      border-color: var(--blue);
+      background: var(--blue-lt);
+      color: var(--blue);
+    }
+
+    .dpe-class-btn.active {
+      background: var(--blue);
+      color: white;
+      border-color: var(--blue);
+    }
+
+    .dpe-input {
+      width: 100%;
+      padding: 9px 11px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      color: var(--ink);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .dpe-input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.08);
+    }
+
+    .dpe-input::placeholder {
+      color: #d1d5db;
+    }
+
+    @media (max-width: 768px) {
+      .dpe-class-buttons {
+        gap: 5px;
+      }
+      
+      .dpe-class-btn {
+        padding: 8px 4px;
+        font-size: 12px;
+      }
+      
+      .dpe-input {
+        padding: 8px 10px;
+        font-size: 13px;
+      }
+    }
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -397,6 +466,73 @@
             <div class="tol-pill">±<span id="tol-val">15</span>%</div>
           </div>
           <input type="range" id="tol-range" min="0" max="25" value="3" step="1"/>
+          </div>
+    </div>
+
+    <!-- ===== NOUVEAUX CHAMPS DPE ===== -->
+    
+    <div class="form-section">
+      <div class="form-label">Classe énergie</div>
+      <div class="field">
+        <div class="dpe-class-buttons">
+          <button type="button" class="dpe-class-btn energie-btn" data-class="A">A</button>
+          <button type="button" class="dpe-class-btn energie-btn" data-class="B">B</button>
+          <button type="button" class="dpe-class-btn energie-btn" data-class="C">C</button>
+          <button type="button" class="dpe-class-btn energie-btn" data-class="D">D</button>
+          <button type="button" class="dpe-class-btn energie-btn" data-class="E">E</button>
+          <button type="button" class="dpe-class-btn energie-btn" data-class="F">F</button>
+          <button type="button" class="dpe-class-btn energie-btn" data-class="G">G</button>
+        </div>
+        <input 
+          type="number" 
+          id="dpe-energie-input" 
+          placeholder="ou saisir kWh/m²/an (ex: 250)"
+          min="0" 
+          max="500"
+          class="dpe-input"
+        >
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-label">Classe GES</div>
+      <div class="field">
+        <div class="dpe-class-buttons">
+          <button type="button" class="dpe-class-btn ges-btn" data-class="A">A</button>
+          <button type="button" class="dpe-class-btn ges-btn" data-class="B">B</button>
+          <button type="button" class="dpe-class-btn ges-btn" data-class="C">C</button>
+          <button type="button" class="dpe-class-btn ges-btn" data-class="D">D</button>
+          <button type="button" class="dpe-class-btn ges-btn" data-class="E">E</button>
+          <button type="button" class="dpe-class-btn ges-btn" data-class="F">F</button>
+          <button type="button" class="dpe-class-btn ges-btn" data-class="G">G</button>
+        </div>
+        <input 
+          type="number" 
+          id="dpe-ges-input" 
+          placeholder="ou saisir kg CO2/m²/an (ex: 45)"
+          min="0" 
+          max="150"
+          class="dpe-input"
+        >
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-label">Date diagnostic</div>
+      <div class="field">
+        <input 
+          type="date" 
+          id="dpe-date-input"
+          class="dpe-input"
+        >
+      </div>
+    </div>
+
+    <!-- Champs cachés pour stocker les sélections -->
+    <input type="hidden" id="dpe-energie-selected" value="">
+    <input type="hidden" id="dpe-ges-selected" value="">
+
+      <div class="btn-row">
           <div style="font-size:0.7rem;color:var(--muted);margin-top:5px">
             Entre <span id="surf-min" style="color:var(--blue);font-weight:600">—</span>
             et <span id="surf-max" style="color:var(--blue);font-weight:600">—</span> m²
@@ -1117,6 +1253,91 @@ async function checkVerifyToken() {
 
 loadMe();
 checkVerifyToken();
+// ════════════════════════════════════════════════
+//  GESTION DES FILTRES DPE
+// ════════════════════════════════════════════════
+
+// Gestion des boutons classe énergie
+document.querySelectorAll('.energie-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.querySelectorAll('.energie-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('dpe-energie-selected').value = btn.dataset.class;
+  });
+});
+
+// Gestion des boutons classe GES
+document.querySelectorAll('.ges-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.querySelectorAll('.ges-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('dpe-ges-selected').value = btn.dataset.class;
+  });
+});
+
+// Fonction pour construire l'URL avec les paramètres DPE
+function buildSearchURL() {
+  const surf = parseFloat(surfInput.value);
+  const tol = parseInt(tolRange.value);
+  const commune = selectedCommune;
+  
+  if (!commune) return null;
+  
+  const sMin = surf * (1 - tol / 100);
+  const sMax = surf * (1 + tol / 100);
+  const surfMoy = (sMin + sMax) / 2;
+  const tolVal = tol;
+  
+  // URL de base
+  let url = `https://parcelleid.duckdns.org/parcelles?insee=${commune.code}&surf=${Math.round(surfMoy)}&tol=${tolVal}`;
+  
+  // Ajouter les paramètres DPE optionnels
+  const classeEnergie = document.getElementById('dpe-energie-selected').value;
+  const valeurEnergie = document.getElementById('dpe-energie-input').value;
+  const classeGes = document.getElementById('dpe-ges-selected').value;
+  const valeurGes = document.getElementById('dpe-ges-input').value;
+  const dateMin = document.getElementById('dpe-date-input').value;
+  
+  if (classeEnergie) url += `&classe_energie=${classeEnergie}`;
+  if (valeurEnergie) url += `&valeur_energie=${valeurEnergie}`;
+  if (classeGes) url += `&classe_ges=${classeGes}`;
+  if (valeurGes) url += `&valeur_ges=${valeurGes}`;
+  if (dateMin) url += `&date_dpe_min=${dateMin}`;
+  
+  return url;
+}
+
+// Modifier la fonction fetchParcelles pour utiliser le nouvel endpoint
+async function fetchParcelles(codeInsee, surfMin, surfMax) {
+  const commune = selectedCommune;
+  if (!commune) throw new Error('Commune non sélectionnée');
+  
+  // Construire l'URL avec les filtres DPE
+  const surf = (surfMin + surfMax) / 2;
+  const tol = surf > 0 ? Math.round((surfMax - surfMin) / surf * 100) : 0;
+  
+  let url = `https://parcelleid.duckdns.org/parcelles?insee=${codeInsee}&surf=${Math.round(surf)}&tol=${tol}`;
+  
+  // Ajouter les paramètres DPE
+  const classeEnergie = document.getElementById('dpe-energie-selected').value;
+  const valeurEnergie = document.getElementById('dpe-energie-input').value;
+  const classeGes = document.getElementById('dpe-ges-selected').value;
+  const valeurGes = document.getElementById('dpe-ges-input').value;
+  const dateMin = document.getElementById('dpe-date-input').value;
+  
+  if (classeEnergie) url += `&classe_energie=${classeEnergie}`;
+  if (valeurEnergie) url += `&valeur_energie=${valeurEnergie}`;
+  if (classeGes) url += `&classe_ges=${classeGes}`;
+  if (valeurGes) url += `&valeur_ges=${valeurGes}`;
+  if (dateMin) url += `&date_dpe_min=${dateMin}`;
+  
+  const r = await fetch(url).catch(() => { throw new Error("Impossible de joindre l'API."); });
+  if (!r.ok) throw new Error(`Erreur API : ${r.status}`);
+  const fc = await r.json();
+  return (fc.features || []).filter(f => { const s = parseFloat(f.properties?.surface ?? f.properties?.contenance ?? 0); return s >= surfMin && s <= surfMax; });
+}
 </script>
 </body>
 </html>

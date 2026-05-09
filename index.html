@@ -639,7 +639,7 @@ async function fetchCommunes(q) {
     if (!data.length) { communeSugg.style.display = 'none'; return; }
     data.forEach(c => {
       const li = document.createElement('li');
-      li.innerHTML = `<span>${c.nom}</span><small>${c.codeDepartement}</small>`;
+      li.innerHTML = `<span>${c.nom}</span><small>${c.code}</small>`;
       li.addEventListener('click', () => {
         communeInput.value = c.nom;
         selectedCommune = { nom: c.nom, code: c.code, lat: c.centre?.coordinates[1], lng: c.centre?.coordinates[0] };

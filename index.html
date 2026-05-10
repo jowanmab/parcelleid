@@ -941,7 +941,6 @@ function loadMoreCards(targetSurf) {
           const dLngH = (lng - parseFloat(d.lon)) * Math.cos(lat * Math.PI / 180);
           const heading = Math.round((Math.atan2(dLngH, lat - parseFloat(d.lat)) * 180 / Math.PI + 360) % 360);
           const svLink = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}&heading=${heading}&pitch=0&fov=80`;
-          const embedUrl = `https://www.google.com/maps?q=${lat},${lng}&layer=c&cbll=${lat},${lng}&cbp=12,${heading},0,0,0&output=svembed`;
           const embedUrlV1 = `https://www.google.com/maps/embed?origin=mfe&pb=!6m6!1m5!2m2!1d${lat}!2d${lng}!4f0!5f${heading}`;
           const iframe = document.createElement('iframe');
           iframe.src = embedUrlV1;
@@ -954,26 +953,6 @@ function loadMoreCards(targetSurf) {
         .catch(() => {
           svPlaceholder.innerHTML = `<a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}" target="_blank" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-decoration:none;background:linear-gradient(135deg,#1a1a2e,#16213e);"><span style="font-size:1.8rem">📷</span><span style="font-size:0.62rem;color:#93c5fd;font-weight:700;text-transform:uppercase">Street View →</span></a>`;
         });
-      fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&zoom=17&format=json`)
-        .then(r => r.json())
-        .then(d => {
-          const dLngH = (lng - parseFloat(d.lon)) * Math.cos(lat * Math.PI / 180);
-          const heading = (Math.atan2(dLngH, lat - parseFloat(d.lat)) * 180 / Math.PI + 360) % 360;
-          const svLink = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}&heading=${Math.round(heading)}&pitch=0&fov=80`;
-          const imgUrl = `https://maps.googleapis.com/maps/api/streetview?size=300x180&location=${lat},${lng}&heading=${Math.round(heading)}&fov=90&pitch=0`;
-          const img = document.createElement('img');
-          img.src = imgUrl;
-          img.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;';
-          img.onerror = () => {}; // garde le placeholder si pas de SV
-          const link = document.createElement('a');
-          link.href = svLink;
-          link.target = '_blank';
-          link.style.cssText = 'position:absolute;inset:0;display:block;';
-          svPlaceholder.innerHTML = '';
-          thumbSV.appendChild(img);
-          thumbSV.appendChild(link);
-        })
-        .catch(() => {});
     }, { threshold: 0.1 });
     observer.observe(card);
     thumbSV.addEventListener('click', e => e.stopPropagation());

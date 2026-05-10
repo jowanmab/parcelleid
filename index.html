@@ -167,6 +167,8 @@
     /* ── CARDS ── */
     #results-list { display: grid; grid-template-columns: 1fr; gap: 8px; }
     .card { background: var(--white); border: 1.5px solid var(--soft); border-radius: var(--radius); cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s, transform 0.12s; overflow: hidden; }
+    .card-thumb-sv { pointer-events: auto; }
+    .card-thumb-sv iframe { pointer-events: auto; }
     .card:hover { border-color: var(--blue-bd); box-shadow: 0 2px 12px rgba(37,99,235,0.08); transform: translateY(-1px); }
     .card.active { border-color: var(--orange); box-shadow: 0 2px 12px rgba(249,115,22,0.15); }
     .card-thumb { position: relative; width: 100%; display: flex; flex-direction: row; background: #e5e7eb; overflow: hidden; height: 180px; }
@@ -974,6 +976,7 @@ function loadMoreCards(targetSurf) {
         .catch(() => {});
     }, { threshold: 0.1 });
     observer.observe(card);
+    thumbSV.addEventListener('click', e => e.stopPropagation());
     card.addEventListener('click', () => {
       selectFeature(f, card);
       if (!parcelsLayer) return;

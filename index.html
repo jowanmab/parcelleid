@@ -938,7 +938,18 @@ function loadMoreCards(targetSurf) {
           const dLngH = (lng - parseFloat(d.lon)) * Math.cos(lat * Math.PI / 180);
           const heading = (Math.atan2(dLngH, lat - parseFloat(d.lat)) * 180 / Math.PI + 360) % 360;
           const svLink = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}&heading=${Math.round(heading)}&pitch=0&fov=80`;
-          svPlaceholder.innerHTML = `<a href="${svLink}" target="_blank" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-decoration:none;background:linear-gradient(135deg,#1a1a2e,#16213e);"><span style="font-size:1.8rem">📷</span><span style="font-size:0.62rem;color:#93c5fd;font-weight:700;letter-spacing:0.06em;text-transform:uppercase">Street View →</span></a>`;
+          const imgUrl = `https://maps.googleapis.com/maps/api/streetview?size=300x180&location=${lat},${lng}&heading=${Math.round(heading)}&fov=90&pitch=0`;
+          const img = document.createElement('img');
+          img.src = imgUrl;
+          img.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;';
+          img.onerror = () => {}; // garde le placeholder si pas de SV
+          const link = document.createElement('a');
+          link.href = svLink;
+          link.target = '_blank';
+          link.style.cssText = 'position:absolute;inset:0;display:block;';
+          svPlaceholder.innerHTML = '';
+          thumbSV.appendChild(img);
+          thumbSV.appendChild(link);
         })
         .catch(() => {});
     }, { threshold: 0.1 });

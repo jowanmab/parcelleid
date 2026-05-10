@@ -941,7 +941,7 @@ function loadMoreCards(targetSurf) {
           const dLngH = (lng - parseFloat(d.lon)) * Math.cos(lat * Math.PI / 180);
           const heading = Math.round((Math.atan2(dLngH, lat - parseFloat(d.lat)) * 180 / Math.PI + 360) % 360);
           const svLink = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}&heading=${heading}&pitch=0&fov=80`;
-          const embedUrlV1 = `https://www.google.com/maps/embed?origin=mfe&pb=!6m6!1m5!2m2!1d${lat}!2d${lng}!4f0!5f${heading}`;
+          const embedUrlV1 = `https://www.google.com/maps/embed/v1/streetview?key=AIzaSyD1pMAMR9M6vLrsfoLJ5GDyIbkDTgLvqg4&location=${lat},${lng}&heading=${heading}&fov=100&pitch=0`;
           const iframe = document.createElement('iframe');
           iframe.src = embedUrlV1;
           iframe.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:none;';
@@ -955,8 +955,11 @@ function loadMoreCards(targetSurf) {
         });
     }, { threshold: 0.1 });
     observer.observe(card);
-    thumbSV.addEventListener('click', e => e.stopPropagation());
+    let mouseOverSV = false;
+    thumbSV.addEventListener('mouseenter', () => { mouseOverSV = true; });
+    thumbSV.addEventListener('mouseleave', () => { mouseOverSV = false; });
     card.addEventListener('click', () => {
+      if (mouseOverSV) return;
       selectFeature(f, card);
       if (!parcelsLayer) return;
       parcelsLayer.eachLayer(l => {
@@ -965,7 +968,6 @@ function loadMoreCards(targetSurf) {
           l.getPopup().setLatLng(L.latLng(l.getBounds().getNorth(), l.getBounds().getCenter().lng)).openOn(map);
         }
       });
-      // Replier le panel pour voir la carte
       if (isMobile()) setPanelState('');
     });
     list.appendChild(card);

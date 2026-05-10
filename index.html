@@ -942,16 +942,10 @@ function loadMoreCards(targetSurf) {
           const embedUrl = `https://www.google.com/maps?q=${lat},${lng}&layer=c&cbll=${lat},${lng}&cbp=12,${heading},0,0,0&output=svembed`;
           const iframe = document.createElement('iframe');
           iframe.src = embedUrl;
-          iframe.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:none;pointer-events:none;';
+          iframe.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:none;';
           iframe.loading = 'lazy';
-          const link = document.createElement('a');
-          link.href = svLink;
-          link.target = '_blank';
-          link.title = 'Ouvrir Street View';
-          link.style.cssText = 'position:absolute;inset:0;display:block;';
           svPlaceholder.remove();
           thumbSV.appendChild(iframe);
-          thumbSV.appendChild(link);
         })
         .catch(() => {
           svPlaceholder.innerHTML = `<a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}" target="_blank" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-decoration:none;background:linear-gradient(135deg,#1a1a2e,#16213e);"><span style="font-size:1.8rem">📷</span><span style="font-size:0.62rem;color:#93c5fd;font-weight:700;text-transform:uppercase">Street View →</span></a>`;

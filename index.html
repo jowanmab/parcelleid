@@ -977,6 +977,7 @@ function loadMoreCards(targetSurf) {
     }, { threshold: 0.1 });
     observer.observe(card);
     thumbSV.addEventListener('click', e => e.stopPropagation());
+    thumbSV.addEventListener('click', e => e.stopPropagation());
     card.addEventListener('click', () => {
       selectFeature(f, card);
       if (!parcelsLayer) return;

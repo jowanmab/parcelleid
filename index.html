@@ -940,10 +940,12 @@ function loadMoreCards(targetSurf) {
           const heading = Math.round((Math.atan2(dLngH, lat - parseFloat(d.lat)) * 180 / Math.PI + 360) % 360);
           const svLink = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}&heading=${heading}&pitch=0&fov=80`;
           const embedUrl = `https://www.google.com/maps?q=${lat},${lng}&layer=c&cbll=${lat},${lng}&cbp=12,${heading},0,0,0&output=svembed`;
+          const embedUrlV1 = `https://www.google.com/maps/embed/v1/streetview?key=AIzaSyD1pMAMR9M6vLrsfoLJ5GDyIbkDTgLvqg4&location=${lat},${lng}&heading=${heading}&fov=90&pitch=0`;
           const iframe = document.createElement('iframe');
-          iframe.src = embedUrl;
+          iframe.src = embedUrlV1;
           iframe.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:none;';
           iframe.loading = 'lazy';
+          iframe.allowFullscreen = true;
           svPlaceholder.remove();
           thumbSV.appendChild(iframe);
         })

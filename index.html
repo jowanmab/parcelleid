@@ -268,12 +268,13 @@
         border-top: 1px solid var(--border);
         border-radius: 20px 20px 0 0;
         box-shadow: 0 -6px 32px rgba(0,0,0,0.12);
-        /* collapsed par défaut : seul le handle visible */
-        height: calc(var(--panel-h) + 20px); /* +20 pour pill */
+        height: calc(var(--panel-h) + 20px);
         transition: height 0.38s cubic-bezier(0.4,0,0.2,1);
         overflow: hidden;
+        display: flex;
+        flex-direction: column;
         background: var(--white);
-        touch-action: none; /* géré manuellement */
+        touch-action: none;
       }
       .panel.mid  { height: 48%; }
       .panel.open { height: 85%; }
@@ -312,9 +313,10 @@
 
       /* scroll area */
       .panel-scroll {
-        overflow-y: auto;
+        overflow-y: scroll;
         -webkit-overflow-scrolling: touch;
-        height: calc(100% - 60px); /* tout sous le handle */
+        flex: 1;
+        min-height: 0;
         padding: 14px 14px 80px;
         overscroll-behavior: contain;
       }

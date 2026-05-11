@@ -19,27 +19,45 @@
 
     .dpe-class-btn {
       padding: 10px 6px;
-      border: 2px solid var(--border);
-      background: var(--white);
+      border: 2px solid transparent;
       border-radius: 8px;
       font-weight: 600;
       font-size: 14px;
-      color: var(--mid);
+      color: white;
       cursor: pointer;
       transition: all 0.2s ease;
       font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 44px;
     }
 
+    .energie-btn[data-class="A"] { background: #0f7c3a; }
+    .energie-btn[data-class="B"] { background: #5cb85c; }
+    .energie-btn[data-class="C"] { background: #f0d000; color: #333; }
+    .energie-btn[data-class="D"] { background: #ff9900; }
+    .energie-btn[data-class="E"] { background: #e74c3c; }
+    .energie-btn[data-class="F"] { background: #d92a2a; }
+    .energie-btn[data-class="G"] { background: #c1121f; }
+
+    .ges-btn[data-class="A"] { background: #0f7c3a; }
+    .ges-btn[data-class="B"] { background: #5cb85c; }
+    .ges-btn[data-class="C"] { background: #f0d000; color: #333; }
+    .ges-btn[data-class="D"] { background: #ff9900; }
+    .ges-btn[data-class="E"] { background: #e74c3c; }
+    .ges-btn[data-class="F"] { background: #d92a2a; }
+    .ges-btn[data-class="G"] { background: #c1121f; }
+
     .dpe-class-btn:hover {
-      border-color: var(--blue);
-      background: var(--blue-lt);
-      color: var(--blue);
+      opacity: 0.85;
+      transform: scale(1.05);
     }
 
     .dpe-class-btn.active {
-      background: var(--blue);
-      color: white;
-      border-color: var(--blue);
+      border: 2px solid white;
+      box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2);
+    }
+
+    .dpe-class-btn:active {
+      transform: scale(0.95);
     }
 
     .dpe-input {
@@ -52,6 +70,7 @@
       font-family: 'Plus Jakarta Sans', sans-serif;
       outline: none;
       transition: border-color 0.2s, box-shadow 0.2s;
+      min-height: 44px;
     }
 
     .dpe-input:focus {
@@ -63,21 +82,6 @@
       color: #d1d5db;
     }
 
-    @media (max-width: 768px) {
-      .dpe-class-buttons {
-        gap: 5px;
-      }
-      
-      .dpe-class-btn {
-        padding: 8px 4px;
-        font-size: 12px;
-      }
-      
-      .dpe-input {
-        padding: 8px 10px;
-        font-size: 13px;
-      }
-    }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --blue:    #2563eb;
@@ -129,25 +133,26 @@
     .form-label { font-size: 0.75rem; font-weight: 500; color: var(--mid); margin-bottom: 8px; }
     .field { margin-bottom: 10px; }
     .field:last-child { margin-bottom: 0; }
-    input[type=text], input[type=number] { width: 100%; background: var(--white); border: 1.5px solid var(--border); border-radius: 8px; padding: 9px 11px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.86rem; color: var(--ink); outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+    input[type=text], input[type=number] { width: 100%; background: var(--white); border: 1.5px solid var(--border); border-radius: 8px; padding: 9px 11px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.86rem; color: var(--ink); outline: none; transition: border-color 0.2s, box-shadow 0.2s; min-height: 44px; }
     input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.08); }
     input::placeholder { color: #d1d5db; }
     .ac-wrap { position: relative; }
     #commune-suggestions { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--white); border: 1.5px solid var(--border); border-radius: 8px; z-index: 3000; max-height: 210px; overflow-y: auto; display: none; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
-    #commune-suggestions li { list-style: none; padding: 9px 12px; font-size: 0.85rem; cursor: pointer; border-bottom: 1px solid var(--bg); transition: background 0.15s; display: flex; justify-content: space-between; align-items: center; }
+    #commune-suggestions li { list-style: none; padding: 9px 12px; font-size: 0.85rem; cursor: pointer; border-bottom: 1px solid var(--bg); transition: background 0.15s; display: flex; justify-content: space-between; align-items: center; min-height: 44px; }
     #commune-suggestions li:last-child { border-bottom: none; }
     #commune-suggestions li:hover { background: var(--bg); }
     #commune-suggestions li small { color: var(--muted); font-size: 0.73rem; }
     .surface-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; }
-    .tol-pill { background: var(--blue-lt); border: 1.5px solid var(--blue-bd); border-radius: 8px; padding: 9px 11px; font-size: 0.78rem; color: var(--blue); font-weight: 700; text-align: center; white-space: nowrap; }
-    input[type=range] { width: 100%; accent-color: var(--blue); background: transparent; border: none; padding: 0; margin-top: 8px; }
+    .tol-pill { background: var(--blue-lt); border: 1.5px solid var(--blue-bd); border-radius: 8px; padding: 9px 11px; font-size: 0.78rem; color: var(--blue); font-weight: 700; text-align: center; white-space: nowrap; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+    input[type=range] { width: 100%; accent-color: var(--blue); background: transparent; border: none; padding: 0; margin-top: 8px; height: 7px; cursor: pointer; border-radius: 3px; }
     .btn-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-bottom: 10px; }
-    .btn-search { background: var(--blue); color: var(--white); border: none; border-radius: var(--radius); padding: 12px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: background 0.2s, transform 0.1s; letter-spacing: -0.01em; }
+    .btn-search { background: var(--blue); color: var(--white); border: none; border-radius: var(--radius); padding: 12px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: background 0.2s, transform 0.1s; letter-spacing: -0.01em; min-height: 44px; }
     .btn-search:hover { background: #1d4ed8; }
     .btn-search:active { transform: scale(0.98); }
     .btn-search:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; transform: none; }
-    .btn-reset { background: var(--white); color: var(--mid); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 12px 14px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: background 0.15s; white-space: nowrap; }
+    .btn-reset { background: var(--white); color: var(--mid); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 12px 14px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: background 0.15s; white-space: nowrap; min-height: 44px; }
     .btn-reset:hover { background: var(--bg); color: var(--ink); }
+    .btn-reset:active { transform: scale(0.98); }
     #status { font-size: 0.8rem; color: var(--mid); padding: 9px 12px; background: var(--white); border: 1px solid var(--border); border-radius: 8px; text-align: center; display: none; margin-bottom: 10px; line-height: 1.5; }
     #status.show { display: block; }
     #status.err { color: #dc2626; border-color: rgba(220,38,38,0.3); background: rgba(220,38,38,0.04); }
@@ -220,7 +225,7 @@
 
     /* ── MEASURE TOOLBAR ── */
     #measure-toolbar { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); z-index: 500; display: flex; align-items: center; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
-    .measure-btn { display: flex; align-items: center; gap: 6px; padding: 8px 13px; font-size: 0.73rem; font-weight: 600; color: var(--mid); cursor: pointer; border: none; background: none; transition: background 0.15s, color 0.15s; white-space: nowrap; border-right: 1px solid var(--soft); font-family: 'Plus Jakarta Sans', sans-serif; }
+    .measure-btn { display: flex; align-items: center; gap: 6px; padding: 8px 13px; font-size: 0.73rem; font-weight: 600; color: var(--mid); cursor: pointer; border: none; background: none; transition: background 0.15s, color 0.15s; white-space: nowrap; border-right: 1px solid var(--soft); font-family: 'Plus Jakarta Sans', sans-serif; min-height: 44px; }
     .measure-btn:last-child { border-right: none; }
     .measure-btn:hover { background: var(--bg); color: var(--ink); }
     .measure-btn.active { background: var(--blue-lt); color: var(--blue); }
@@ -229,7 +234,7 @@
     #measure-result.show { display: flex; }
     #measure-result strong { color: var(--blue); font-size: 1rem; font-weight: 800; }
     .measure-sep { width: 1px; height: 20px; background: var(--border); }
-    .measure-clear-btn { background: none; border: 1px solid var(--border); color: var(--mid); border-radius: 6px; padding: 3px 9px; font-size: 0.72rem; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.15s; }
+    .measure-clear-btn { background: none; border: 1px solid var(--border); color: var(--mid); border-radius: 6px; padding: 3px 9px; font-size: 0.72rem; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.15s; min-height: 44px; }
     .measure-clear-btn:hover { background: var(--bg); color: var(--ink); }
     .measure-tooltip { background: var(--ink) !important; border: none !important; color: #93c5fd !important; font-family: 'Plus Jakarta Sans', sans-serif !important; font-size: 0.75rem !important; font-weight: 600 !important; border-radius: 6px !important; padding: 4px 9px !important; box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important; }
     .measure-tooltip::before { display: none !important; }
@@ -242,9 +247,9 @@
     .auth-box { background: var(--white); border-radius: 16px; padding: 28px 24px; width: 100%; max-width: 380px; box-shadow: 0 24px 64px rgba(0,0,0,0.18); }
     .auth-title { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 4px; }
     .auth-sub { font-size: 0.77rem; color: var(--mid); margin-bottom: 20px; }
-    .auth-input { width: 100%; background: var(--bg); border: 1.5px solid var(--border); border-radius: 8px; padding: 11px 13px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.88rem; color: var(--ink); outline: none; margin-bottom: 12px; transition: border-color 0.2s; }
+    .auth-input { width: 100%; background: var(--bg); border: 1.5px solid var(--border); border-radius: 8px; padding: 11px 13px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.88rem; color: var(--ink); outline: none; margin-bottom: 12px; transition: border-color 0.2s; min-height: 44px; }
     .auth-input:focus { border-color: var(--blue); }
-    .auth-btn { width: 100%; background: var(--blue); color: white; border: none; border-radius: 8px; padding: 12px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: background 0.2s; margin-top: 4px; }
+    .auth-btn { width: 100%; background: var(--blue); color: white; border: none; border-radius: 8px; padding: 12px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: background 0.2s; margin-top: 4px; min-height: 44px; }
     .auth-btn:hover { background: #1d4ed8; }
     .auth-switch { font-size: 0.77rem; color: var(--mid); text-align: center; margin-top: 14px; }
     .auth-switch a { color: var(--blue); cursor: pointer; font-weight: 600; text-decoration: none; }
@@ -254,7 +259,7 @@
     .auth-close { float: right; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--muted); margin-top: -4px; }
 
     /* ══════════════════════════════════════
-       MOBILE  ≤ 768px
+       MOBILE  ≤ 768px — AMÉLIORATIONS
     ══════════════════════════════════════ */
     @media (max-width: 768px) {
 
@@ -286,7 +291,7 @@
       .panel.mid  { height: 48%; }
       .panel.open { height: 85%; }
 
-      /* Pill + handle drag */
+      /* Pill + handle drag — AMÉLIORATIONS */
       .panel-handle {
         display: flex;
         flex-direction: column;
@@ -295,19 +300,28 @@
         padding: 10px 0 6px;
         cursor: grab;
         user-select: none;
+        -webkit-user-select: none;
         flex-shrink: 0;
         touch-action: none;
       }
+      .panel-handle:active {
+        cursor: grabbing;
+      }
       .panel-pill {
-        width: 36px; height: 4px;
-        background: var(--border);
-        border-radius: 2px;
+        width: 40px;
+        height: 5px;
+        background: var(--muted);
+        border-radius: 2.5px;
         margin-bottom: 8px;
       }
       .panel-handle-label {
-        font-size: 0.82rem; font-weight: 700;
+        font-size: 0.85rem;
+        font-weight: 700;
         color: var(--ink);
-        display: flex; align-items: center; gap: 6px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        user-select: none;
       }
       .panel-handle-count {
         font-size: 0.7rem; font-weight: 700;
@@ -319,32 +333,97 @@
       }
       .panel-handle-count.show { display: inline-block; }
 
-      /* scroll area */
+      /* scroll area — AMÉLIORATIONS */
       .panel-scroll {
         overflow-y: scroll;
         -webkit-overflow-scrolling: touch;
         flex: 1;
         min-height: 0;
-        padding: 14px 14px 80px;
+        padding: 16px 16px 120px;
         overscroll-behavior: contain;
       }
 
       /* cacher hero sur mobile (gain de place) */
       .hero { display: none; }
 
-      /* Form sections plus compactes */
-      .form-section { padding: 11px; margin-bottom: 8px; }
+      /* Form sections plus spacieuses — AMÉLIORATIONS */
+      .form-section { 
+        padding: 13px;
+        margin-bottom: 9px;
+      }
+
+      .form-label {
+        margin-bottom: 9px;
+      }
+
+      .field {
+        margin-bottom: 12px;
+      }
+
+      .btn-row {
+        gap: 10px;
+      }
+
+      /* Inputs font-size 16px (anti-zoom Safari) */
+      input[type=text],
+      input[type=number],
+      input[type=date] {
+        font-size: 16px !important;
+        padding: 12px 13px;
+      }
+
+      .dpe-input {
+        font-size: 16px !important;
+        padding: 12px 13px;
+      }
+
+      /* DPE buttons restent compacts (7 sur une ligne) */
+      @media (max-width: 480px) {
+        .dpe-class-buttons {
+          gap: 4px;
+        }
+        
+        .dpe-class-btn {
+          padding: 8px 4px;
+          font-size: 12px;
+        }
+
+        .card-thumb {
+          height: 160px;
+        }
+
+        .panel-scroll {
+          padding-top: 8px;
+        }
+      }
+
+      /* Autocomplete suggestions — zone tactile */
+      #commune-suggestions {
+        max-height: 280px;
+        border-radius: 10px;
+      }
+
+      #commune-suggestions li {
+        padding: 12px 12px;
+        min-height: 44px;
+      }
+
+      /* Clavier virtuel — scroll margin */
+      input:focus {
+        scroll-margin-top: 80px;
+      }
+
+      /* Empêcher zoom double-tap (iOS) */
+      button, a, input {
+        touch-action: manipulation;
+      }
 
       /* ── ENCARTS FOND DE PLAN repositionnés ── */
-      /* Le LayerControl Leaflet (bottomleft) doit être au-dessus du panel
-         mais en dessous du panel quand il est open.
-         On force sa position via CSS au-dessus du panel collapsed */
       .leaflet-bottom.leaflet-left {
         bottom: calc(var(--panel-h) + 24px) !important;
         left: 10px !important;
         transition: bottom 0.38s cubic-bezier(0.4,0,0.2,1);
       }
-      /* Quand panel mid ou open, les encarts remontent encore */
       body.panel-mid .leaflet-bottom.leaflet-left  { bottom: calc(48% + 10px) !important; }
       body.panel-open .leaflet-bottom.leaflet-left { bottom: calc(85% + 10px) !important; }
 
@@ -361,8 +440,13 @@
         left: 50%;
         transform: translateX(-50%);
       }
-      .measure-btn { padding: 8px 11px; gap: 4px; font-size: 0.7rem; }
-      .measure-btn .btn-label { display: none; } /* texte masqué, icône seule */
+      .measure-btn { 
+        padding: 8px 11px;
+        gap: 4px;
+        font-size: 0.7rem;
+        min-height: 40px;
+      }
+      .measure-btn .btn-label { display: none; }
 
       /* ── MEASURE RESULT : repositionné au-dessus du panel ── */
       #measure-result {
@@ -387,9 +471,6 @@
 
       /* Cards 1 col sur mobile */
       #results-list { grid-template-columns: 1fr; }
-
-      /* Card thumb : carré comme sur desktop (canvas 256x256) */
-      /* padding-bottom: 100% — ne pas modifier */
     }
   </style>
 </head>
@@ -477,6 +558,10 @@
           </div>
           <input type="range" id="tol-range" min="0" max="25" value="3" step="1"/>
         </div>
+        <div style="font-size:0.7rem;color:var(--muted);margin-top:5px;margin-bottom:10px">
+          Entre <span id="surf-min" style="color:var(--blue);font-weight:600">—</span>
+          et <span id="surf-max" style="color:var(--blue);font-weight:600">—</span> m²
+        </div>
       </div>
 
       <!-- ===== NOUVEAUX CHAMPS DPE ===== -->
@@ -542,10 +627,6 @@
       <input type="hidden" id="dpe-energie-selected" value="">
       <input type="hidden" id="dpe-ges-selected" value="">
 
-      <div style="font-size:0.7rem;color:var(--muted);margin-top:5px;margin-bottom:10px">
-        Entre <span id="surf-min" style="color:var(--blue);font-weight:600">—</span>
-        et <span id="surf-max" style="color:var(--blue);font-weight:600">—</span> m²
-      </div>
 
       <div class="btn-row">
         <button class="btn-search" id="search-btn" onclick="doSearch()">Afficher les parcelles</button>
@@ -596,11 +677,7 @@
       <button class="measure-clear-btn" onclick="clearMeasure()">✕ Effacer</button>
     </div>
 
-    <div id="overlay">
-      <div class="overlay-icon">🗺️</div>
-      <div class="overlay-title">Trouvez votre parcelle</div>
-      <div class="overlay-sub">Entrez une commune et une surface pour démarrer</div>
-    </div>
+    <div id="overlay" style="background: transparent !important; z-index: 1;"></div>
 
     <div id="map-count"></div>
     <div class="map-footer">Données : <span>IGN · Cadastre officiel français</span> — Licence Ouverte Etalab</div>
@@ -1293,11 +1370,7 @@ async function checkVerifyToken() {
 
 loadMe();
 checkVerifyToken();
-// ════════════════════════════════════════════════
-//  GESTION DES FILTRES DPE
-// ════════════════════════════════════════════════
 
-// Gestion des boutons classe énergie
 document.querySelectorAll('.energie-btn').forEach(btn => {
   btn.addEventListener('click', (e) => {
     e.preventDefault();
@@ -1307,7 +1380,6 @@ document.querySelectorAll('.energie-btn').forEach(btn => {
   });
 });
 
-// Gestion des boutons classe GES
 document.querySelectorAll('.ges-btn').forEach(btn => {
   btn.addEventListener('click', (e) => {
     e.preventDefault();
@@ -1317,7 +1389,6 @@ document.querySelectorAll('.ges-btn').forEach(btn => {
   });
 });
 
-// Fonction pour construire l'URL avec les paramètres DPE
 function buildSearchURL() {
   const surf = parseFloat(surfInput.value);
   const tol = parseInt(tolRange.value);
@@ -1330,10 +1401,8 @@ function buildSearchURL() {
   const surfMoy = (sMin + sMax) / 2;
   const tolVal = tol;
   
-  // URL de base
   let url = `https://parcelleid.duckdns.org/parcelles?insee=${commune.code}&surf=${Math.round(surfMoy)}&tol=${tolVal}`;
   
-  // Ajouter les paramètres DPE optionnels
   const classeEnergie = document.getElementById('dpe-energie-selected').value;
   const valeurEnergie = document.getElementById('dpe-energie-input').value;
   const classeGes = document.getElementById('dpe-ges-selected').value;
@@ -1349,18 +1418,15 @@ function buildSearchURL() {
   return url;
 }
 
-// Modifier la fonction fetchParcelles pour utiliser le nouvel endpoint
 async function fetchParcelles(codeInsee, surfMin, surfMax) {
   const commune = selectedCommune;
   if (!commune) throw new Error('Commune non sélectionnée');
   
-  // Construire l'URL avec les filtres DPE
   const surf = (surfMin + surfMax) / 2;
   const tol = surf > 0 ? Math.round((surfMax - surfMin) / surf * 100) : 0;
   
   let url = `https://parcelleid.duckdns.org/parcelles?insee=${codeInsee}&surf=${Math.round(surf)}&tol=${tol}`;
   
-  // Ajouter les paramètres DPE
   const classeEnergie = document.getElementById('dpe-energie-selected').value;
   const valeurEnergie = document.getElementById('dpe-energie-input').value;
   const classeGes = document.getElementById('dpe-ges-selected').value;
@@ -1378,6 +1444,12 @@ async function fetchParcelles(codeInsee, surfMin, surfMax) {
   const fc = await r.json();
   return (fc.features || []).filter(f => { const s = parseFloat(f.properties?.surface ?? f.properties?.contenance ?? 0); return s >= surfMin && s <= surfMax; });
 }
+// Enlever l'overlay au chargement (la carte s'affiche directement)
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('overlay').classList.add('gone');
+  }, 500);
+});
 </script>
 </body>
 </html>

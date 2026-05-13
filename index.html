@@ -707,8 +707,8 @@
       </div>
     </div>
 </main>
-
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD1pMAMR9M6vLrsfoLJ5GDyIbkDTgLvqg4&libraries=streetView,geometry"></script>
 <script>
 // ════════════════════════════════════════════════
 //  MOBILE PANEL — DRAG + 3 ÉTATS
@@ -1081,8 +1081,28 @@ body.innerHTML = `<div class="card-body-row"><div class="card-surf">${Math.round
     scrollObs.observe(sentinel);
   }
 }
+// ── GOOGLE EARTH 3D ──────────────────────────────────────
+function openGoogleEarth(lat, lng, address) {
+  // Paramètres Google Earth Web :
+  // @LAT,LON,ALTITUDEa,ZOOMd,TILTy,HEADINGh,0t,0r
+  // ALTITUDE = hauteur caméra (mètres)
+  // ZOOM = distance zoom (mètres)
+  // TILT = inclinaison caméra (0=vertical, 90=horizontal)
+  // HEADING = orientation (0=Nord)
+  
+  const altitude = 120;  // hauteur caméra
+  const zoomDist = 300;  // distance zoom pour voir parcelle + contexte
+  const tilt = 60;       // inclinaison spectaculaire
+  const heading = 0;     // orientation Nord
+  
+  const url = `https://earth.google.com/web/@${lat},${lng},${altitude}a,${zoomDist}d,${tilt}y,${heading}h,0t,0r`;
+  return url;
+}
 
 // ── BIND PARCEL CLICK ─────────────────────────────────────
+function openGoogleEarth(lat, lng) {
+  return `https://earth.google.com/web/@${lat},${lng},50a,150d,75y,0h,1t,0r`;
+}
 function bindParcelClick(layer) {
   layer.on('click', function() {
     if (measureMode) return;
@@ -1115,6 +1135,7 @@ function drawParcels(features, targetSurf) {
         + '<div style="color:var(--mid)">Surface : <strong style="color:var(--ink)">' + Math.round(surf) + ' m²</strong> · Écart : <strong style="color:' + (ecart <= 5 ? '#15803d' : ecart <= 15 ? '#a16207' : '#dc2626') + '">±' + ecart.toFixed(1) + '%</strong></div>'
         + '<div class="popup-links">'
         + '<a class="popup-link" href="https://explore.data.gouv.fr/fr/immobilier?lng=' + lng + '&lat=' + lat + '&zoom=17" target="_blank">Ventes DVF</a>'
+        + '<a class="popup-link" id="earth-' + uid + '" href="#" target="_blank">🌍 Google Earth</a>'
         + '<a class="popup-link" id="geo-' + uid + '" href="#" target="_blank">Géoportail</a>'
         + '</div>';
       layer.bindPopup(popupHtml);
@@ -1127,6 +1148,11 @@ function drawParcels(features, targetSurf) {
           const addr = await tryAddr('&type=housenumber') || await tryAddr('');
           const el = document.getElementById(`addr-${uid}`); if (el) el.textContent = addr || 'Adresse non trouvée';
         } catch {}
+<<<<<<< HEAD
+        const elEarth = document.getElementById('earth-' + uid);
+        if (elEarth) elEarth.href = openGoogleEarth(lat, lng);
+=======
+>>>>>>> 81095f36d4324621bf6959bd314a4753f4781b0b
         const elGeo = document.getElementById('geo-' + uid);
         if (elGeo) elGeo.href = 'https://www.geoportail-urbanisme.gouv.fr/map/#lon=' + lng + '&lat=' + lat + '&zoom=19';
       });
@@ -1444,6 +1470,56 @@ async function checkVerifyToken() {
   window.history.replaceState({}, '', window.location.pathname);
 }
 function openSVModal(lat, lng) {
+<<<<<<< HEAD
+  const content = document.getElementById('sv-modal-content');
+  const existingIframe = document.getElementById('sv-modal-iframe');
+  if (existingIframe) existingIframe.remove();
+
+  const svContainer = document.createElement('div');
+  svContainer.id = 'streetview-api-container';
+  svContainer.style.cssText = 'width: 100%; height: 100%;';
+  content.appendChild(svContainer);
+
+  const position = new google.maps.LatLng(lat, lng);
+  const svService = new google.maps.StreetViewService();
+  
+  svService.getPanorama({ location: position, radius: 100 }, (data, status) => {
+    let heading = 0;
+    if (status === 'OK') {
+      const svPosition = data.location.latLng;
+      heading = google.maps.geometry.spherical.computeHeading(svPosition, position);
+    }
+    
+    const viewer = new google.maps.StreetViewPanorama(svContainer, {
+      position: position,
+      pov: { heading: heading, pitch: 0, zoom: 1 },
+      zoom: 1
+    });
+
+    new google.maps.Marker({
+      position: position,
+      map: viewer,
+      title: '📍 Parcelle',
+      icon: {
+        path: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z',
+        fillColor: '#e53935',
+        fillOpacity: 1,
+        strokeColor: '#b71c1c',
+        strokeWeight: 1,
+        scale: 2,
+        anchor: new google.maps.Point(12, 22)
+      }
+    });
+  });
+
+  document.getElementById('sv-modal').classList.add('show');
+}
+
+function closeSVModal() {
+  document.getElementById('sv-modal').classList.remove('show');
+  const container = document.getElementById('streetview-api-container');
+  if (container) container.remove();
+=======
   const url = `https://www.google.com/maps/embed/v1/streetview?key=AIzaSyD1pMAMR9M6vLrsfoLJ5GDyIbkDTgLvqg4&location=${lat},${lng}&fov=100&pitch=0`;
   document.getElementById('sv-modal-iframe').src = url;
   document.getElementById('sv-modal').classList.add('show');
@@ -1452,6 +1528,7 @@ function openSVModal(lat, lng) {
 function closeSVModal() {
   document.getElementById('sv-modal').classList.remove('show');
   document.getElementById('sv-modal-iframe').src = '';
+>>>>>>> 81095f36d4324621bf6959bd314a4753f4781b0b
 }
 
 document.getElementById('sv-modal').addEventListener('click', (e) => {

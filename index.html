@@ -176,7 +176,7 @@
     .card-thumb-sv iframe { pointer-events: auto; }
     .card:hover { border-color: var(--blue-bd); box-shadow: 0 2px 12px rgba(37,99,235,0.08); }
     .card.active { border-color: var(--orange); box-shadow: 0 2px 12px rgba(249,115,22,0.15); }
-    .card-thumb { position: relative; width: 100%; display: flex; flex-direction: row; background: #e5e7eb; overflow: hidden; height: 180px; }
+    .card-thumb { position: relative; width: 100%; display: flex; flex-direction: row; background: #e5e7eb; overflow: hidden; height: 256px; }
     .card-thumb-sv { position: relative; width: 50%; height: 100%; overflow: hidden; flex-shrink: 0; background: #1a1a2e; }
     .card-thumb-sv-placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
     .card-thumb-sv-placeholder span { font-size: 1.6rem; }
@@ -546,6 +546,13 @@
             <input type="text" id="commune-input" placeholder="Commune ou code postal…" autocomplete="off"/>
             <ul id="commune-suggestions"></ul>
           </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-label">Surface du logement (m²)</div>
+        <div class="field">
+          <input type="number" id="surface-logement-input" placeholder="Ex : 85" min="1" class="dpe-input"/>
         </div>
       </div>
 
@@ -994,7 +1001,12 @@ function loadMoreCards(targetSurf) {
     const numero  = f.properties?.numero  || f.properties?.numero_plan || '';
     const commune = f.properties?.commune || '';
     const ref = [section, numero].filter(Boolean).join(' ') + (commune ? ' · ' + commune : '');
-    body.innerHTML = `<div class="card-body-row"><div class="card-surf">${Math.round(surf)} m²</div><span class="card-tag ${tagClass}">±${ecart.toFixed(1)}%</span></div>${ref ? '<div class="card-ref">' + ref + '</div>' : ''}`;
+    const ce = f.properties?.classe_energie;
+const cg = f.properties?.classe_ges;
+const dpeColors = {A:'#0f7c3a',B:'#5cb85c',C:'#f0d000',D:'#ff9900',E:'#e74c3c',F:'#d92a2a',G:'#c1121f'};
+const dpeBadge = ce ? `<span style="background:${dpeColors[ce]||'#999'};color:${ce==='C'?'#333':'white'};font-size:0.6rem;font-weight:700;padding:2px 6px;border-radius:4px;">⚡${ce}</span>` : '';
+const gesBadge = cg ? `<span style="background:${dpeColors[cg]||'#999'};color:${cg==='C'?'#333':'white'};font-size:0.6rem;font-weight:700;padding:2px 6px;border-radius:4px;">🌿${cg}</span>` : '';
+body.innerHTML = `<div class="card-body-row"><div class="card-surf">${Math.round(surf)} m²</div><div style="display:flex;gap:4px;align-items:center;">${dpeBadge}${gesBadge}<span class="card-tag ${tagClass}">±${ecart.toFixed(1)}%</span></div></div>${ref ? '<div class="card-ref">' + ref + '</div>' : ''}`;
     card.appendChild(thumb); card.appendChild(body);
     card.addEventListener('mouseenter', () => { if (!parcelsLayer) return; parcelsLayer.eachLayer(l => { if (l.feature === f && l.feature !== activeFeature) l.setStyle(STYLE_HOVER); }); });
     card.addEventListener('mouseleave', () => { if (!parcelsLayer) return; parcelsLayer.eachLayer(l => { if (l.feature === f && l.feature !== activeFeature) l.setStyle(STYLE_DEFAULT); }); });
@@ -1409,6 +1421,8 @@ function buildSearchURL() {
   const valeurGes = document.getElementById('dpe-ges-input').value;
   const dateMin = document.getElementById('dpe-date-input').value;
   
+  const surfLogement = document.getElementById('surface-logement-input').value;
+  if (surfLogement) url += `&surface_habitable=${surfLogement}`;
   if (classeEnergie) url += `&classe_energie=${classeEnergie}`;
   if (valeurEnergie) url += `&valeur_energie=${valeurEnergie}`;
   if (classeGes) url += `&classe_ges=${classeGes}`;

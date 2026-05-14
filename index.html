@@ -1148,9 +1148,17 @@ function drawParcels(features, targetSurf) {
           const addr = await tryAddr('&type=housenumber') || await tryAddr('');
           const el = document.getElementById(`addr-${uid}`); if (el) el.textContent = addr || 'Adresse non trouvée';
         } catch {}
+<<<<<<< HEAD
         const elEarth = document.getElementById('earth-' + uid);
         if (elEarth) elEarth.href = openGoogleEarth(lat, lng);
 
+=======
+<<<<<<< HEAD
+        const elEarth = document.getElementById('earth-' + uid);
+        if (elEarth) elEarth.href = openGoogleEarth(lat, lng);
+=======
+>>>>>>> 81095f36d4324621bf6959bd314a4753f4781b0b
+>>>>>>> ca4d786d568c0b7d9589500b33f46ee6ac8e716f
         const elGeo = document.getElementById('geo-' + uid);
         if (elGeo) elGeo.href = 'https://www.geoportail-urbanisme.gouv.fr/map/#lon=' + lng + '&lat=' + lat + '&zoom=19';
       });
@@ -1468,6 +1476,10 @@ async function checkVerifyToken() {
   window.history.replaceState({}, '', window.location.pathname);
 }
 function openSVModal(lat, lng) {
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> ca4d786d568c0b7d9589500b33f46ee6ac8e716f
   const content = document.getElementById('sv-modal-content');
   const existingIframe = document.getElementById('sv-modal-iframe');
   if (existingIframe) existingIframe.remove();
@@ -1512,7 +1524,15 @@ function openSVModal(lat, lng) {
   document.getElementById('sv-modal').classList.add('show');
 }
 
+<<<<<<< HEAD
 function openSVModal(lat, lng) {
+=======
+function closeSVModal() {
+  document.getElementById('sv-modal').classList.remove('show');
+  const container = document.getElementById('streetview-api-container');
+  if (container) container.remove();
+=======
+>>>>>>> ca4d786d568c0b7d9589500b33f46ee6ac8e716f
   const url = `https://www.google.com/maps/embed/v1/streetview?key=AIzaSyD1pMAMR9M6vLrsfoLJ5GDyIbkDTgLvqg4&location=${lat},${lng}&fov=100&pitch=0`;
   document.getElementById('sv-modal-iframe').src = url;
   document.getElementById('sv-modal').classList.add('show');
@@ -1521,6 +1541,7 @@ function openSVModal(lat, lng) {
 function closeSVModal() {
   document.getElementById('sv-modal').classList.remove('show');
   document.getElementById('sv-modal-iframe').src = '';
+>>>>>>> 81095f36d4324621bf6959bd314a4753f4781b0b
 }
 const surfLogementInput = document.getElementById('surface-logement-input');
 const searchBtn = document.getElementById('search-btn');

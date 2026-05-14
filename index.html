@@ -1148,17 +1148,12 @@ function drawParcels(features, targetSurf) {
           const addr = await tryAddr('&type=housenumber') || await tryAddr('');
           const el = document.getElementById(`addr-${uid}`); if (el) el.textContent = addr || 'Adresse non trouvée';
         } catch {}
-<<<<<<< HEAD
         const elEarth = document.getElementById('earth-' + uid);
         if (elEarth) elEarth.href = openGoogleEarth(lat, lng);
 
-=======
-<<<<<<< HEAD
         const elEarth = document.getElementById('earth-' + uid);
         if (elEarth) elEarth.href = openGoogleEarth(lat, lng);
-=======
->>>>>>> 81095f36d4324621bf6959bd314a4753f4781b0b
->>>>>>> ca4d786d568c0b7d9589500b33f46ee6ac8e716f
+
         const elGeo = document.getElementById('geo-' + uid);
         if (elGeo) elGeo.href = 'https://www.geoportail-urbanisme.gouv.fr/map/#lon=' + lng + '&lat=' + lat + '&zoom=19';
       });

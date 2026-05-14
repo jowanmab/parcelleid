@@ -1150,6 +1150,7 @@ function drawParcels(features, targetSurf) {
         } catch {}
         const elEarth = document.getElementById('earth-' + uid);
         if (elEarth) elEarth.href = openGoogleEarth(lat, lng);
+
         const elGeo = document.getElementById('geo-' + uid);
         if (elGeo) elGeo.href = 'https://www.geoportail-urbanisme.gouv.fr/map/#lon=' + lng + '&lat=' + lat + '&zoom=19';
       });
@@ -1511,19 +1512,19 @@ function openSVModal(lat, lng) {
   document.getElementById('sv-modal').classList.add('show');
 }
 
-function closeSVModal() {
-  document.getElementById('sv-modal').classList.remove('show');
-  const container = document.getElementById('streetview-api-container');
-  if (container) container.remove();
+function openSVModal(lat, lng) {
+  const url = `https://www.google.com/maps/embed/v1/streetview?key=AIzaSyD1pMAMR9M6vLrsfoLJ5GDyIbkDTgLvqg4&location=${lat},${lng}&fov=100&pitch=0`;
+  document.getElementById('sv-modal-iframe').src = url;
+  document.getElementById('sv-modal').classList.add('show');
 }
 
-document.getElementById('sv-modal').addEventListener('click', (e) => {
-  if (e.target.id === 'sv-modal') closeSVModal();
-});
+function closeSVModal() {
+  document.getElementById('sv-modal').classList.remove('show');
+  document.getElementById('sv-modal-iframe').src = '';
+}
 const surfLogementInput = document.getElementById('surface-logement-input');
 const searchBtn = document.getElementById('search-btn');
 const searchHint = document.getElementById('search-hint');
-
 function updateSearchBtn() {
   const surfLog = parseFloat(surfLogementInput.value);
   const surfCad = parseFloat(surfInput.value);

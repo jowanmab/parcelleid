@@ -105,7 +105,7 @@
       --white:   #ffffff;
       --radius:  10px;
       --shadow:  0 2px 8px rgba(0,0,0,0.06);
-      --panel-h: 56px; /* hauteur collapsed mobile */
+      --panel-h: 56px;
     }
 
     body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--ink); height: 100dvh; overflow: hidden; display: flex; flex-direction: column; }
@@ -128,7 +128,7 @@
     /* ── PANEL DESKTOP ── */
     .panel { background: var(--white); border-right: 1px solid var(--soft); display: flex; flex-direction: column; overflow: hidden; }
     .panel-scroll { overflow-y: auto; flex: 1; padding: 20px 16px 32px; -webkit-overflow-scrolling: touch; }
-    .panel-handle { display: none; } /* desktop: invisible */
+    .panel-handle { display: none; }
 
     /* ── HERO ── */
     .hero { margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid #f3f4f6; }
@@ -266,218 +266,52 @@
     .auth-msg.ok  { background: rgba(22,163,74,0.07); color: #16a34a; border: 1px solid rgba(22,163,74,0.2); display: block; }
     .auth-close { float: right; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--muted); margin-top: -4px; }
 
-    /* ══════════════════════════════════════
-       MOBILE  ≤ 768px — AMÉLIORATIONS
-    ══════════════════════════════════════ */
+    /* MOBILE */
     @media (max-width: 768px) {
-
-      /* Layout : carte plein écran, panel par-dessus */
       main { display: block; position: relative; height: 100%; }
-
-      .map-wrap {
-        position: absolute;
-        inset: 0;
-        height: 100%;
-      }
-
-      /* ── PANEL BOTTOM SHEET ── */
-      .panel {
-        position: absolute;
-        bottom: 0; left: 0; right: 0;
-        z-index: 1000;
-        border-right: none;
-        border-top: 1px solid var(--border);
-        border-radius: 20px 20px 0 0;
-        box-shadow: 0 -6px 32px rgba(0,0,0,0.12);
-        height: calc(var(--panel-h) + 20px);
-        transition: height 0.38s cubic-bezier(0.4,0,0.2,1);
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        background: var(--white);
-      }
+      .map-wrap { position: absolute; inset: 0; height: 100%; }
+      .panel { position: absolute; bottom: 0; left: 0; right: 0; z-index: 1000; border-right: none; border-top: 1px solid var(--border); border-radius: 20px 20px 0 0; box-shadow: 0 -6px 32px rgba(0,0,0,0.12); height: calc(var(--panel-h) + 20px); transition: height 0.38s cubic-bezier(0.4,0,0.2,1); overflow: hidden; display: flex; flex-direction: column; background: var(--white); }
       .panel.mid  { height: 48%; }
       .panel.open { height: 85%; }
-
-      /* Pill + handle drag — AMÉLIORATIONS */
-      .panel-handle {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0;
-        padding: 10px 0 6px;
-        cursor: grab;
-        user-select: none;
-        -webkit-user-select: none;
-        flex-shrink: 0;
-        touch-action: none;
-      }
-      .panel-handle:active {
-        cursor: grabbing;
-      }
-      .panel-pill {
-        width: 40px;
-        height: 5px;
-        background: var(--muted);
-        border-radius: 2.5px;
-        margin-bottom: 8px;
-      }
-      .panel-handle-label {
-        font-size: 0.85rem;
-        font-weight: 700;
-        color: var(--ink);
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        user-select: none;
-      }
-      .panel-handle-count {
-        font-size: 0.7rem; font-weight: 700;
-        color: var(--white);
-        background: var(--blue);
-        border-radius: 20px;
-        padding: 1px 8px;
-        display: none;
-      }
+      .panel-handle { display: flex; flex-direction: column; align-items: center; gap: 0; padding: 10px 0 6px; cursor: grab; user-select: none; -webkit-user-select: none; flex-shrink: 0; touch-action: none; }
+      .panel-handle:active { cursor: grabbing; }
+      .panel-pill { width: 40px; height: 5px; background: var(--muted); border-radius: 2.5px; margin-bottom: 8px; }
+      .panel-handle-label { font-size: 0.85rem; font-weight: 700; color: var(--ink); display: flex; align-items: center; gap: 6px; user-select: none; }
+      .panel-handle-count { font-size: 0.7rem; font-weight: 700; color: var(--white); background: var(--blue); border-radius: 20px; padding: 1px 8px; display: none; }
       .panel-handle-count.show { display: inline-block; }
-
-      /* scroll area — AMÉLIORATIONS */
-      .panel-scroll {
-        overflow-y: scroll;
-        -webkit-overflow-scrolling: touch;
-        flex: 1;
-        min-height: 0;
-        padding: 16px 16px 120px;
-        overscroll-behavior: contain;
-      }
-
-      /* cacher hero sur mobile (gain de place) */
+      .panel-scroll { overflow-y: scroll; -webkit-overflow-scrolling: touch; flex: 1; min-height: 0; padding: 16px 16px 120px; overscroll-behavior: contain; }
       .hero { display: none; }
-
-      /* Form sections plus spacieuses — AMÉLIORATIONS */
-      .form-section { 
-        padding: 13px;
-        margin-bottom: 9px;
-      }
-
-      .form-label {
-        margin-bottom: 9px;
-      }
-
-      .field {
-        margin-bottom: 12px;
-      }
-
-      .btn-row {
-        gap: 10px;
-      }
-
-      /* Inputs font-size 16px (anti-zoom Safari) */
-      input[type=text],
-      input[type=number],
-      input[type=date] {
-        font-size: 16px !important;
-        padding: 12px 13px;
-      }
-
-      .dpe-input {
-        font-size: 16px !important;
-        padding: 12px 13px;
-      }
-
-      /* DPE buttons restent compacts (7 sur une ligne) */
+      .form-section { padding: 13px; margin-bottom: 9px; }
+      .form-label { margin-bottom: 9px; }
+      .field { margin-bottom: 12px; }
+      .btn-row { gap: 10px; }
+      input[type=text], input[type=number], input[type=date] { font-size: 16px !important; padding: 12px 13px; }
+      .dpe-input { font-size: 16px !important; padding: 12px 13px; }
       @media (max-width: 480px) {
-        .dpe-class-buttons {
-          gap: 4px;
-        }
-        
-        .dpe-class-btn {
-          padding: 8px 4px;
-          font-size: 12px;
-        }
-
-        .card-thumb {
-          height: 160px;
-        }
-
-        .panel-scroll {
-          padding-top: 8px;
-        }
+        .dpe-class-buttons { gap: 4px; }
+        .dpe-class-btn { padding: 8px 4px; font-size: 12px; }
+        .card-thumb { height: 160px; }
+        .panel-scroll { padding-top: 8px; }
       }
-
-      /* Autocomplete suggestions — zone tactile */
-      #commune-suggestions {
-        max-height: 280px;
-        border-radius: 10px;
-      }
-
-      #commune-suggestions li {
-        padding: 12px 12px;
-        min-height: 44px;
-      }
-
-      /* Clavier virtuel — scroll margin */
-      input:focus {
-        scroll-margin-top: 80px;
-      }
-
-      /* Empêcher zoom double-tap (iOS) */
-      button, a, input {
-        touch-action: manipulation;
-      }
-
-      /* ── ENCARTS FOND DE PLAN repositionnés ── */
-      .leaflet-bottom.leaflet-left {
-        bottom: calc(var(--panel-h) + 24px) !important;
-        left: 10px !important;
-        transition: bottom 0.38s cubic-bezier(0.4,0,0.2,1);
-      }
+      #commune-suggestions { max-height: 280px; border-radius: 10px; }
+      #commune-suggestions li { padding: 12px 12px; min-height: 44px; }
+      input:focus { scroll-margin-top: 80px; }
+      button, a, input { touch-action: manipulation; }
+      .leaflet-bottom.leaflet-left { bottom: calc(var(--panel-h) + 24px) !important; left: 10px !important; transition: bottom 0.38s cubic-bezier(0.4,0,0.2,1); }
       body.panel-mid .leaflet-bottom.leaflet-left  { bottom: calc(48% + 10px) !important; }
       body.panel-open .leaflet-bottom.leaflet-left { bottom: calc(85% + 10px) !important; }
-
-      /* Leaflet zoom control : top-right, ok sur mobile */
       .leaflet-top.leaflet-right { top: 14px; right: 10px; }
       .leaflet-top.leaflet-left  { top: 14px; left: 10px; }
-
-      /* ── MAP COUNT en haut à droite ── */
       #map-count { top: 10px; right: 10px; font-size: 0.78rem; padding: 5px 10px; }
-
-      /* ── TOOLBAR MESURE : icônes seulement, plus compacte ── */
-      #measure-toolbar {
-        top: 10px;
-        left: 50%;
-        transform: translateX(-50%);
-      }
-      .measure-btn { 
-        padding: 8px 11px;
-        gap: 4px;
-        font-size: 0.7rem;
-        min-height: 40px;
-      }
+      #measure-toolbar { top: 10px; left: 50%; transform: translateX(-50%); }
+      .measure-btn { padding: 8px 11px; gap: 4px; font-size: 0.7rem; min-height: 40px; }
       .measure-btn .btn-label { display: none; }
-
-      /* ── MEASURE RESULT : repositionné au-dessus du panel ── */
-      #measure-result {
-        bottom: calc(var(--panel-h) + 30px);
-        transition: bottom 0.38s cubic-bezier(0.4,0,0.2,1);
-        font-size: 0.78rem;
-        padding: 8px 12px;
-        gap: 10px;
-      }
+      #measure-result { bottom: calc(var(--panel-h) + 30px); transition: bottom 0.38s cubic-bezier(0.4,0,0.2,1); font-size: 0.78rem; padding: 8px 12px; gap: 10px; }
       body.panel-mid  #measure-result { bottom: calc(48% + 10px); }
       body.panel-open #measure-result { bottom: calc(85% + 10px); }
-
-      /* ── MAP FOOTER ── */
-      .map-footer {
-        bottom: calc(var(--panel-h) + 28px);
-        transition: bottom 0.38s cubic-bezier(0.4,0,0.2,1);
-        font-size: 0.6rem;
-        padding: 4px 12px;
-      }
+      .map-footer { bottom: calc(var(--panel-h) + 28px); transition: bottom 0.38s cubic-bezier(0.4,0,0.2,1); font-size: 0.6rem; padding: 4px 12px; }
       body.panel-mid  .map-footer { bottom: calc(48% + 8px); }
       body.panel-open .map-footer { bottom: calc(85% + 8px); }
-
-      /* Cards 1 col sur mobile */
       #results-list { grid-template-columns: 1fr; }
     }
   </style>
@@ -523,10 +357,7 @@
 </div>
 
 <main>
-  <!-- PANEL GAUCHE / BOTTOM SHEET -->
   <aside class="panel" id="mobile-panel">
-
-    <!-- Handle drag (visible uniquement mobile) -->
     <div class="panel-handle" id="panel-handle">
       <div class="panel-pill"></div>
       <div class="panel-handle-label">
@@ -579,69 +410,47 @@
         </div>
       </div>
 
-      <!-- ===== NOUVEAUX CHAMPS DPE ===== -->
-    
-    <div class="form-section">
-      <div class="form-label">Classe énergie</div>
-      <div class="field">
-        <div class="dpe-class-buttons">
-          <button type="button" class="dpe-class-btn energie-btn" data-class="A">A</button>
-          <button type="button" class="dpe-class-btn energie-btn" data-class="B">B</button>
-          <button type="button" class="dpe-class-btn energie-btn" data-class="C">C</button>
-          <button type="button" class="dpe-class-btn energie-btn" data-class="D">D</button>
-          <button type="button" class="dpe-class-btn energie-btn" data-class="E">E</button>
-          <button type="button" class="dpe-class-btn energie-btn" data-class="F">F</button>
-          <button type="button" class="dpe-class-btn energie-btn" data-class="G">G</button>
+      <div class="form-section">
+        <div class="form-label">Classe énergie</div>
+        <div class="field">
+          <div class="dpe-class-buttons">
+            <button type="button" class="dpe-class-btn energie-btn" data-class="A">A</button>
+            <button type="button" class="dpe-class-btn energie-btn" data-class="B">B</button>
+            <button type="button" class="dpe-class-btn energie-btn" data-class="C">C</button>
+            <button type="button" class="dpe-class-btn energie-btn" data-class="D">D</button>
+            <button type="button" class="dpe-class-btn energie-btn" data-class="E">E</button>
+            <button type="button" class="dpe-class-btn energie-btn" data-class="F">F</button>
+            <button type="button" class="dpe-class-btn energie-btn" data-class="G">G</button>
+          </div>
+          <input type="number" id="dpe-energie-input" placeholder="ou saisir kWh/m²/an (ex: 250)" min="0" max="500" class="dpe-input">
         </div>
-        <input 
-          type="number" 
-          id="dpe-energie-input" 
-          placeholder="ou saisir kWh/m²/an (ex: 250)"
-          min="0" 
-          max="500"
-          class="dpe-input"
-        >
       </div>
-    </div>
 
-    <div class="form-section">
-      <div class="form-label">Classe GES</div>
-      <div class="field">
-        <div class="dpe-class-buttons">
-          <button type="button" class="dpe-class-btn ges-btn" data-class="A">A</button>
-          <button type="button" class="dpe-class-btn ges-btn" data-class="B">B</button>
-          <button type="button" class="dpe-class-btn ges-btn" data-class="C">C</button>
-          <button type="button" class="dpe-class-btn ges-btn" data-class="D">D</button>
-          <button type="button" class="dpe-class-btn ges-btn" data-class="E">E</button>
-          <button type="button" class="dpe-class-btn ges-btn" data-class="F">F</button>
-          <button type="button" class="dpe-class-btn ges-btn" data-class="G">G</button>
+      <div class="form-section">
+        <div class="form-label">Classe GES</div>
+        <div class="field">
+          <div class="dpe-class-buttons">
+            <button type="button" class="dpe-class-btn ges-btn" data-class="A">A</button>
+            <button type="button" class="dpe-class-btn ges-btn" data-class="B">B</button>
+            <button type="button" class="dpe-class-btn ges-btn" data-class="C">C</button>
+            <button type="button" class="dpe-class-btn ges-btn" data-class="D">D</button>
+            <button type="button" class="dpe-class-btn ges-btn" data-class="E">E</button>
+            <button type="button" class="dpe-class-btn ges-btn" data-class="F">F</button>
+            <button type="button" class="dpe-class-btn ges-btn" data-class="G">G</button>
+          </div>
+          <input type="number" id="dpe-ges-input" placeholder="ou saisir kg CO2/m²/an (ex: 45)" min="0" max="150" class="dpe-input">
         </div>
-        <input 
-          type="number" 
-          id="dpe-ges-input" 
-          placeholder="ou saisir kg CO2/m²/an (ex: 45)"
-          min="0" 
-          max="150"
-          class="dpe-input"
-        >
       </div>
-    </div>
 
-    <div class="form-section">
-      <div class="form-label">Date diagnostic</div>
-      <div class="field">
-        <input 
-          type="date" 
-          id="dpe-date-input"
-          class="dpe-input"
-        >
+      <div class="form-section">
+        <div class="form-label">Date diagnostic</div>
+        <div class="field">
+          <input type="date" id="dpe-date-input" class="dpe-input">
+        </div>
       </div>
-    </div>
 
-    <!-- Champs cachés pour stocker les sélections -->
       <input type="hidden" id="dpe-energie-selected" value="">
       <input type="hidden" id="dpe-ges-selected" value="">
-
 
       <div class="btn-row">
         <button class="btn-search" id="search-btn" onclick="doSearch()">Afficher les parcelles</button>
@@ -663,11 +472,9 @@
     </div>
   </aside>
 
-  <!-- CARTE -->
   <div class="map-wrap">
     <div id="map"></div>
 
-    <!-- Toolbar mesure -->
     <div id="measure-toolbar">
       <button class="measure-btn" id="btn-measure-dist" onclick="toggleMeasureMode('distance')">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="8" x2="2" y2="16"/><line x1="22" y1="8" x2="22" y2="16"/></svg>
@@ -683,7 +490,6 @@
       </button>
     </div>
 
-    <!-- Résultat mesure -->
     <div id="measure-result">
       <span id="measure-label">Distance</span>
       <div class="measure-sep"></div>
@@ -699,25 +505,22 @@
     <div id="map-count"></div>
     <div class="map-footer">Données : <span>IGN · Cadastre officiel français</span> — Licence Ouverte Etalab</div>
   </div>
-  <!-- STREET VIEW MODAL -->
-    <div id="sv-modal">
-      <div id="sv-modal-content">
-        <button id="sv-modal-close" onclick="closeSVModal()">✕</button>
-        <iframe id="sv-modal-iframe"></iframe>
-      </div>
+
+  <div id="sv-modal">
+    <div id="sv-modal-content">
+      <button id="sv-modal-close" onclick="closeSVModal()">✕</button>
+      <iframe id="sv-modal-iframe"></iframe>
     </div>
+  </div>
 </main>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD1pMAMR9M6vLrsfoLJ5GDyIbkDTgLvqg4&libraries=streetView,geometry"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD1pMAMR9M6vLrsfoLJ5GDyIbkDTgLvqg4&libraries=streetView,geometry&loading=async"></script>
 <script>
-// ════════════════════════════════════════════════
-//  MOBILE PANEL — DRAG + 3 ÉTATS
-// ════════════════════════════════════════════════
+// MOBILE PANEL
 const isMobile = () => window.innerWidth <= 768;
 const mobilePanel = document.getElementById('mobile-panel');
 const panelHandle = document.getElementById('panel-handle');
-
-// États : '' (collapsed) | 'mid' | 'open'
 let panelState = '';
 
 function setPanelState(state) {
@@ -728,7 +531,6 @@ function setPanelState(state) {
   if (state === 'open') { mobilePanel.classList.add('open'); document.body.classList.add('panel-open'); }
 }
 
-// Drag sur le handle
 let dragStartY = 0, dragStartState = '';
 let isDragging = false;
 
@@ -737,7 +539,7 @@ function onDragStart(e) {
   isDragging = true;
   dragStartY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
   dragStartState = panelState;
-  mobilePanel.style.transition = 'none'; // désactive l'animation pendant le drag
+  mobilePanel.style.transition = 'none';
   document.body.style.userSelect = 'none';
 }
 
@@ -750,22 +552,17 @@ function onDragEnd(e) {
   isDragging = false;
   mobilePanel.style.transition = '';
   document.body.style.userSelect = '';
-
   const endY = e.type === 'touchend' ? e.changedTouches[0].clientY : e.clientY;
-  const delta = dragStartY - endY; // positif = vers le haut
-
+  const delta = dragStartY - endY;
   if (delta > 40) {
-    // glisse vers le haut → état suivant
     if (dragStartState === '')     setPanelState('mid');
     else if (dragStartState === 'mid') setPanelState('open');
     else setPanelState('open');
   } else if (delta < -40) {
-    // glisse vers le bas → état précédent
     if (dragStartState === 'open') setPanelState('mid');
     else if (dragStartState === 'mid') setPanelState('');
     else setPanelState('');
   } else {
-    // tap simple : toggle entre collapsed et mid
     if (dragStartState === '') setPanelState('mid');
     else if (dragStartState === 'mid') setPanelState('');
     else setPanelState('mid');
@@ -779,9 +576,7 @@ window.addEventListener('mousemove', onDragMove);
 window.addEventListener('touchend', onDragEnd);
 window.addEventListener('mouseup', onDragEnd);
 
-// ════════════════════════════════════════════════
-//  CARTE
-// ════════════════════════════════════════════════
+// CARTE
 const map = L.map('map', { zoomControl: true, maxZoom: 22 }).setView([46.6, 2.3], 5);
 const tileVoyager   = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { attribution: '© OpenStreetMap contributors © CARTO', subdomains: 'abcd', maxZoom: 20 });
 const tileSatellite = L.tileLayer('https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}', { attribution: '© IGN BD Ortho', maxZoom: 22, maxNativeZoom: 19 });
@@ -816,7 +611,7 @@ const LayerControl = L.Control.extend({
       if (!isSat) { map.removeLayer(tileVoyager); tileSatellite.addTo(map); isSat = true; styleBtn(btnCarte, false); styleBtn(btnSat, true); }
       if (pluActive) { map.removeLayer(tilePLU); pluActive = false; styleBtn(btnPLU, false); }
     });
-    const svgPLU = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="68" height="46"><rect width="68" height="46" fill="#f5e642"/><polygon points="0,0 18,0 15,12 0,18" fill="#cc3333"/><polygon points="18,0 32,0 30,8 24,14 15,12" fill="#f5e642"/><polygon points="32,0 50,0 50,10 38,18 30,8" fill="#f5e642"/><polygon points="50,0 68,0 68,14 58,14 50,10" fill="#3a8a3a"/><polygon points="0,18 15,12 24,14 18,28 8,32 0,28" fill="#cc3333"/><polygon points="15,12 30,8 38,18 32,28 24,36 18,28" fill="#f5e642"/><polygon points="30,8 50,10 58,14 52,24 40,26 32,28 38,18" fill="#3a8a3a"/><polygon points="58,14 68,14 68,30 60,32 52,24" fill="#cc3333"/><polygon points="0,28 8,32 10,46 0,46" fill="#f5e642"/><polygon points="8,32 18,28 24,36 20,46 10,46" fill="#3a8a3a"/><polygon points="18,28 32,28 36,38 28,46 20,46 24,36" fill="#f5e642"/><polygon points="32,28 40,26 52,24 60,32 56,42 44,46 36,38" fill="#f5e642"/><polygon points="60,32 68,30 68,46 56,42" fill="#cc3333"/><polygon points="44,46 56,42 68,46" fill="#f5ab42"/></svg>');
+    const svgPLU = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="68" height="46"><rect width="68" height="46" fill="#f5e642"/></svg>');
     const btnPLU = mkBtn(svgPLU, 'PLU');
     styleBtn(btnPLU, false);
     L.DomEvent.on(btnPLU, 'click', () => {
@@ -830,7 +625,7 @@ const LayerControl = L.Control.extend({
 });
 new LayerControl().addTo(map);
 
-// ── ÉTAT ─────────────────────────────────────────────────
+// ÉTAT
 let parcelsLayer = null, communeLayer = null;
 let allFeatures = [], renderedCount = 0;
 let activeFeature = null;
@@ -840,14 +635,12 @@ const STYLE_DEFAULT  = { color: '#2563eb', weight: 2, opacity: 0.9, fillColor: '
 const STYLE_HOVER    = { color: '#f97316', weight: 3, opacity: 1, fillColor: '#f97316', fillOpacity: 0.25 };
 const STYLE_SELECTED = { color: '#f97316', weight: 3, opacity: 1, fillColor: '#f97316', fillOpacity: 0.25 };
 
-// ── PROGRESS ──────────────────────────────────────────────
 function setProgress(pct) {
   const wrap = document.getElementById('progress-wrap'), bar = document.getElementById('progress-bar');
   wrap.classList.add('show'); bar.style.width = pct + '%';
   if (pct >= 100) setTimeout(() => { wrap.classList.remove('show'); bar.style.width = '0%'; }, 600);
 }
 
-// ── TOLERANCE ────────────────────────────────────────────
 const tolRange = document.getElementById('tol-range'), surfInput = document.getElementById('surface-input');
 function updateTol() {
   const tol = parseInt(tolRange.value), surf = parseFloat(surfInput.value);
@@ -861,7 +654,6 @@ tolRange.addEventListener('input', updateTol);
 surfInput.addEventListener('input', updateTol);
 updateTol();
 
-// ── AUTOCOMPLETE ──────────────────────────────────────────
 const communeInput = document.getElementById('commune-input'), communeSugg = document.getElementById('commune-suggestions');
 let selectedCommune = null, acTimer;
 communeInput.addEventListener('input', () => {
@@ -895,11 +687,9 @@ async function fetchCommunes(q) {
   } catch { communeSugg.style.display = 'none'; }
 }
 
-// ── STATUS ───────────────────────────────────────────────
 function setStatus(msg, type = '') { const el = document.getElementById('status'); el.innerHTML = msg; el.className = 'show' + (type ? ' ' + type : ''); }
 function clearStatus() { document.getElementById('status').className = ''; }
 
-// ── MINIATURE SATELLITE IGN ───────────────────────────────
 function drawThumb(canvas, feature, zoom) {
   zoom = zoom || 18;
   const ctx = canvas.getContext('2d');
@@ -947,16 +737,6 @@ function drawThumb(canvas, feature, zoom) {
   });
 }
 
-// ── ADRESSE COURTE ────────────────────────────────────────
-async function fetchShortAddr(lat, lng) {
-  try {
-    const d = await fetch(`https://api-adresse.data.gouv.fr/reverse/?lon=${lng}&lat=${lat}&limit=1`).then(r => r.json());
-    const label = d.features?.[0]?.properties?.label || '';
-    return label.replace(/\s+\d{5}\s+\S+$/, '').trim() || label;
-  } catch { return ''; }
-}
-
-// ── SELECTION FEATURE ─────────────────────────────────────
 function selectFeature(feature, card) {
   if (activeFeature && parcelsLayer) parcelsLayer.eachLayer(l => { if (l.feature === activeFeature) l.setStyle(STYLE_DEFAULT); });
   document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
@@ -965,7 +745,6 @@ function selectFeature(feature, card) {
   if (parcelsLayer) parcelsLayer.eachLayer(l => { if (l.feature === feature) { l.setStyle(STYLE_SELECTED); l.bringToFront(); } });
 }
 
-// ── RENDER CARDS ─────────────────────────────────────────
 function renderCards(features, targetSurf) {
   allFeatures = features; renderedCount = 0;
   const list = document.getElementById('results-list'), countEl = document.getElementById('r-count');
@@ -973,14 +752,12 @@ function renderCards(features, targetSurf) {
   if (!features.length) {
     countEl.textContent = '0 résultat';
     list.innerHTML = `<div style="font-size:0.8rem;color:var(--muted);text-align:center;padding:20px 0;border:1px dashed var(--border);border-radius:8px;grid-column:1/-1;">Aucune parcelle trouvée.<br/>Essayez d'augmenter la tolérance.</div>`;
-    // update handle count
     const hc = document.getElementById('handle-count');
     hc.textContent = '0'; hc.classList.remove('show');
     return;
   }
   const txt = features.length + ' parcelle' + (features.length > 1 ? 's' : '');
   countEl.textContent = txt;
-  // badge sur le handle mobile
   const hc = document.getElementById('handle-count');
   hc.textContent = features.length; hc.classList.add('show');
   loadMoreCards(targetSurf);
@@ -999,18 +776,13 @@ function loadMoreCards(targetSurf) {
     card.className = 'card';
     card.dataset.featureIdx = renderedCount + idx;
     const thumb = document.createElement('div'); thumb.className = 'card-thumb';
-
-    // Côté gauche : Street View
     const thumbSV = document.createElement('div'); thumbSV.className = 'card-thumb-sv';
     const svPlaceholder = document.createElement('div'); svPlaceholder.className = 'card-thumb-sv-placeholder';
     svPlaceholder.innerHTML = '<span style="font-size:1.4rem">📷</span><small style="font-size:0.6rem;color:#93c5fd;font-weight:600">Chargement…</small>';
     thumbSV.appendChild(svPlaceholder);
-
-    // Côté droit : IGN satellite
     const thumbIGN = document.createElement('div'); thumbIGN.className = 'card-thumb-ign';
     const canvas = document.createElement('canvas'); canvas.width = 256; canvas.height = 256;
     thumbIGN.appendChild(canvas);
-
     thumb.appendChild(thumbSV); thumb.appendChild(thumbIGN);
     const body = document.createElement('div'); body.className = 'card-body';
     const section = f.properties?.section || '';
@@ -1018,11 +790,11 @@ function loadMoreCards(targetSurf) {
     const commune = f.properties?.commune || '';
     const ref = [section, numero].filter(Boolean).join(' ') + (commune ? ' · ' + commune : '');
     const ce = f.properties?.classe_energie;
-const cg = f.properties?.classe_ges;
-const dpeColors = {A:'#0f7c3a',B:'#5cb85c',C:'#f0d000',D:'#ff9900',E:'#e74c3c',F:'#d92a2a',G:'#c1121f'};
-const dpeBadge = ce ? `<span style="background:${dpeColors[ce]||'#999'};color:${ce==='C'?'#333':'white'};font-size:0.6rem;font-weight:700;padding:2px 6px;border-radius:4px;">⚡${ce}</span>` : '';
-const gesBadge = cg ? `<span style="background:${dpeColors[cg]||'#999'};color:${cg==='C'?'#333':'white'};font-size:0.6rem;font-weight:700;padding:2px 6px;border-radius:4px;">🌿${cg}</span>` : '';
-body.innerHTML = `<div class="card-body-row"><div class="card-surf">${Math.round(surf)} m²</div><div style="display:flex;gap:4px;align-items:center;">${dpeBadge}${gesBadge}<span class="card-tag ${tagClass}">±${ecart.toFixed(1)}%</span></div></div>${ref ? '<div class="card-ref">' + ref + '</div>' : ''}`;
+    const cg = f.properties?.classe_ges;
+    const dpeColors = {A:'#0f7c3a',B:'#5cb85c',C:'#f0d000',D:'#ff9900',E:'#e74c3c',F:'#d92a2a',G:'#c1121f'};
+    const dpeBadge = ce ? `<span style="background:${dpeColors[ce]||'#999'};color:${ce==='C'?'#333':'white'};font-size:0.6rem;font-weight:700;padding:2px 6px;border-radius:4px;">⚡${ce}</span>` : '';
+    const gesBadge = cg ? `<span style="background:${dpeColors[cg]||'#999'};color:${cg==='C'?'#333':'white'};font-size:0.6rem;font-weight:700;padding:2px 6px;border-radius:4px;">🌿${cg}</span>` : '';
+    body.innerHTML = `<div class="card-body-row"><div class="card-surf">${Math.round(surf)} m²</div><div style="display:flex;gap:4px;align-items:center;">${dpeBadge}${gesBadge}<span class="card-tag ${tagClass}">±${ecart.toFixed(1)}%</span></div></div>${ref ? '<div class="card-ref">' + ref + '</div>' : ''}`;
     card.appendChild(thumb); card.appendChild(body);
     card.addEventListener('mouseenter', () => { if (!parcelsLayer) return; parcelsLayer.eachLayer(l => { if (l.feature === f && l.feature !== activeFeature) l.setStyle(STYLE_HOVER); }); });
     card.addEventListener('mouseleave', () => { if (!parcelsLayer) return; parcelsLayer.eachLayer(l => { if (l.feature === f && l.feature !== activeFeature) l.setStyle(STYLE_DEFAULT); }); });
@@ -1038,16 +810,12 @@ body.innerHTML = `<div class="card-body-row"><div class="card-surf">${Math.round
         lat = (mnLat + mxLat) / 2; lng = (mnLng + mxLng) / 2;
       } catch {}
       drawThumb(canvas, f, 19);
-      // Street View embed
       const embedUrl = `https://www.google.com/maps/embed/v1/streetview?key=AIzaSyD1pMAMR9M6vLrsfoLJ5GDyIbkDTgLvqg4&location=${lat},${lng}&fov=100&pitch=0`;
       const iframe = document.createElement('iframe');
       iframe.src = embedUrl;
       iframe.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:none;';
       iframe.loading = 'lazy';
       iframe.allowFullscreen = true;
-      iframe.onerror = () => {
-        svPlaceholder.innerHTML = `<a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}" target="_blank" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-decoration:none;background:linear-gradient(135deg,#1a1a2e,#16213e);"><span style="font-size:1.8rem">📷</span><span style="font-size:0.62rem;color:#93c5fd;font-weight:700;text-transform:uppercase">Street View →</span></a>`;
-      };
       svPlaceholder.remove();
       thumbSV.appendChild(iframe);
     }, { threshold: 0.1 });
@@ -1081,45 +849,24 @@ body.innerHTML = `<div class="card-body-row"><div class="card-surf">${Math.round
     scrollObs.observe(sentinel);
   }
 }
-// ── GOOGLE EARTH 3D ──────────────────────────────────────
-function openGoogleEarth(lat, lng, address) {
-  // Paramètres Google Earth Web :
-  // @LAT,LON,ALTITUDEa,ZOOMd,TILTy,HEADINGh,0t,0r
-  // ALTITUDE = hauteur caméra (mètres)
-  // ZOOM = distance zoom (mètres)
-  // TILT = inclinaison caméra (0=vertical, 90=horizontal)
-  // HEADING = orientation (0=Nord)
-  
-  const altitude = 120;  // hauteur caméra
-  const zoomDist = 300;  // distance zoom pour voir parcelle + contexte
-  const tilt = 60;       // inclinaison spectaculaire
-  const heading = 0;     // orientation Nord
-  
-  const url = `https://earth.google.com/web/@${lat},${lng},${altitude}a,${zoomDist}d,${tilt}y,${heading}h,0t,0r`;
-  return url;
-}
 
-// ── BIND PARCEL CLICK ─────────────────────────────────────
 function openGoogleEarth(lat, lng) {
   return `https://earth.google.com/web/@${lat},${lng},50a,150d,75y,0h,1t,0r`;
 }
+
 function bindParcelClick(layer) {
   layer.on('click', function() {
     if (measureMode) return;
     const idx = allFeatures.indexOf(layer.feature);
     const card = idx >= 0 ? document.querySelector(`.card[data-feature-idx="${idx}"]`) : null;
     selectFeature(layer.feature, card);
-    
-    // Ouvrir Street View en modale
     let lat = 0, lng = 0;
     try { lat = layer.getBounds().getCenter().lat; lng = layer.getBounds().getCenter().lng; } catch {}
     openSVModal(lat, lng);
-    
     layer.getPopup().setLatLng(L.latLng(layer.getBounds().getNorth(), layer.getBounds().getCenter().lng)).openOn(map);
   });
 }
 
-// ── DRAW PARCELS ──────────────────────────────────────────
 function drawParcels(features, targetSurf) {
   if (parcelsLayer) { map.removeLayer(parcelsLayer); parcelsLayer = null; }
   activeFeature = null;
@@ -1150,10 +897,6 @@ function drawParcels(features, targetSurf) {
         } catch {}
         const elEarth = document.getElementById('earth-' + uid);
         if (elEarth) elEarth.href = openGoogleEarth(lat, lng);
-
-        const elEarth = document.getElementById('earth-' + uid);
-        if (elEarth) elEarth.href = openGoogleEarth(lat, lng);
-
         const elGeo = document.getElementById('geo-' + uid);
         if (elGeo) elGeo.href = 'https://www.geoportail-urbanisme.gouv.fr/map/#lon=' + lng + '&lat=' + lat + '&zoom=19';
       });
@@ -1162,38 +905,24 @@ function drawParcels(features, targetSurf) {
   if (features.length) { try { map.fitBounds(parcelsLayer.getBounds(), { padding: [40, 40] }); } catch {} }
 }
 
-// ── FETCH PARCELLES ───────────────────────────────────────
 async function fetchParcelles(codeInsee, surfMin, surfMax) {
-  const surf = (surfMin + surfMax) / 2, tol = surf > 0 ? Math.round((surfMax - surfMin) / surf * 100) : 0;
-  const r = await fetch(`https://parcelleid.duckdns.org/parcelles?insee=${codeInsee}&surf=${Math.round(surf)}&tol=${tol}`).catch(() => { throw new Error("Impossible de joindre l'API."); });
-  if (!r.ok) throw new Error(`Erreur API : ${r.status}`);
-  const fc = await r.json();
-  return (fc.features || []).filter(f => { const s = parseFloat(f.properties?.surface ?? f.properties?.contenance ?? 0); return s >= surfMin && s <= surfMax; });
-}
-
-// ── SEARCH ───────────────────────────────────────────────
-async function fetchParcellesByHabitable(codeInsee, surfMin, surfMax) {
   const surf = (surfMin + surfMax) / 2;
   const tol = surf > 0 ? Math.round((surfMax - surfMin) / surf * 100) : 0;
-  
-  let url = `https://parcelleid.duckdns.org/parcelles?insee=${codeInsee}&surface_habitable_min=${Math.round(surfMin)}&surface_habitable_max=${Math.round(surfMax)}`;
-  
+  let url = `https://parcelleid.duckdns.org/parcelles?insee=${codeInsee}&surf=${Math.round(surf)}&tol=${tol}`;
   const classeEnergie = document.getElementById('dpe-energie-selected').value;
   const valeurEnergie = document.getElementById('dpe-energie-input').value;
   const classeGes = document.getElementById('dpe-ges-selected').value;
   const valeurGes = document.getElementById('dpe-ges-input').value;
   const dateMin = document.getElementById('dpe-date-input').value;
-  
   if (classeEnergie) url += `&classe_energie=${classeEnergie}`;
   if (valeurEnergie) url += `&valeur_energie=${valeurEnergie}`;
   if (classeGes) url += `&classe_ges=${classeGes}`;
   if (valeurGes) url += `&valeur_ges=${valeurGes}`;
   if (dateMin) url += `&date_dpe_min=${dateMin}`;
-  
   const r = await fetch(url).catch(() => { throw new Error("Impossible de joindre l'API."); });
   if (!r.ok) throw new Error(`Erreur API : ${r.status}`);
   const fc = await r.json();
-  return (fc.features || []);
+  return (fc.features || []).filter(f => { const s = parseFloat(f.properties?.surface ?? f.properties?.contenance ?? 0); return s >= surfMin && s <= surfMax; });
 }
 
 async function doSearch() {
@@ -1201,12 +930,8 @@ async function doSearch() {
   const surfCadastrale = parseFloat(surfInput.value);
   const tol = parseInt(tolRange.value);
   const commune = selectedCommune;
-  
   if (!commune) { setStatus('⚠️ Sélectionnez une commune dans la liste.', 'err'); return; }
   if ((!surfLogement || surfLogement <= 0) && (!surfCadastrale || surfCadastrale <= 0)) { setStatus('⚠️ Saisissez la surface du logement OU la surface cadastrale.', 'err'); return; }
-  
-  // Si surface logement fournie, on cherche par tolérance sur surface habitable
-  // Sinon on cherche par surface cadastrale
   let sMin, sMax, surf;
   if (surfLogement > 0) {
     surf = surfLogement;
@@ -1225,42 +950,23 @@ async function doSearch() {
     communeLayer = L.geoJSON(communeGeo, { style: { color: '#2563eb', weight: 1.5, fillOpacity: 0.03, dashArray: '5,4', opacity: 0.4 } }).addTo(map);
     map.fitBounds(communeLayer.getBounds(), { padding: [20, 20] });
     setProgress(10); setStatus('<span class="spinner"></span>Interrogation de l\'API cadastre…');
-    let features;
-    if (surfLogement > 0 && surfCadastrale <= 0) {
-      // Recherche par surface habitable (via DPE)
-      features = await fetchParcellesByHabitable(commune.code, sMin, sMax);
-    } else {
-      // Recherche par surface cadastrale
-      features = await fetchParcelles(commune.code, sMin, sMax);
-    }
-    
-    // Tri : si surface habitable, trier par surface habitable; sinon par surface cadastrale
-    if (surfLogement > 0 && surfCadastrale <= 0) {
-      features.sort((a, b) => {
-        const sA = parseFloat(a.properties?.surface_habitable ?? 0);
-        const sB = parseFloat(b.properties?.surface_habitable ?? 0);
-        return Math.abs(sA - surf) - Math.abs(sB - surf);
-      });
-    } else {
-      features.sort((a, b) => {
-        const sA = parseFloat(a.properties?.surface ?? a.properties?.contenance ?? 0);
-        const sB = parseFloat(b.properties?.surface ?? b.properties?.contenance ?? 0);
-        return Math.abs(sA - surf) - Math.abs(sB - surf);
-      });
-    }
+    const features = await fetchParcelles(commune.code, sMin, sMax);
+    features.sort((a, b) => {
+      const sA = parseFloat(a.properties?.surface ?? a.properties?.contenance ?? 0);
+      const sB = parseFloat(b.properties?.surface ?? b.properties?.contenance ?? 0);
+      return Math.abs(sA - surf) - Math.abs(sB - surf);
+    });
     setProgress(100);
     document.getElementById('overlay').classList.add('gone');
     const mc = document.getElementById('map-count'); mc.style.display = 'block'; mc.innerHTML = `<em>${features.length}</em> parcelle${features.length > 1 ? 's' : ''}`;
     drawParcels(features, surf);
     renderCards(features, surf);
     if (features.length > 0) clearStatus(); else setStatus("Aucune parcelle trouvée. Essayez d'augmenter la tolérance.", 'err');
-    // Après search mobile : panel mid pour voir résultats + carte
     if (isMobile()) setPanelState('mid');
   } catch (err) { setStatus(`❌ ${err.message}`, 'err'); setProgress(100); }
   btn.disabled = false;
 }
 
-// ── RESET ────────────────────────────────────────────────
 function doReset() {
   document.getElementById('commune-input').value = '';
   document.getElementById('surface-input').value = '';
@@ -1283,10 +989,9 @@ function doReset() {
 communeInput.addEventListener('keydown', e => { if (e.key === 'Enter' && selectedCommune) doSearch(); });
 surfInput.addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
 
-// Init mobile : panel mid au démarrage pour montrer le formulaire
 if (isMobile()) setPanelState('mid');
 
-// ── OUTIL DE MESURE ───────────────────────────────────────
+// OUTIL DE MESURE
 let measureMode = null, measurePoints = [], measureLines = [], liveTooltip = null;
 
 function haversineM(a, b) {
@@ -1346,7 +1051,6 @@ function toggleMeasureMode(mode) {
   if (parcelsLayer) parcelsLayer.eachLayer(l => l.off('click'));
   map.on('click', onMeasureClick); map.on('mousemove', onMeasureMove); map.on('dblclick', onMeasureDblClick);
   map.doubleClickZoom.disable();
-  // En mode mesure sur mobile : replier le panel pour voir la carte
   if (isMobile()) setPanelState('');
 }
 
@@ -1371,7 +1075,7 @@ function onMeasureClick(e) { L.DomEvent.stopPropagation(e); map.closePopup(); me
 function onMeasureMove(e) { if (measurePoints.length) redrawMeasure(e.latlng); }
 function onMeasureDblClick(e) { L.DomEvent.stopPropagation(e); if (measureMode === 'distance' && measurePoints.length) measurePoints.pop(); stopMeasure(); }
 
-// ── AUTH ─────────────────────────────────────────────────
+// AUTH
 const API = 'https://parcelleid.duckdns.org';
 let authUser = null;
 
@@ -1470,65 +1174,9 @@ async function checkVerifyToken() {
   } catch {}
   window.history.replaceState({}, '', window.location.pathname);
 }
+
+// STREET VIEW MODAL
 function openSVModal(lat, lng) {
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> ca4d786d568c0b7d9589500b33f46ee6ac8e716f
-  const content = document.getElementById('sv-modal-content');
-  const existingIframe = document.getElementById('sv-modal-iframe');
-  if (existingIframe) existingIframe.remove();
-
-  const svContainer = document.createElement('div');
-  svContainer.id = 'streetview-api-container';
-  svContainer.style.cssText = 'width: 100%; height: 100%;';
-  content.appendChild(svContainer);
-
-  const position = new google.maps.LatLng(lat, lng);
-  const svService = new google.maps.StreetViewService();
-  
-  svService.getPanorama({ location: position, radius: 100 }, (data, status) => {
-    let heading = 0;
-    if (status === 'OK') {
-      const svPosition = data.location.latLng;
-      heading = google.maps.geometry.spherical.computeHeading(svPosition, position);
-    }
-    
-    const viewer = new google.maps.StreetViewPanorama(svContainer, {
-      position: position,
-      pov: { heading: heading, pitch: 0, zoom: 1 },
-      zoom: 1
-    });
-
-    new google.maps.Marker({
-      position: position,
-      map: viewer,
-      title: '📍 Parcelle',
-      icon: {
-        path: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z',
-        fillColor: '#e53935',
-        fillOpacity: 1,
-        strokeColor: '#b71c1c',
-        strokeWeight: 1,
-        scale: 2,
-        anchor: new google.maps.Point(12, 22)
-      }
-    });
-  });
-
-  document.getElementById('sv-modal').classList.add('show');
-}
-
-
-<<<<<<< HEAD
-function openSVModal(lat, lng) {
-=======
-function closeSVModal() {
-  document.getElementById('sv-modal').classList.remove('show');
-  const container = document.getElementById('streetview-api-container');
-  if (container) container.remove();
-=======
->>>>>>> ca4d786d568c0b7d9589500b33f46ee6ac8e716f
   const url = `https://www.google.com/maps/embed/v1/streetview?key=AIzaSyD1pMAMR9M6vLrsfoLJ5GDyIbkDTgLvqg4&location=${lat},${lng}&fov=100&pitch=0`;
   document.getElementById('sv-modal-iframe').src = url;
   document.getElementById('sv-modal').classList.add('show');
@@ -1537,11 +1185,17 @@ function closeSVModal() {
 function closeSVModal() {
   document.getElementById('sv-modal').classList.remove('show');
   document.getElementById('sv-modal-iframe').src = '';
->>>>>>> 81095f36d4324621bf6959bd314a4753f4781b0b
 }
+
+document.getElementById('sv-modal').addEventListener('click', (e) => {
+  if (e.target.id === 'sv-modal') closeSVModal();
+});
+
+// SEARCH BTN INIT
 const surfLogementInput = document.getElementById('surface-logement-input');
 const searchBtn = document.getElementById('search-btn');
 const searchHint = document.getElementById('search-hint');
+
 function updateSearchBtn() {
   const surfLog = parseFloat(surfLogementInput.value);
   const surfCad = parseFloat(surfInput.value);
@@ -1576,64 +1230,6 @@ document.querySelectorAll('.ges-btn').forEach(btn => {
   });
 });
 
-function buildSearchURL() {
-  const surf = parseFloat(surfInput.value);
-  const tol = parseInt(tolRange.value);
-  const commune = selectedCommune;
-  
-  if (!commune) return null;
-  
-  const sMin = surf * (1 - tol / 100);
-  const sMax = surf * (1 + tol / 100);
-  const surfMoy = (sMin + sMax) / 2;
-  const tolVal = tol;
-  
-  let url = `https://parcelleid.duckdns.org/parcelles?insee=${commune.code}&surf=${Math.round(surfMoy)}&tol=${tolVal}`;
-  
-  const classeEnergie = document.getElementById('dpe-energie-selected').value;
-  const valeurEnergie = document.getElementById('dpe-energie-input').value;
-  const classeGes = document.getElementById('dpe-ges-selected').value;
-  const valeurGes = document.getElementById('dpe-ges-input').value;
-  const dateMin = document.getElementById('dpe-date-input').value;
-  
-  const surfLogement = document.getElementById('surface-logement-input').value;
-  if (surfLogement) url += `&surface_habitable=${surfLogement}`;
-  if (classeEnergie) url += `&classe_energie=${classeEnergie}`;
-  if (valeurEnergie) url += `&valeur_energie=${valeurEnergie}`;
-  if (classeGes) url += `&classe_ges=${classeGes}`;
-  if (valeurGes) url += `&valeur_ges=${valeurGes}`;
-  if (dateMin) url += `&date_dpe_min=${dateMin}`;
-  
-  return url;
-}
-
-async function fetchParcelles(codeInsee, surfMin, surfMax) {
-  const commune = selectedCommune;
-  if (!commune) throw new Error('Commune non sélectionnée');
-  
-  const surf = (surfMin + surfMax) / 2;
-  const tol = surf > 0 ? Math.round((surfMax - surfMin) / surf * 100) : 0;
-  
-  let url = `https://parcelleid.duckdns.org/parcelles?insee=${codeInsee}&surf=${Math.round(surf)}&tol=${tol}`;
-  
-  const classeEnergie = document.getElementById('dpe-energie-selected').value;
-  const valeurEnergie = document.getElementById('dpe-energie-input').value;
-  const classeGes = document.getElementById('dpe-ges-selected').value;
-  const valeurGes = document.getElementById('dpe-ges-input').value;
-  const dateMin = document.getElementById('dpe-date-input').value;
-  
-  if (classeEnergie) url += `&classe_energie=${classeEnergie}`;
-  if (valeurEnergie) url += `&valeur_energie=${valeurEnergie}`;
-  if (classeGes) url += `&classe_ges=${classeGes}`;
-  if (valeurGes) url += `&valeur_ges=${valeurGes}`;
-  if (dateMin) url += `&date_dpe_min=${dateMin}`;
-  
-  const r = await fetch(url).catch(() => { throw new Error("Impossible de joindre l'API."); });
-  if (!r.ok) throw new Error(`Erreur API : ${r.status}`);
-  const fc = await r.json();
-  return (fc.features || []).filter(f => { const s = parseFloat(f.properties?.surface ?? f.properties?.contenance ?? 0); return s >= surfMin && s <= surfMax; });
-}
-// Enlever l'overlay au chargement (la carte s'affiche directement)
 window.addEventListener('load', () => {
   setTimeout(() => {
     document.getElementById('overlay').classList.add('gone');

@@ -933,10 +933,11 @@ function drawParcels(features, targetSurf) {
   if (features.length) { try { map.fitBounds(parcelsLayer.getBounds(), { padding: [40, 40] }); } catch {} }
 }
 
-async function fetchParcelles(codeInsee, surfMin, surfMax) {
+async function fetchParcelles(codeInsee, surfMin, surfMax, surfLogement = 0) {
   const surf = (surfMin + surfMax) / 2;
   const tol = surf > 0 ? Math.round((surfMax - surfMin) / surf * 100) : 0;
   let url = `https://parcelleid.duckdns.org/parcelles?insee=${codeInsee}&surf=${Math.round(surf)}&tol=${tol}`;
+  if (surfLogement > 0) url += `&surf_log=${Math.round(surfLogement)}&tol_log=4`;
   const classeEnergie = document.getElementById('dpe-energie-selected').value;
   const valeurEnergie = document.getElementById('dpe-energie-input').value;
   const classeGes = document.getElementById('dpe-ges-selected').value;
@@ -950,7 +951,13 @@ async function fetchParcelles(codeInsee, surfMin, surfMax) {
   const r = await fetch(url).catch(() => { throw new Error("Impossible de joindre l'API."); });
   if (!r.ok) throw new Error(`Erreur API : ${r.status}`);
   const fc = await r.json();
-  return (fc.features || []).filter(f => { const s = parseFloat(f.properties?.surface ?? f.properties?.contenance ?? 0); return s >= surfMin && s <= surfMax; });
+  return (fc.features || []).filter(f => { 
+    const s = parseFloat(f.properties?.surface ?? f.properties?.contenance ?? 0);
+    const sh = parseFloat(f.properties?.surface_habitable ?? 0);
+    const matchSurfCadastral = s >= surfMin && s <= surfMax;
+    const matchLogement = !surfLogement || !sh || Math.abs(sh - surfLogement) / surfLogement <= 0.04;
+    return matchSurfCadastral && matchLogement;
+  });
 }
 
 async function doSearch() {
@@ -961,15 +968,22 @@ async function doSearch() {
   if (!commune) { setStatus('⚠️ Sélectionnez une commune dans la liste.', 'err'); return; }
   if ((!surfLogement || surfLogement <= 0) && (!surfCadastrale || surfCadastrale <= 0)) { setStatus('⚠️ Saisissez la surface du logement OU la surface cadastrale.', 'err'); return; }
   let sMin, sMax, surf;
-  if (surfLogement > 0) {
-    surf = surfLogement;
-    sMin = surf * (1 - tol / 100);
-    sMax = surf * (1 + tol / 100);
-  } else {
-    surf = surfCadastrale;
-    sMin = surf * (1 - tol / 100);
-    sMax = surf * (1 + tol / 100);
-  }
+if (surfLogement > 0 && (!surfCadastrale || surfCadastrale <= 0)) {
+  // Cherche par surface_logement seulement : cherche TOUTES les parcelles
+  surf = surfLogement;
+  sMin = 0;
+  sMax = 999999;
+} else if (surfLogement > 0) {
+  // Cherche par LES DEUX
+  surf = surfLogement;
+  sMin = surf * 0.5;
+  sMax = surf * 2;
+} else {
+  // Cherche par surface cadastrale seulement
+  surf = surfCadastrale;
+  sMin = surf * (1 - tol / 100);
+  sMax = surf * (1 + tol / 100);
+}
   const btn = document.getElementById('search-btn'); btn.disabled = true;
   setProgress(5); setStatus('<span class="spinner"></span>Chargement du contour de la commune…');
   try {
@@ -978,8 +992,13 @@ async function doSearch() {
     communeLayer = L.geoJSON(communeGeo, { style: { color: '#2563eb', weight: 1.5, fillOpacity: 0.03, dashArray: '5,4', opacity: 0.4 } }).addTo(map);
     map.fitBounds(communeLayer.getBounds(), { padding: [20, 20] });
     setProgress(10); setStatus('<span class="spinner"></span>Interrogation de l\'API cadastre…');
-    const features = await fetchParcelles(commune.code, sMin, sMax);
+    const features = await fetchParcelles(commune.code, sMin, sMax, surfLogement);
     features.sort((a, b) => {
+      if (surfLogement > 0) {
+        const shA = parseFloat(a.properties?.surface_habitable ?? 0);
+        const shB = parseFloat(b.properties?.surface_habitable ?? 0);
+        return Math.abs(shA - surfLogement) - Math.abs(shB - surfLogement);
+      }
       const sA = parseFloat(a.properties?.surface ?? a.properties?.contenance ?? 0);
       const sB = parseFloat(b.properties?.surface ?? b.properties?.contenance ?? 0);
       return Math.abs(sA - surf) - Math.abs(sB - surf);

@@ -26,16 +26,16 @@
     }
 
     .dpe-class-btn {
-      padding: 10px 6px;
+      padding: 6px 4px;
       border: 2px solid transparent;
-      border-radius: 8px;
+      border-radius: 7px;
       font-weight: 600;
-      font-size: 14px;
+      font-size: 13px;
       color: white;
       cursor: pointer;
       transition: all 0.2s ease;
       font-family: 'Plus Jakarta Sans', sans-serif;
-      min-height: 44px;
+      min-height: 32px;
     }
 
     .energie-btn[data-class="A"] { background: #0f7c3a; }
@@ -70,15 +70,15 @@
 
     .dpe-input {
       width: 100%;
-      padding: 9px 11px;
+      padding: 7px 10px;
       border: 1.5px solid var(--border);
       border-radius: 8px;
-      font-size: 14px;
+      font-size: 13px;
       color: var(--ink);
       font-family: 'Plus Jakarta Sans', sans-serif;
       outline: none;
       transition: border-color 0.2s, box-shadow 0.2s;
-      min-height: 44px;
+      min-height: 34px;
     }
 
     .dpe-input:focus {
@@ -137,10 +137,11 @@
     .hero p { font-size: 0.77rem; color: var(--mid); line-height: 1.6; }
 
     /* ── FORM ── */
-    .form-section { background: var(--bg); border: 1px solid var(--soft); border-radius: 12px; padding: 13px; margin-bottom: 10px; }
-    .form-label { font-size: 0.75rem; font-weight: 500; color: var(--mid); margin-bottom: 8px; }
-    .field { margin-bottom: 10px; }
+    .form-section { background: var(--bg); border: 1px solid var(--soft); border-radius: 10px; padding: 9px 11px; margin-bottom: 7px; }
+    .form-label { font-size: 0.72rem; font-weight: 500; color: var(--mid); margin-bottom: 5px; }
+    .field { margin-bottom: 7px; }
     .field:last-child { margin-bottom: 0; }
+    .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     input[type=text], input[type=number] { width: 100%; background: var(--white); border: 1.5px solid var(--border); border-radius: 8px; padding: 9px 11px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.86rem; color: var(--ink); outline: none; transition: border-color 0.2s, box-shadow 0.2s; min-height: 44px; }
     input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.08); }
     input::placeholder { color: #d1d5db; }
@@ -151,14 +152,14 @@
     #commune-suggestions li:hover { background: var(--bg); }
     #commune-suggestions li small { color: var(--muted); font-size: 0.73rem; }
     .surface-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; }
-    .tol-pill { background: var(--blue-lt); border: 1.5px solid var(--blue-bd); border-radius: 8px; padding: 9px 11px; font-size: 0.78rem; color: var(--blue); font-weight: 700; text-align: center; white-space: nowrap; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+    .tol-pill { background: var(--blue-lt); border: 1.5px solid var(--blue-bd); border-radius: 8px; padding: 6px 10px; font-size: 0.75rem; color: var(--blue); font-weight: 700; text-align: center; white-space: nowrap; min-height: 34px; display: flex; align-items: center; justify-content: center; }
     input[type=range] { width: 100%; accent-color: var(--blue); background: transparent; border: none; padding: 0; margin-top: 8px; height: 7px; cursor: pointer; border-radius: 3px; }
-    .btn-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-bottom: 10px; }
-    .btn-search { background: var(--blue); color: var(--white); border: none; border-radius: var(--radius); padding: 12px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: background 0.2s, transform 0.1s; letter-spacing: -0.01em; min-height: 44px; }
+    .btn-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-bottom: 8px; }
+    .btn-search { background: var(--blue); color: var(--white); border: none; border-radius: var(--radius); padding: 9px 12px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: background 0.2s, transform 0.1s; letter-spacing: -0.01em; min-height: 38px; }
     .btn-search:hover { background: #1d4ed8; }
     .btn-search:active { transform: scale(0.98); }
     .btn-search:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; transform: none; }
-    .btn-reset { background: var(--white); color: var(--mid); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 12px 14px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: background 0.15s; white-space: nowrap; min-height: 44px; }
+    .btn-reset { background: var(--white); color: var(--mid); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 9px 12px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: background 0.15s; white-space: nowrap; min-height: 38px; }
     .btn-reset:hover { background: var(--bg); color: var(--ink); }
     .btn-reset:active { transform: scale(0.98); }
     #status { font-size: 0.8rem; color: var(--mid); padding: 9px 12px; background: var(--white); border: 1px solid var(--border); border-radius: 8px; text-align: center; display: none; margin-bottom: 10px; line-height: 1.5; }
@@ -179,6 +180,26 @@
 
     /* ── SEARCH SUMMARY (mobile, après recherche) ── */
     .search-summary { display: none; }
+    .search-summary.show {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      background: var(--blue-lt);
+      border: 1.5px solid var(--blue-bd);
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      text-align: left;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .search-summary.show:active { transform: scale(0.99); }
+    #search-form-block.collapsed { display: none; }
     .search-summary-content { flex: 1; min-width: 0; }
     .search-summary-location { font-size: 0.85rem; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.01em; }
     .search-summary-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
@@ -295,32 +316,16 @@
       .panel-handle-count.show { display: inline-block; }
       .panel-scroll { overflow-y: scroll; -webkit-overflow-scrolling: touch; flex: 1; min-height: 0; padding: 16px 16px 120px; overscroll-behavior: contain; }
       .hero { display: none; }
-      #search-form-block.collapsed { display: none; }
-      .search-summary.show {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        width: 100%;
-        background: var(--blue-lt);
-        border: 1.5px solid var(--blue-bd);
-        border-radius: 12px;
-        padding: 10px 12px;
-        margin-bottom: 12px;
-        cursor: pointer;
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        text-align: left;
-        position: sticky;
-        top: 0;
-        z-index: 5;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      }
-      .search-summary.show:active { transform: scale(0.99); }
       .form-section { padding: 13px; margin-bottom: 9px; }
-      .form-label { margin-bottom: 9px; }
+      .form-label { margin-bottom: 9px; font-size: 0.75rem; }
       .field { margin-bottom: 12px; }
       .btn-row { gap: 10px; }
-      input[type=text], input[type=number], input[type=date] { font-size: 16px !important; padding: 12px 13px; }
-      .dpe-input { font-size: 16px !important; padding: 12px 13px; }
+      input[type=text], input[type=number], input[type=date] { font-size: 16px !important; padding: 12px 13px; min-height: 44px; }
+      .dpe-input { font-size: 16px !important; padding: 12px 13px; min-height: 44px; }
+      .dpe-class-btn { min-height: 44px; padding: 10px 6px; font-size: 14px; }
+      .tol-pill { min-height: 44px; padding: 9px 11px; font-size: 0.78rem; }
+      .btn-search, .btn-reset { min-height: 44px; padding: 12px; font-size: 0.88rem; }
+      .form-row-2 { grid-template-columns: 1fr; gap: 7px; }
       @media (max-width: 480px) {
         .dpe-class-buttons { gap: 4px; }
         .dpe-class-btn { padding: 8px 4px; font-size: 12px; }
@@ -436,9 +441,15 @@
       </div>
 
       <div class="form-section">
-        <div class="form-label">Surface du logement (m²)</div>
-        <div class="field">
-          <input type="number" id="surface-logement-input" placeholder="Ex : 85" min="1" class="dpe-input"/>
+        <div class="form-row-2">
+          <div>
+            <div class="form-label">Surface logement (m²)</div>
+            <input type="number" id="surface-logement-input" placeholder="Ex : 85" min="1" class="dpe-input"/>
+          </div>
+          <div>
+            <div class="form-label">Date diagnostic</div>
+            <input type="date" id="dpe-date-input" class="dpe-input">
+          </div>
         </div>
       </div>
 
@@ -484,13 +495,6 @@
             <button type="button" class="dpe-class-btn ges-btn" data-class="F">F</button>
             <button type="button" class="dpe-class-btn ges-btn" data-class="G">G</button>
           </div>
-        </div>
-      </div>
-
-      <div class="form-section">
-        <div class="form-label">Date diagnostic</div>
-        <div class="field">
-          <input type="date" id="dpe-date-input" class="dpe-input">
         </div>
       </div>
 
@@ -675,11 +679,12 @@ new LayerControl().addTo(map);
 let parcelsLayer = null, communeLayer = null;
 let allFeatures = [], renderedCount = 0;
 let activeFeature = null;
+let currentTargetSurf = 0, currentIsLogement = false;
 const BATCH = 10;
 
-const STYLE_DEFAULT  = { color: '#2563eb', weight: 2, opacity: 0.9, fillColor: '#2563eb', fillOpacity: 0.18 };
-const STYLE_HOVER    = { color: '#f97316', weight: 3, opacity: 1, fillColor: '#f97316', fillOpacity: 0.25 };
-const STYLE_SELECTED = { color: '#f97316', weight: 3, opacity: 1, fillColor: '#f97316', fillOpacity: 0.25 };
+const STYLE_DEFAULT  = { color: '#2563eb', weight: 2, opacity: 0.9, fillOpacity: 0 };
+const STYLE_HOVER    = { color: '#f97316', weight: 3, opacity: 1, fillOpacity: 0 };
+const STYLE_SELECTED = { color: '#f97316', weight: 3, opacity: 1, fillOpacity: 0 };
 
 function setProgress(pct) {
   const wrap = document.getElementById('progress-wrap'), bar = document.getElementById('progress-bar');
@@ -772,6 +777,16 @@ function computeParcelView(feature) {
   return { lat: mLat, lng: mLng, heading: Math.round(heading) };
 }
 
+function computeFitZoom(coords, canvasSize, fillRatio) {
+  let mnLat = Infinity, mxLat = -Infinity, mnLng = Infinity, mxLng = -Infinity;
+  coords.forEach(c => { mnLng = Math.min(mnLng, c[0]); mxLng = Math.max(mxLng, c[0]); mnLat = Math.min(mnLat, c[1]); mxLat = Math.max(mxLat, c[1]); });
+  const yNorm = lat => (1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2;
+  const maxDim = Math.max((mxLng - mnLng) / 360, Math.abs(yNorm(mxLat) - yNorm(mnLat)));
+  if (maxDim <= 0) return 19;
+  const zFrac = Math.log2(fillRatio * canvasSize / (256 * maxDim));
+  return Math.max(15, Math.min(19, Math.floor(zFrac)));
+}
+
 function drawThumb(canvas, feature, zoom) {
   zoom = zoom || 18;
   const ctx = canvas.getContext('2d');
@@ -829,6 +844,7 @@ function selectFeature(feature, card) {
 
 function renderCards(features, targetSurf, isLogement = false) {
   allFeatures = features; renderedCount = 0;
+  currentTargetSurf = targetSurf; currentIsLogement = isLogement;
   const list = document.getElementById('results-list'), countEl = document.getElementById('r-count');
   list.innerHTML = '';
   if (!features.length) {
@@ -914,7 +930,8 @@ function loadMoreCards(targetSurf, isLogement = false) {
         coords.forEach(c => { mnLng = Math.min(mnLng, c[0]); mxLng = Math.max(mxLng, c[0]); mnLat = Math.min(mnLat, c[1]); mxLat = Math.max(mxLat, c[1]); });
         lat = (mnLat + mxLat) / 2; lng = (mnLng + mxLng) / 2;
       } catch {}
-      drawThumb(canvas, f, 19);
+      const thumbCoords = (f.geometry.type === 'MultiPolygon' ? f.geometry.coordinates[0][0] : f.geometry.coordinates[0]);
+      drawThumb(canvas, f, computeFitZoom(thumbCoords, 256, 0.8));
       const view = computeParcelView(f);
       const svLat = view.lat || lat;
       const svLng = view.lng || lng;
@@ -963,16 +980,30 @@ function openGoogleEarth(lat, lng) {
   return `https://earth.google.com/web/@${lat},${lng},50a,150d,75y,0h,1t,0r`;
 }
 
+function bringFeatureToTop(f) {
+  const oldIdx = allFeatures.indexOf(f);
+  if (oldIdx < 0) return;
+  if (oldIdx > 0) {
+    allFeatures.splice(oldIdx, 1);
+    allFeatures.unshift(f);
+  }
+  const list = document.getElementById('results-list');
+  list.innerHTML = '';
+  renderedCount = 0;
+  loadMoreCards(currentTargetSurf, currentIsLogement);
+}
+
 function bindParcelClick(layer) {
   layer.on('click', function() {
     if (measureMode) return;
-    const idx = allFeatures.indexOf(layer.feature);
-    const card = idx >= 0 ? document.querySelector(`.card[data-feature-idx="${idx}"]`) : null;
-    selectFeature(layer.feature, card);
-    let lat = 0, lng = 0;
-    try { lat = layer.getBounds().getCenter().lat; lng = layer.getBounds().getCenter().lng; } catch {}
-    openSVModal(lat, lng, layer.feature);
+    const f = layer.feature;
+    bringFeatureToTop(f);
+    const card = document.querySelector('.card[data-feature-idx="0"]');
+    selectFeature(f, card);
     layer.getPopup().setLatLng(L.latLng(layer.getBounds().getNorth(), layer.getBounds().getCenter().lng)).openOn(map);
+    const ps = document.querySelector('.panel-scroll');
+    if (ps) ps.scrollTop = 0;
+    if (isMobile()) setPanelState('mid');
   });
 }
 
@@ -1078,10 +1109,8 @@ async function doSearch() {
     drawParcels(features, surf, isLogement);
     renderCards(features, surf, isLogement);
     if (features.length > 0) clearStatus(); else setStatus("Aucune parcelle trouvée. Essayez d'augmenter la tolérance.", 'err');
-    if (isMobile()) {
-      setPanelState('mid');
-      if (features.length > 0) collapseSearch();
-    }
+    if (features.length > 0) collapseSearch();
+    if (isMobile()) setPanelState('mid');
   } catch (err) { setStatus(`❌ ${err.message}`, 'err'); setProgress(100); }
   btn.disabled = false;
 }
@@ -1197,7 +1226,12 @@ function redrawMeasure(live) {
   const pts = live ? [...measurePoints, live] : [...measurePoints];
   const color = measureMode === 'distance' ? '#2563eb' : '#16a34a';
   if (pts.length >= 2) measureLines.push(L.polyline(pts, { color, weight: 2.5, opacity: 0.9 }).addTo(map));
-  if (measureMode === 'area' && pts.length >= 3) measureLines.push(L.polygon(pts, { color, weight: 2, fillColor: color, fillOpacity: 0.12 }).addTo(map));
+  if (measureMode === 'area' && pts.length >= 3) {
+    measureLines.push(L.polygon(pts, { color, weight: 2, fillColor: color, fillOpacity: 0.12 }).addTo(map));
+    const cLat = pts.reduce((s, p) => s + p.lat, 0) / pts.length;
+    const cLng = pts.reduce((s, p) => s + p.lng, 0) / pts.length;
+    measureLines.push(L.tooltip({ permanent: true, direction: 'center', className: 'measure-tooltip' }).setLatLng([cLat, cLng]).setContent(fmtArea(polyAreaM2(pts))).addTo(map));
+  }
   measurePoints.forEach((pt, i) => measureLines.push(L.circleMarker(pt, { radius: i === 0 ? 7 : 5, color, weight: 2, fillColor: i === 0 ? color : 'white', fillOpacity: 1 }).addTo(map)));
   if (live && measurePoints.length) {
     const last = measurePoints[measurePoints.length - 1];

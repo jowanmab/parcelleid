@@ -220,22 +220,21 @@
     .card-thumb-sv-placeholder span { font-size: 1.6rem; }
     .card-thumb-sv-placeholder small { font-size: 0.6rem; color: #93c5fd; font-weight: 600; letter-spacing: 0.05em; }
     .card-thumb-right { position: relative; width: 50%; height: 100%; display: flex; flex-direction: column; overflow: hidden; }
-    .card-thumb-info { position: relative; width: 100%; height: 50%; background: var(--white); padding: 8px; overflow: hidden; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; justify-content: center; }
-    .card-thumb-info-row { font-size: 0.7rem; margin-bottom: 4px; }
-    .card-thumb-info-label { color: var(--muted); font-weight: 500; }
-    .card-thumb-info-value { color: var(--ink); font-weight: 700; margin-top: 1px; }
+    .card-thumb-info { position: relative; width: 100%; height: 50%; background: var(--blue-lt); padding: 8px 9px; overflow: hidden; border-bottom: 1px solid var(--blue-bd); display: flex; flex-direction: column; gap: 4px; justify-content: center; }
+    .info-line { display: flex; align-items: center; gap: 6px; font-size: 0.72rem; line-height: 1; }
+    .info-icon { font-size: 0.85rem; flex-shrink: 0; }
+    .info-val { font-weight: 700; color: var(--ink); }
+    .info-val-mismatch { color: #dc2626; text-decoration: underline dotted; }
+    .info-diff { font-weight: 600; font-size: 0.65rem; margin-left: auto; padding-left: 4px; }
+    .info-badges { gap: 5px; flex-wrap: wrap; }
+    .info-badge { display: inline-flex; align-items: center; gap: 1px; font-size: 0.7rem; font-weight: 800; padding: 3px 7px; border-radius: 5px; letter-spacing: 0.02em; }
+    .info-badge-empty { background: var(--border); color: var(--muted); }
+    .info-badge-mismatch { box-shadow: 0 0 0 2px #ef4444; }
+    .info-warn { font-size: 0.85rem; margin-left: 2px; }
     .card-thumb-ign { position: relative; width: 100%; height: 50%; overflow: hidden; flex-shrink: 0; }
     .card-thumb-ign canvas { position: absolute; top: 0; left: 0; width: 100% !important; height: 100% !important; display: block; }
     .card-thumb canvas { position: absolute; top: 0; left: 0; width: 100% !important; height: 100% !important; display: block; }
     .card-addr { position: absolute; top: 0; left: 0; right: 0; padding: 4px 6px; background: rgba(0,0,0,0.55); color: white; font-size: 0.58rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; z-index: 1; }
-    .card-body { padding: 8px 9px; }
-    .card-body-row { display: flex; align-items: baseline; justify-content: space-between; gap: 4px; }
-    .card-surf { font-size: 0.92rem; font-weight: 800; color: var(--ink); letter-spacing: -0.02em; }
-    .card-ref { font-size: 0.62rem; color: var(--muted); margin-top: 2px; }
-    .card-tag { display: inline-block; font-size: 0.6rem; font-weight: 700; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; }
-    .card-tag.green { background: #dcfce7; color: #15803d; }
-    .card-tag.yellow { background: #fef9c3; color: #a16207; }
-    .card-tag.red { background: #fee2e2; color: #dc2626; }
     .load-more { width: 100%; grid-column: 1/-1; background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 10px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.82rem; font-weight: 600; color: var(--mid); cursor: pointer; transition: background 0.15s; margin-top: 2px; }
     .load-more:hover { background: var(--bg); color: var(--ink); }
 
@@ -332,7 +331,7 @@
         .card-thumb { flex-direction: column; height: auto; }
         .card-thumb-sv { width: 100%; height: 256px; }
         .card-thumb-right { width: 100%; height: auto; flex-direction: row; }
-        .card-thumb-info { width: 50%; height: 256px; border-bottom: none; border-right: 1px solid var(--border); }
+        .card-thumb-info { width: 50%; height: 256px; border-bottom: none; border-right: 1px solid var(--blue-bd); }
         .card-thumb-ign { width: 50%; height: 256px; }
         .panel-scroll { padding-top: 8px; }
       }
@@ -506,7 +505,7 @@
         <button class="btn-reset" onclick="doReset()">↺ Reset</button>
       </div>
 
-      <div id="search-hint" style="font-size:0.75rem;color:#dc2626;text-align:center;margin-bottom:10px;display:none;">⚠️ Remplissez la surface du logement ou cadastrale</div>
+      <div id="search-hint" style="font-size:0.75rem;color:#dc2626;text-align:center;margin-bottom:10px;display:none;">⚠️ Renseignez au moins un critère (surface, classe DPE/GES ou date diagnostic)</div>
       </div>
 
       <div class="progress-wrap" id="progress-wrap"><div class="progress-bar" id="progress-bar"></div></div>
@@ -680,6 +679,7 @@ let parcelsLayer = null, communeLayer = null;
 let allFeatures = [], renderedCount = 0;
 let activeFeature = null;
 let currentTargetSurf = 0, currentIsLogement = false;
+let currentFilters = { surfLog: 0, surfCad: 0, dpeE: '', dpeG: '', dpeDate: '' };
 const BATCH = 10;
 
 const STYLE_DEFAULT  = { color: '#2563eb', weight: 2, opacity: 0.9, fillOpacity: 0 };
@@ -867,13 +867,6 @@ function loadMoreCards(targetSurf, isLogement = false) {
   if (oldBtn) oldBtn.remove();
   const batch = allFeatures.slice(renderedCount, renderedCount + BATCH);
   batch.forEach((f, idx) => {
-    const surf = parseFloat(f.properties?.surface ?? f.properties?.contenance ?? 0);
-    const sh = parseFloat(f.properties?.surface_habitable ?? 0);
-    const compareTo = isLogement ? sh : surf;
-    const hasEcart = targetSurf > 0 && compareTo > 0;
-    const ecart = hasEcart ? Math.abs(compareTo - targetSurf) / targetSurf * 100 : 0;
-    const tagClass = !hasEcart ? 'red' : ecart <= 2 ? 'green' : ecart <= 10 ? 'yellow' : 'red';
-    const tagText = hasEcart ? `±${ecart.toFixed(1)}%` : '—';
     const card = document.createElement('div');
     card.className = 'card';
     card.dataset.featureIdx = renderedCount + idx;
@@ -886,15 +879,29 @@ function loadMoreCards(targetSurf, isLogement = false) {
     const thumbRight = document.createElement('div'); thumbRight.className = 'card-thumb-right';
 
     const thumbInfo = document.createElement('div'); thumbInfo.className = 'card-thumb-info';
-    const surfLog = f.properties?.surface_habitable || '—';
-    const dpeClass = f.properties?.classe_energie || '—';
-    const gesClass = f.properties?.classe_ges || '—';
-    const surfParcelle = Math.round(surf) + ' m²';
+    const surfHab = parseFloat(f.properties?.surface_habitable ?? 0);
+    const dpeClass = f.properties?.classe_energie || '';
+    const gesClass = f.properties?.classe_ges || '';
+    const dateDpe = f.properties?.date_dpe || '';
+    const surfParc = parseFloat(f.properties?.surface ?? f.properties?.contenance ?? 0);
+    const dpeColorsLocal = {A:'#0f7c3a',B:'#5cb85c',C:'#f0d000',D:'#ff9900',E:'#e74c3c',F:'#d92a2a',G:'#c1121f'};
+    const diffPct = (val, target) => target > 0 && val > 0 ? Math.abs(val - target) / target * 100 : null;
+    const diffColor = d => d === null ? 'var(--muted)' : d <= 5 ? '#15803d' : d <= 15 ? '#a16207' : '#dc2626';
+    const dHab = diffPct(surfHab, currentFilters.surfLog);
+    const dParc = diffPct(surfParc, currentFilters.surfCad);
+    const dpeMismatch = currentFilters.dpeE && dpeClass && dpeClass !== currentFilters.dpeE;
+    const gesMismatch = currentFilters.dpeG && gesClass && gesClass !== currentFilters.dpeG;
+    const dateMismatch = currentFilters.dpeDate && dateDpe && dateDpe < currentFilters.dpeDate;
+    const fmtDate = d => { if (!d) return '—'; const p = d.split('-'); return p.length === 3 ? `${p[2]}/${p[1]}/${p[0].slice(2)}` : d; };
+    const badge = (cls, mismatch, icon) => cls
+      ? `<span class="info-badge${mismatch ? ' info-badge-mismatch' : ''}" style="background:${dpeColorsLocal[cls] || '#999'};color:${cls === 'C' ? '#333' : '#fff'}">${icon}${cls}</span>`
+      : `<span class="info-badge info-badge-empty">${icon}—</span>`;
+    const diffHtml = (d) => d === null ? '' : `<span class="info-diff" style="color:${diffColor(d)}">±${d.toFixed(1)}%</span>`;
     thumbInfo.innerHTML = `
-      <div class="card-thumb-info-row"><span class="card-thumb-info-label">Hab.</span><span class="card-thumb-info-value">${surfLog} m²</span></div>
-      <div class="card-thumb-info-row"><span class="card-thumb-info-label">DPE</span><span class="card-thumb-info-value">${dpeClass}</span></div>
-      <div class="card-thumb-info-row"><span class="card-thumb-info-label">GES</span><span class="card-thumb-info-value">${gesClass}</span></div>
-      <div class="card-thumb-info-row"><span class="card-thumb-info-label">Parc.</span><span class="card-thumb-info-value">${surfParcelle}</span></div>
+      <div class="info-line"><span class="info-icon">🏠</span><span class="info-val">${surfHab > 0 ? Math.round(surfHab) + ' m²' : '—'}</span>${diffHtml(dHab)}</div>
+      <div class="info-line"><span class="info-icon">📐</span><span class="info-val">${surfParc > 0 ? Math.round(surfParc) + ' m²' : '—'}</span>${diffHtml(dParc)}</div>
+      <div class="info-line info-badges">${badge(dpeClass, dpeMismatch, '⚡')}${badge(gesClass, gesMismatch, '🌿')}${(dpeMismatch || gesMismatch) ? '<span class="info-warn" title="Classe différente du filtre">⚠️</span>' : ''}</div>
+      <div class="info-line"><span class="info-icon">📅</span><span class="info-val${dateMismatch ? ' info-val-mismatch' : ''}">${fmtDate(dateDpe)}</span></div>
     `;
 
     const thumbIGN = document.createElement('div'); thumbIGN.className = 'card-thumb-ign';
@@ -905,18 +912,7 @@ function loadMoreCards(targetSurf, isLogement = false) {
     thumbRight.appendChild(thumbIGN);
     thumb.appendChild(thumbSV);
     thumb.appendChild(thumbRight);
-    const body = document.createElement('div'); body.className = 'card-body';
-    const section = f.properties?.section || '';
-    const numero  = f.properties?.numero  || f.properties?.numero_plan || '';
-    const commune = f.properties?.commune || '';
-    const ref = [section, numero].filter(Boolean).join(' ') + (commune ? ' · ' + commune : '');
-    const ce = f.properties?.classe_energie;
-    const cg = f.properties?.classe_ges;
-    const dpeColors = {A:'#0f7c3a',B:'#5cb85c',C:'#f0d000',D:'#ff9900',E:'#e74c3c',F:'#d92a2a',G:'#c1121f'};
-    const dpeBadge = ce ? `<span style="background:${dpeColors[ce]||'#999'};color:${ce==='C'?'#333':'white'};font-size:0.6rem;font-weight:700;padding:2px 6px;border-radius:4px;">⚡${ce}</span>` : '';
-    const gesBadge = cg ? `<span style="background:${dpeColors[cg]||'#999'};color:${cg==='C'?'#333':'white'};font-size:0.6rem;font-weight:700;padding:2px 6px;border-radius:4px;">🌿${cg}</span>` : '';
-    body.innerHTML = `<div class="card-body-row"><div class="card-surf">${Math.round(surf)} m²</div><div style="display:flex;gap:4px;align-items:center;">${dpeBadge}${gesBadge}<span class="card-tag ${tagClass}">${tagText}</span></div></div>${ref ? '<div class="card-ref">' + ref + '</div>' : ''}`;
-    card.appendChild(thumb); card.appendChild(body);
+    card.appendChild(thumb);
     card.addEventListener('mouseenter', () => { if (!parcelsLayer) return; parcelsLayer.eachLayer(l => { if (l.feature === f && l.feature !== activeFeature) l.setStyle(STYLE_HOVER); }); });
     card.addEventListener('mouseleave', () => { if (!parcelsLayer) return; parcelsLayer.eachLayer(l => { if (l.feature === f && l.feature !== activeFeature) l.setStyle(STYLE_DEFAULT); }); });
     const observer = new IntersectionObserver(entries => {
@@ -1052,20 +1048,35 @@ function drawParcels(features, targetSurf, isLogement = false) {
   if (features.length) { try { map.fitBounds(parcelsLayer.getBounds(), { padding: [40, 40] }); } catch {} }
 }
 
+const INSEE_ARRONDISSEMENTS = {
+  '75056': Array.from({length: 20}, (_, i) => String(75101 + i)),
+  '13055': Array.from({length: 16}, (_, i) => String(13201 + i)),
+  '69123': Array.from({length: 9},  (_, i) => String(69381 + i))
+};
+
 async function fetchParcelles({ insee, surfCad = 0, tolCad = 0, surfLog = 0, tolLog = 4 }) {
-  let url = `https://parcelleid.duckdns.org/parcelles?insee=${insee}`;
-  if (surfCad > 0) url += `&surf=${surfCad}&tol=${tolCad}`;
-  if (surfLog > 0) url += `&surf_log=${surfLog}&tol_log=${tolLog}`;
+  const codes = INSEE_ARRONDISSEMENTS[insee] || [insee];
   const classeEnergie = document.getElementById('dpe-energie-selected').value;
   const classeGes = document.getElementById('dpe-ges-selected').value;
   const dateMin = document.getElementById('dpe-date-input').value;
-  if (classeEnergie) url += `&classe_energie=${classeEnergie}`;
-  if (classeGes) url += `&classe_ges=${classeGes}`;
-  if (dateMin) url += `&date_dpe_min=${dateMin}`;
-  const r = await fetch(url).catch(() => { throw new Error("Impossible de joindre l'API."); });
-  if (!r.ok) throw new Error(`Erreur API : ${r.status}`);
-  const fc = await r.json();
-  return fc.features || [];
+  const buildUrl = (code) => {
+    let url = `https://parcelleid.duckdns.org/parcelles?insee=${code}`;
+    if (surfCad > 0) url += `&surf=${surfCad}&tol=${tolCad}`;
+    if (surfLog > 0) url += `&surf_log=${surfLog}&tol_log=${tolLog}`;
+    if (classeEnergie) url += `&classe_energie=${classeEnergie}`;
+    if (classeGes) url += `&classe_ges=${classeGes}`;
+    if (dateMin) url += `&date_dpe_min=${dateMin}`;
+    return url;
+  };
+  const responses = await Promise.all(codes.map(c => fetch(buildUrl(c)).catch(() => null)));
+  if (!responses.some(r => r && r.ok)) throw new Error("Impossible de joindre l'API.");
+  const all = [];
+  for (const r of responses) {
+    if (!r || !r.ok) continue;
+    const fc = await r.json().catch(() => null);
+    if (fc?.features) all.push(...fc.features);
+  }
+  return all;
 }
 
 async function doSearch() {
@@ -1074,7 +1085,17 @@ async function doSearch() {
   const tol = parseInt(tolRange.value);
   const commune = selectedCommune;
   if (!commune) { setStatus('⚠️ Sélectionnez une commune dans la liste.', 'err'); return; }
-  if ((!surfLogement || surfLogement <= 0) && (!surfCadastrale || surfCadastrale <= 0)) { setStatus('⚠️ Saisissez la surface du logement OU la surface cadastrale.', 'err'); return; }
+  const dpeE = document.getElementById('dpe-energie-selected').value;
+  const dpeG = document.getElementById('dpe-ges-selected').value;
+  const dpeDate = document.getElementById('dpe-date-input').value;
+  const hasSurf = (surfLogement > 0) || (surfCadastrale > 0);
+  const hasDpe = !!(dpeE || dpeG || dpeDate);
+  if (!hasSurf && !hasDpe) { setStatus('⚠️ Renseignez au moins un critère (surface, classe DPE/GES ou date diagnostic).', 'err'); return; }
+  currentFilters = {
+    surfLog: surfLogement > 0 ? surfLogement : 0,
+    surfCad: surfCadastrale > 0 ? surfCadastrale : 0,
+    dpeE, dpeG, dpeDate
+  };
   // Cible pour le tri et l'affichage de l'écart % sur les cartes.
   const surf = surfLogement > 0 ? surfLogement : surfCadastrale;
   const btn = document.getElementById('search-btn'); btn.disabled = true;
@@ -1118,6 +1139,11 @@ async function doSearch() {
 function doReset() {
   document.getElementById('commune-input').value = '';
   document.getElementById('surface-input').value = '';
+  document.getElementById('surface-logement-input').value = '';
+  document.getElementById('dpe-date-input').value = '';
+  document.getElementById('dpe-energie-selected').value = '';
+  document.getElementById('dpe-ges-selected').value = '';
+  document.querySelectorAll('.dpe-class-btn.active').forEach(b => b.classList.remove('active'));
   document.getElementById('tol-range').value = 3;
   selectedCommune = null; allFeatures = []; renderedCount = 0; activeFeature = null;
   updateTol();
@@ -1132,6 +1158,7 @@ function doReset() {
   map.setView([46.6, 2.3], 5);
   clearMeasure(); stopMeasure();
   expandSearch();
+  updateSearchBtn();
   if (isMobile()) setPanelState('mid');
 }
 
@@ -1406,13 +1433,17 @@ const searchHint = document.getElementById('search-hint');
 function updateSearchBtn() {
   const surfLog = parseFloat(surfLogementInput.value);
   const surfCad = parseFloat(surfInput.value);
-  const isDisabled = (!surfLog || surfLog <= 0) && (!surfCad || surfCad <= 0);
-  searchBtn.disabled = isDisabled;
-  searchHint.style.display = isDisabled ? 'block' : 'none';
+  const dpeE = document.getElementById('dpe-energie-selected').value;
+  const dpeG = document.getElementById('dpe-ges-selected').value;
+  const dpeDate = document.getElementById('dpe-date-input').value;
+  const hasFilter = (surfLog > 0) || (surfCad > 0) || dpeE || dpeG || dpeDate;
+  searchBtn.disabled = !hasFilter;
+  searchHint.style.display = hasFilter ? 'none' : 'block';
 }
 
 surfLogementInput.addEventListener('input', updateSearchBtn);
 surfInput.addEventListener('input', updateSearchBtn);
+document.getElementById('dpe-date-input').addEventListener('input', updateSearchBtn);
 updateSearchBtn();
 loadMe();
 checkVerifyToken();
@@ -1424,6 +1455,7 @@ document.querySelectorAll('.energie-btn').forEach(btn => {
     document.querySelectorAll('.energie-btn').forEach(b => b.classList.remove('active'));
     if (!already) { btn.classList.add('active'); document.getElementById('dpe-energie-selected').value = btn.dataset.class; }
     else { document.getElementById('dpe-energie-selected').value = ''; }
+    updateSearchBtn();
   });
 });
 
@@ -1434,6 +1466,7 @@ document.querySelectorAll('.ges-btn').forEach(btn => {
     document.querySelectorAll('.ges-btn').forEach(b => b.classList.remove('active'));
     if (!already) { btn.classList.add('active'); document.getElementById('dpe-ges-selected').value = btn.dataset.class; }
     else { document.getElementById('dpe-ges-selected').value = ''; }
+    updateSearchBtn();
   });
 });
 

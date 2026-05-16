@@ -83,7 +83,7 @@
 
     .dpe-input:focus {
       border-color: var(--blue);
-      box-shadow: 0 0 0 3px rgba(37,99,235,0.08);
+      box-shadow: 0 0 0 3px rgba(138,184,154,0.18);
     }
 
     .dpe-input::placeholder {
@@ -92,16 +92,16 @@
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --blue:    #2563eb;
-      --blue-lt: #eff6ff;
-      --blue-bd: #bfdbfe;
-      --orange:  #f97316;
-      --ink:     #111827;
-      --mid:     #6b7280;
-      --muted:   #9ca3af;
-      --border:  #e5e7eb;
-      --soft:    #f0f0ee;
-      --bg:      #f9fafb;
+      --blue:    #8AB89A;
+      --blue-lt: #EEF5F0;
+      --blue-bd: #CDDFD3;
+      --orange:  #E89878;
+      --ink:     #2E3530;
+      --mid:     #6B7771;
+      --muted:   #A8B2AB;
+      --border:  #E5E1D6;
+      --soft:    #EDE9DD;
+      --bg:      #FAF7EF;
       --white:   #ffffff;
       --radius:  10px;
       --shadow:  0 2px 8px rgba(0,0,0,0.06);
@@ -143,7 +143,7 @@
     .field:last-child { margin-bottom: 0; }
     .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     input[type=text], input[type=number] { width: 100%; background: var(--white); border: 1.5px solid var(--border); border-radius: 8px; padding: 9px 11px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.86rem; color: var(--ink); outline: none; transition: border-color 0.2s, box-shadow 0.2s; min-height: 44px; }
-    input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.08); }
+    input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(138,184,154,0.18); }
     input::placeholder { color: #d1d5db; }
     .ac-wrap { position: relative; }
     #commune-suggestions { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--white); border: 1.5px solid var(--border); border-radius: 8px; z-index: 3000; max-height: 210px; overflow-y: auto; display: none; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
@@ -156,7 +156,7 @@
     input[type=range] { width: 100%; accent-color: var(--blue); background: transparent; border: none; padding: 0; margin-top: 8px; height: 7px; cursor: pointer; border-radius: 3px; }
     .btn-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-bottom: 8px; }
     .btn-search { background: var(--blue); color: var(--white); border: none; border-radius: var(--radius); padding: 9px 12px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: background 0.2s, transform 0.1s; letter-spacing: -0.01em; min-height: 38px; }
-    .btn-search:hover { background: #1d4ed8; }
+    .btn-search:hover { background: #6F9F84; }
     .btn-search:active { transform: scale(0.98); }
     .btn-search:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; transform: none; }
     .btn-reset { background: var(--white); color: var(--mid); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 9px 12px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: background 0.15s; white-space: nowrap; min-height: 38px; }
@@ -212,8 +212,8 @@
     .card { background: var(--white); border: 1.5px solid var(--soft); border-radius: var(--radius); cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s, transform 0.12s; overflow: hidden; }
     .card-thumb-sv { pointer-events: auto; }
     .card-thumb-sv iframe { pointer-events: auto; }
-    .card:hover { border-color: var(--blue-bd); box-shadow: 0 2px 12px rgba(37,99,235,0.08); }
-    .card.active { border-color: var(--orange); box-shadow: 0 2px 12px rgba(249,115,22,0.15); }
+    .card:hover { border-color: var(--blue-bd); box-shadow: 0 2px 12px rgba(138,184,154,0.18); }
+    .card.active { border-color: var(--orange); box-shadow: 0 2px 12px rgba(232,152,120,0.18); }
     .card-thumb { position: relative; width: 100%; display: flex; flex-direction: row; background: #e5e7eb; overflow: hidden; height: 256px; }
     .card-thumb-sv { position: relative; width: 50%; height: 100%; overflow: hidden; flex-shrink: 0; background: #1a1a2e; }
     .card-thumb-sv-placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
@@ -292,7 +292,7 @@
     .auth-input { width: 100%; background: var(--bg); border: 1.5px solid var(--border); border-radius: 8px; padding: 11px 13px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.88rem; color: var(--ink); outline: none; margin-bottom: 12px; transition: border-color 0.2s; min-height: 44px; }
     .auth-input:focus { border-color: var(--blue); }
     .auth-btn { width: 100%; background: var(--blue); color: white; border: none; border-radius: 8px; padding: 12px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: background 0.2s; margin-top: 4px; min-height: 44px; }
-    .auth-btn:hover { background: #1d4ed8; }
+    .auth-btn:hover { background: #6F9F84; }
     .auth-switch { font-size: 0.77rem; color: var(--mid); text-align: center; margin-top: 14px; }
     .auth-switch a { color: var(--blue); cursor: pointer; font-weight: 600; text-decoration: none; }
     .auth-msg { font-size: 0.8rem; padding: 9px 12px; border-radius: 8px; margin-bottom: 12px; display: none; }
@@ -648,8 +648,8 @@ const LayerControl = L.Control.extend({
     const btnCarte = mkBtn('https://a.basemaps.cartocdn.com/rastertiles/voyager/5/16/11.png', 'Carte');
     const btnSat   = mkBtn('https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg&TILEMATRIXSET=PM&TILEMATRIX=5&TILEROW=11&TILECOL=16', 'Satellite');
     const styleBtn = (btn, active) => {
-      btn.style.borderColor = active ? '#2563eb' : '#e5e7eb';
-      btn.querySelector('div').style.cssText = `font-size:0.6rem;font-weight:700;text-align:center;padding:3px 0;letter-spacing:0.06em;text-transform:uppercase;background:${active ? '#2563eb' : 'rgba(255,255,255,0.9)'};color:${active ? 'white' : '#6b7280'};`;
+      btn.style.borderColor = active ? '#8AB89A' : '#E5E1D6';
+      btn.querySelector('div').style.cssText = `font-size:0.6rem;font-weight:700;text-align:center;padding:3px 0;letter-spacing:0.06em;text-transform:uppercase;background:${active ? '#8AB89A' : 'rgba(255,255,255,0.9)'};color:${active ? 'white' : '#6B7771'};`;
     };
     styleBtn(btnCarte, true); styleBtn(btnSat, false);
     L.DomEvent.on(btnCarte, 'click', () => {
@@ -682,9 +682,9 @@ let currentTargetSurf = 0, currentIsLogement = false;
 let currentFilters = { surfLog: 0, surfCad: 0, dpeE: '', dpeG: '', dpeDate: '' };
 const BATCH = 10;
 
-const STYLE_DEFAULT  = { color: '#2563eb', weight: 2, opacity: 0.9, fillOpacity: 0 };
-const STYLE_HOVER    = { color: '#f97316', weight: 3, opacity: 1, fillOpacity: 0 };
-const STYLE_SELECTED = { color: '#f97316', weight: 3, opacity: 1, fillOpacity: 0 };
+const STYLE_DEFAULT  = { color: '#8AB89A', weight: 2, opacity: 0.9, fillOpacity: 0 };
+const STYLE_HOVER    = { color: '#E89878', weight: 3, opacity: 1, fillOpacity: 0 };
+const STYLE_SELECTED = { color: '#E89878', weight: 3, opacity: 1, fillOpacity: 0 };
 
 function setProgress(pct) {
   const wrap = document.getElementById('progress-wrap'), bar = document.getElementById('progress-bar');
@@ -829,8 +829,8 @@ function drawThumb(canvas, feature, zoom) {
     ctx.beginPath();
     coords.forEach((c, i) => { const [px, py] = toPixel(c[1], c[0]); i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py); });
     ctx.closePath();
-    ctx.fillStyle = 'rgba(37,99,235,0.18)'; ctx.fill();
-    ctx.strokeStyle = '#2563eb'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = 'rgba(138,184,154,0.18)'; ctx.fill();
+    ctx.strokeStyle = '#8AB89A'; ctx.lineWidth = 2; ctx.stroke();
   });
 }
 
@@ -1103,7 +1103,7 @@ async function doSearch() {
   try {
     const communeGeo = await fetch(`https://geo.api.gouv.fr/communes/${commune.code}?fields=contour&format=geojson&geometry=contour`).then(r => { if (!r.ok) throw new Error('Contour commune introuvable'); return r.json(); });
     if (communeLayer) map.removeLayer(communeLayer);
-    communeLayer = L.geoJSON(communeGeo, { style: { color: '#2563eb', weight: 1.5, fillOpacity: 0.03, dashArray: '5,4', opacity: 0.4 } }).addTo(map);
+    communeLayer = L.geoJSON(communeGeo, { style: { color: '#8AB89A', weight: 1.5, fillOpacity: 0.03, dashArray: '5,4', opacity: 0.4 } }).addTo(map);
     map.fitBounds(communeLayer.getBounds(), { padding: [20, 20] });
     setProgress(10); setStatus('<span class="spinner"></span>Interrogation de l\'API cadastre…');
     const features = await fetchParcelles({
@@ -1251,7 +1251,7 @@ function redrawMeasure(live) {
   if (liveTooltip) { map.removeLayer(liveTooltip); liveTooltip = null; }
   if (!measurePoints.length) return;
   const pts = live ? [...measurePoints, live] : [...measurePoints];
-  const color = measureMode === 'distance' ? '#2563eb' : '#16a34a';
+  const color = measureMode === 'distance' ? '#8AB89A' : '#16a34a';
   if (pts.length >= 2) measureLines.push(L.polyline(pts, { color, weight: 2.5, opacity: 0.9 }).addTo(map));
   if (measureMode === 'area' && pts.length >= 3) {
     measureLines.push(L.polygon(pts, { color, weight: 2, fillColor: color, fillOpacity: 0.12 }).addTo(map));

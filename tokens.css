@@ -1,0 +1,148 @@
+/* ScanImmo · Mobile UI Kit — palette-swappable design tokens
+   ─────────────────────────────────────────────────────────────
+   Apply [data-palette="..."] on a high-level wrapper to swap.
+   Palettes: bleu (default), sage, foncier, ardoise
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+[data-palette] {
+  /* ── shared base ─────────────────────────────────────── */
+  --font: 'Plus Jakarta Sans', -apple-system, system-ui, sans-serif;
+
+  /* DPE / GES scale — never overridden, official french palette */
+  --dpe-a: #0f7c3a; --dpe-b: #5cb85c; --dpe-c: #f0d000; --dpe-d: #ff9900;
+  --dpe-e: #e74c3c; --dpe-f: #d92a2a; --dpe-g: #c1121f;
+
+  /* semantic (unchanged across palettes) */
+  --success: #16a34a; --danger: #dc2626; --warn: #a16207;
+}
+
+/* ════════════════════════════════════════════════════════════
+   PALETTE A — BLEU (current, default)
+   tech-forward, French public-data feel
+   ════════════════════════════════════════════════════════════ */
+[data-palette="bleu"] {
+  --primary:        #2563eb;
+  --primary-hover:  #1d4ed8;
+  --primary-lt:     #eff6ff;
+  --primary-bd:     #bfdbfe;
+  --accent:         #f97316;
+  --accent-lt:      rgba(249,115,22,0.15);
+
+  --ink:    #111827;
+  --mid:    #6b7280;
+  --muted:  #9ca3af;
+  --border: #e5e7eb;
+  --soft:   #f0f0ee;
+  --bg:     #f9fafb;
+  --white:  #ffffff;
+
+  --map-base: linear-gradient(135deg, #6e8550 0%, #4f6635 100%);
+  --palette-name: "Bleu — actuelle";
+}
+
+/* ════════════════════════════════════════════════════════════
+   PALETTE B — SAGE PASTEL (Airbnb-warm, washed out)
+   trustworthy, hospitality, real-estate warmth — soft tones
+   ════════════════════════════════════════════════════════════ */
+[data-palette="sage"] {
+  --primary:        #8AB89A;   /* pastel sage */
+  --primary-hover:  #6F9F84;
+  --primary-lt:     #EEF5F0;
+  --primary-bd:     #CDDFD3;
+  --accent:         #E89878;   /* dusty peach / poudre rose */
+  --accent-lt:      rgba(232,152,120,0.18);
+
+  --ink:    #2E3530;   /* soft charcoal, never pure black */
+  --mid:    #6B7771;
+  --muted:  #A8B2AB;
+  --border: #E5E1D6;
+  --soft:   #EDE9DD;
+  --bg:     #FAF7EF;   /* warm cream */
+  --white:  #ffffff;
+
+  --map-base: linear-gradient(135deg, #B8CDA6 0%, #94B485 100%);
+  --palette-name: "Sage — pastel";
+}
+
+/* ════════════════════════════════════════════════════════════
+   PALETTE C — FONCIER (Cadastre / land)
+   premium, institutional, ties to the land
+   ════════════════════════════════════════════════════════════ */
+[data-palette="foncier"] {
+  --primary:        #1f6e3b;   /* forest green */
+  --primary-hover:  #185a2f;
+  --primary-lt:     #eaf3ec;
+  --primary-bd:     #aed1b6;
+  --accent:         #b45309;   /* deep gold */
+  --accent-lt:      rgba(180,83,9,0.15);
+
+  --ink:    #14201a;
+  --mid:    #5a6b60;
+  --muted:  #94a39a;
+  --border: #dde6df;
+  --soft:   #ecf0ec;
+  --bg:     #f4f7f2;
+  --white:  #ffffff;
+
+  --map-base: linear-gradient(135deg, #6e8550 0%, #4f6635 100%);
+  --palette-name: "Foncier — vert profond / or";
+}
+
+/* ════════════════════════════════════════════════════════════
+   PALETTE D — ARDOISE (Figma-minimal)
+   modern tool, pure neutrals + single coral accent
+   ════════════════════════════════════════════════════════════ */
+[data-palette="ardoise"] {
+  --primary:        #0f172a;   /* slate-900 */
+  --primary-hover:  #000000;
+  --primary-lt:     #f1f5f9;
+  --primary-bd:     #cbd5e1;
+  --accent:         #ef4444;   /* coral red */
+  --accent-lt:      rgba(239,68,68,0.15);
+
+  --ink:    #0f172a;
+  --mid:    #64748b;
+  --muted:  #94a3b8;
+  --border: #e2e8f0;
+  --soft:   #f1f5f9;
+  --bg:     #ffffff;
+  --white:  #ffffff;
+
+  --map-base: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+  --palette-name: "Ardoise — outil minimal";
+}
+
+/* ════════════════════════════════════════════════════════════
+   PALETTE E — FLIP7 (retro-playful)
+   teal + gold + coral · cream backgrounds · gamified vibe
+   ════════════════════════════════════════════════════════════ */
+[data-palette="flip7"] {
+  --primary:        #2BA8A2;   /* teal */
+  --primary-hover:  #1E8C86;
+  --primary-lt:     #E8F6F5;
+  --primary-bd:     #A6DDDA;
+  --accent:         #FFD23F;   /* gold */
+  --accent-lt:      rgba(255,210,63,0.30);
+  --coral:          #EF6C4A;   /* secondary accent · BOOM / selection */
+  --coral-lt:       rgba(239,108,74,0.18);
+  --sky:            #5DADE2;
+
+  --ink:    #1B3B3A;   /* deep teal-charcoal */
+  --mid:    #4F6E6D;
+  --muted:  #8AAAA9;
+  --border: #D3E7E5;
+  --soft:   #DCEEEC;
+  --bg:     #EFF8F7;   /* pale teal page bg */
+  --white:  #ffffff;
+  --cream:  #FFF8E7;   /* card / input surface */
+
+  --map-base: linear-gradient(135deg, #6ABFB9 0%, #3CC4BD 100%);
+  --palette-name: "Flip7 — retro playful";
+}
+
+/* ════════════════════════════════════════════════════════════
+   BASE TYPE
+   ════════════════════════════════════════════════════════════ */
+[data-palette] { font-family: var(--font); color: var(--ink); }

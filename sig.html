@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ParcelleID — Identifier une annonce immo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <style>
+    /* ── STREET VIEW MODAL ── */
+    #sv-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 9500; display: none; align-items: center; justify-content: center; }
+    #sv-modal.show { display: flex; }
+    #sv-modal-content { position: relative; width: 90%; height: 90%; max-width: 1000px; background: var(--white); border-radius: 16px; overflow: hidden; }
+    #sv-modal iframe { width: 100%; height: 100%; border: none; }
+    #sv-modal-close { position: absolute; top: 14px; right: 14px; background: var(--white); border: none; border-radius: 50%; width: 44px; height: 44px; cursor: pointer; font-size: 24px; color: var(--ink); z-index: 9600; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+    #sv-modal-close:hover { background: var(--bg); }
+
+     /* ── DPE BUTTONS ── */
+    .dpe-class-buttons {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .dpe-class-btn {
+      padding: 6px 4px;
+      border: 2px solid transparent;
+      border-radius: 7px;
+      font-weight: 600;
+      font-size: 13px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 32px;
+    }
+
+    .energie-btn[data-class="A"] { background: #0f7c3a; }
+    .energie-btn[data-class="B"] { background: #5cb85c; }
+    .energie-btn[data-class="C"] { background: #f0d000; color: #333; }
+    .energie-btn[data-class="D"] { background: #ff9900; }
+    .energie-btn[data-class="E"] { background: #e74c3c; }
+    .energie-btn[data-class="F"] { background: #d92a2a; }
+    .energie-btn[data-class="G"] { background: #c1121f; }
+
+    .ges-btn[data-class="A"] { background: #0f7c3a; }
+    .ges-btn[data-class="B"] { background: #5cb85c; }
+    .ges-btn[data-class="C"] { background: #f0d000; color: #333; }
+    .ges-btn[data-class="D"] { background: #ff9900; }
+    .ges-btn[data-class="E"] { background: #e74c3c; }
+    .ges-btn[data-class="F"] { background: #d92a2a; }
+    .ges-btn[data-class="G"] { background: #c1121f; }
+
+    .dpe-class-btn:hover {
+      opacity: 0.85;
+      transform: scale(1.05);
+    }
+
+    .dpe-class-btn.active {
+      border: 2px solid white;
+      box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2);
+    }
+
+    .dpe-class-btn:active {
+      transform: scale(0.95);
+    }
+
+    .dpe-input {
+      width: 100%;
+      padding: 7px 10px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--ink);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      min-height: 34px;
+    }
+
+    .dpe-input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(138,184,154,0.18);
+    }
+
+    .dpe-input::placeholder {
+      color: #d1d5db;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue:    #8AB89A;
+      --blue-lt: #EEF5F0;
+      --blue-bd: #CDDFD3;
+      --orange:  #E89878;
+      --ink:     #2E3530;
+      --mid:     #6B7771;
+      --muted:   #A8B2AB;
+      --border:  #E5E1D6;
+      --soft:    #EDE9DD;
+      --bg:      #FAF7EF;
+      --white:   #ffffff;
+      --radius:  10px;
+      --shadow:  0 2px 8px rgba(0,0,0,0.06);
+      --panel-h: 56px;
+    }
+
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--ink); height: 100dvh; overflow: hidden; display: flex; flex-direction: column; }
+
+    /* ── HEADER ── */
+    header { background: var(--white); border-bottom: 1px solid var(--soft); padding: 0 16px 0 16px; height: 52px; display: flex; align-items: center; gap: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); flex-shrink: 0; z-index: 800; position: relative; }
+    .logo { font-weight: 800; font-size: 1.15rem; color: var(--ink); letter-spacing: -0.03em; display: flex; align-items: center; gap: 4px; }
+    .logo .logo-id { background: var(--blue); color: #fff; font-size: 0.72rem; font-weight: 800; padding: 2px 6px; border-radius: 5px; letter-spacing: 0.01em; }
+    .logo-sub { font-size: 0.65rem; color: var(--muted); font-weight: 400; margin-left: 2px; }
+    .header-sep { flex: 1; }
+    .header-tag { font-size: 0.64rem; color: var(--muted); border: 1px solid var(--border); padding: 3px 8px; border-radius: 20px; letter-spacing: 0.05em; }
+    .user-badge { font-size: 0.78rem; font-weight: 600; color: var(--mid); border: 1px solid var(--border); padding: 5px 12px; border-radius: 20px; cursor: pointer; transition: background 0.15s; display: flex; align-items: center; gap: 6px; background: none; font-family: 'Plus Jakarta Sans', sans-serif; white-space: nowrap; }
+    .user-badge:hover { background: var(--bg); }
+    .plan-pill { font-size: 0.6rem; font-weight: 700; padding: 2px 6px; border-radius: 10px; background: var(--blue); color: white; text-transform: uppercase; }
+    .plan-pill.pro { background: var(--orange); }
+
+    /* ── LAYOUT DESKTOP ── */
+    main { flex: 1; display: grid; grid-template-columns: 720px 1fr; overflow: hidden; }
+
+    /* ── PANEL DESKTOP ── */
+    .panel { background: var(--white); border-right: 1px solid var(--soft); display: flex; flex-direction: column; overflow: hidden; }
+    .panel-scroll { overflow-y: auto; flex: 1; padding: 20px 16px 32px; -webkit-overflow-scrolling: touch; }
+    .panel-handle { display: none; }
+
+    /* ── HERO ── */
+    .hero { margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid #f3f4f6; }
+    .hero-eyebrow { font-size: 0.63rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--blue); margin-bottom: 5px; }
+    .hero h1 { font-size: 1.1rem; font-weight: 800; line-height: 1.3; letter-spacing: -0.02em; margin-bottom: 5px; }
+    .hero p { font-size: 0.77rem; color: var(--mid); line-height: 1.6; }
+
+    /* ── FORM ── */
+    .form-section { background: var(--bg); border: 1px solid var(--soft); border-radius: 10px; padding: 9px 11px; margin-bottom: 7px; }
+    .form-label { font-size: 0.72rem; font-weight: 500; color: var(--mid); margin-bottom: 5px; }
+    .field { margin-bottom: 7px; }
+    .field:last-child { margin-bottom: 0; }
+    .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    input[type=text], input[type=number] { width: 100%; background: var(--white); border: 1.5px solid var(--border); border-radius: 8px; padding: 9px 11px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.86rem; color: var(--ink); outline: none; transition: border-color 0.2s, box-shadow 0.2s; min-height: 44px; }
+    input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(138,184,154,0.18); }
+    input::placeholder { color: #d1d5db; }
+    .ac-wrap { position: relative; }
+    #commune-suggestions { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--white); border: 1.5px solid var(--border); border-radius: 8px; z-index: 3000; max-height: 210px; overflow-y: auto; display: none; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+    #commune-suggestions li { list-style: none; padding: 9px 12px; font-size: 0.85rem; cursor: pointer; border-bottom: 1px solid var(--bg); transition: background 0.15s; display: flex; justify-content: space-between; align-items: center; min-height: 44px; }
+    #commune-suggestions li:last-child { border-bottom: none; }
+    #commune-suggestions li:hover { background: var(--bg); }
+    #commune-suggestions li small { color: var(--muted); font-size: 0.73rem; }
+    .surface-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; }
+    .tol-pill { background: var(--blue-lt); border: 1.5px solid var(--blue-bd); border-radius: 8px; padding: 6px 10px; font-size: 0.75rem; color: var(--blue); font-weight: 700; text-align: center; white-space: nowrap; min-height: 34px; display: flex; align-items: center; justify-content: center; }
+    input[type=range] { width: 100%; accent-color: var(--blue); background: transparent; border: none; padding: 0; margin-top: 8px; height: 7px; cursor: pointer; border-radius: 3px; }
+    .btn-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-bottom: 8px; }
+    .btn-search { background: var(--blue); color: var(--white); border: none; border-radius: var(--radius); padding: 9px 12px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: background 0.2s, transform 0.1s; letter-spacing: -0.01em; min-height: 38px; }
+    .btn-search:hover { background: #6F9F84; }
+    .btn-search:active { transform: scale(0.98); }
+    .btn-search:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; transform: none; }
+    .btn-reset { background: var(--white); color: var(--mid); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 9px 12px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: background 0.15s; white-space: nowrap; min-height: 38px; }
+    .btn-reset:hover { background: var(--bg); color: var(--ink); }
+    .btn-reset:active { transform: scale(0.98); }
+    #status { font-size: 0.8rem; color: var(--mid); padding: 9px 12px; background: var(--white); border: 1px solid var(--border); border-radius: 8px; text-align: center; display: none; margin-bottom: 10px; line-height: 1.5; }
+    #status.show { display: block; }
+    #status.err { color: #dc2626; border-color: rgba(220,38,38,0.3); background: rgba(220,38,38,0.04); }
+    #status.ok  { color: #16a34a; border-color: rgba(22,163,74,0.3); background: rgba(22,163,74,0.04); }
+    .spinner { display: inline-block; width: 11px; height: 11px; border: 2px solid var(--border); border-top-color: var(--blue); border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 5px; vertical-align: middle; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .progress-wrap { height: 3px; background: var(--border); border-radius: 2px; margin-bottom: 10px; display: none; overflow: hidden; }
+    .progress-wrap.show { display: block; }
+    .progress-bar { height: 100%; background: var(--blue); border-radius: 2px; transition: width 0.3s ease; width: 0%; }
+    .results-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .results-label { font-size: 0.61rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+    .results-count { font-size: 0.73rem; font-weight: 700; color: var(--blue); }
+    .credits-bar { font-size: 0.72rem; color: var(--mid); padding: 8px 12px; background: var(--blue-lt); border: 1px solid var(--blue-bd); border-radius: 8px; margin-bottom: 10px; display: none; }
+    .credits-bar.show { display: block; }
+    .credits-bar strong { color: var(--blue); }
+
+    /* ── SEARCH SUMMARY (mobile, après recherche) ── */
+    .search-summary { display: none; }
+    .search-summary.show {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      background: var(--blue-lt);
+      border: 1.5px solid var(--blue-bd);
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      text-align: left;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .search-summary.show:active { transform: scale(0.99); }
+    #search-form-block.collapsed { display: none; }
+    .search-summary-content { flex: 1; min-width: 0; }
+    .search-summary-location { font-size: 0.85rem; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.01em; }
+    .search-summary-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+    .search-summary-chips:empty { display: none; margin-top: 0; }
+    .search-summary-chip { font-size: 0.7rem; font-weight: 600; color: var(--blue); background: var(--white); border: 1px solid var(--blue-bd); border-radius: 12px; padding: 2px 8px; white-space: nowrap; }
+    .search-summary-edit { font-size: 0.75rem; font-weight: 700; color: var(--blue); flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px; background: var(--white); border: 1.5px solid var(--blue-bd); border-radius: 20px; padding: 7px 12px; min-height: 36px; }
+
+/* ── CARDS ── */
+    #results-list { display: grid; grid-template-columns: 1fr; gap: 8px; }
+    .card { background: var(--white); border: 1.5px solid var(--soft); border-radius: var(--radius); cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s, transform 0.12s; overflow: hidden; }
+    .card-thumb-sv { pointer-events: auto; }
+    .card-thumb-sv iframe { pointer-events: auto; }
+    .card:hover { border-color: var(--blue-bd); box-shadow: 0 2px 12px rgba(138,184,154,0.18); }
+    .card.active { border-color: var(--orange); box-shadow: 0 2px 12px rgba(232,152,120,0.18); }
+    .card-thumb { position: relative; width: 100%; display: flex; flex-direction: row; background: #e5e7eb; overflow: hidden; height: 256px; }
+    .card-thumb-sv { position: relative; width: 50%; height: 100%; overflow: hidden; flex-shrink: 0; background: #1a1a2e; }
+    .card-thumb-sv-placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+    .card-thumb-sv-placeholder span { font-size: 1.6rem; }
+    .card-thumb-sv-placeholder small { font-size: 0.6rem; color: #93c5fd; font-weight: 600; letter-spacing: 0.05em; }
+    .card-thumb-right { position: relative; width: 50%; height: 100%; display: flex; flex-direction: column; overflow: hidden; }
+    .card-thumb-info { position: relative; width: 100%; height: 50%; background: var(--blue-lt); padding: 8px 9px; overflow: hidden; border-bottom: 1px solid var(--blue-bd); display: flex; flex-direction: column; gap: 4px; justify-content: center; }
+    .info-line { display: flex; align-items: center; gap: 6px; font-size: 0.72rem; line-height: 1; }
+    .info-icon { font-size: 0.85rem; flex-shrink: 0; }
+    .info-val { font-weight: 700; color: var(--ink); }
+    .info-val-mismatch { color: #dc2626; text-decoration: underline dotted; }
+    .info-diff { font-weight: 600; font-size: 0.65rem; margin-left: auto; padding-left: 4px; }
+    .info-badges { gap: 5px; flex-wrap: wrap; }
+    .info-badge { display: inline-flex; align-items: center; gap: 1px; font-size: 0.7rem; font-weight: 800; padding: 3px 7px; border-radius: 5px; letter-spacing: 0.02em; }
+    .info-badge-empty { background: var(--border); color: var(--muted); }
+    .info-badge-mismatch { box-shadow: 0 0 0 2px #ef4444; }
+    .info-warn { font-size: 0.85rem; margin-left: 2px; }
+    .card-thumb-ign { position: relative; width: 100%; height: 50%; overflow: hidden; flex-shrink: 0; }
+    .card-thumb-ign canvas { position: absolute; top: 0; left: 0; width: 100% !important; height: 100% !important; display: block; }
+    .card-thumb canvas { position: absolute; top: 0; left: 0; width: 100% !important; height: 100% !important; display: block; }
+    .card-addr { position: absolute; top: 0; left: 0; right: 0; padding: 4px 6px; background: rgba(0,0,0,0.55); color: white; font-size: 0.58rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; z-index: 1; }
+    .load-more { width: 100%; grid-column: 1/-1; background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 10px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.82rem; font-weight: 600; color: var(--mid); cursor: pointer; transition: background 0.15s; margin-top: 2px; }
+    .load-more:hover { background: var(--bg); color: var(--ink); }
+
+    /* ── MAP WRAP ── */
+    .map-wrap { position: relative; overflow: hidden; }
+    #map { position: absolute; inset: 0; }
+
+    /* ── LEAFLET POPUP ── */
+    .leaflet-popup-content-wrapper { background: var(--white); color: var(--ink); border-radius: var(--radius); box-shadow: 0 4px 24px rgba(0,0,0,0.12); font-family: 'Plus Jakarta Sans', sans-serif; border: 1px solid var(--border); }
+    .leaflet-popup-tip { background: var(--white); }
+    .leaflet-popup-content { margin: 13px 15px; font-size: 0.82rem; line-height: 1.7; }
+    .popup-id { font-size: 0.88rem; font-weight: 700; color: var(--ink); margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+    .popup-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--orange); display: inline-block; flex-shrink: 0; }
+    .popup-links { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+    .popup-link { font-size: 0.73rem; color: var(--blue); text-decoration: none; border: 1px solid var(--blue-bd); background: var(--blue-lt); border-radius: 5px; padding: 4px 10px; transition: background 0.2s; font-weight: 500; }
+    .popup-link:hover { background: var(--blue-bd); }
+
+    /* ── OVERLAY ── */
+    #overlay { position: absolute; inset: 0; background: rgba(249,250,251,0.92); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; z-index: 600; transition: opacity 0.4s; }
+    #overlay.gone { opacity: 0; pointer-events: none; }
+    .overlay-icon { font-size: 2.8rem; }
+    .overlay-title { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.02em; }
+    .overlay-sub { font-size: 0.82rem; color: var(--mid); text-align: center; max-width: 280px; line-height: 1.5; }
+
+    /* ── MAP UI ELEMENTS ── */
+    #map-count { position: absolute; top: 14px; right: 14px; background: var(--white); border: 1px solid var(--border); color: var(--ink); border-radius: 8px; padding: 7px 14px; font-size: 0.84rem; font-weight: 700; z-index: 500; display: none; box-shadow: var(--shadow); }
+    #map-count em { color: var(--blue); font-style: normal; }
+    .map-footer { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.95); border: 1px solid var(--border); border-radius: 30px; padding: 5px 16px; font-size: 0.67rem; color: var(--muted); z-index: 500; white-space: nowrap; pointer-events: none; backdrop-filter: blur(8px); }
+    .map-footer span { color: var(--blue); font-weight: 500; }
+
+    /* ── MEASURE TOOLBAR ── */
+    #measure-toolbar { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); z-index: 500; display: flex; align-items: center; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+    .measure-btn { display: flex; align-items: center; gap: 6px; padding: 8px 13px; font-size: 0.73rem; font-weight: 600; color: var(--mid); cursor: pointer; border: none; background: none; transition: background 0.15s, color 0.15s; white-space: nowrap; border-right: 1px solid var(--soft); font-family: 'Plus Jakarta Sans', sans-serif; min-height: 44px; }
+    .measure-btn:last-child { border-right: none; }
+    .measure-btn:hover { background: var(--bg); color: var(--ink); }
+    .measure-btn.active { background: var(--blue-lt); color: var(--blue); }
+    .measure-btn .btn-label { display: inline; }
+    #measure-result { position: absolute; bottom: 46px; left: 50%; transform: translateX(-50%); z-index: 500; background: var(--white); color: var(--ink); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 18px; font-size: 0.82rem; display: none; gap: 14px; align-items: center; box-shadow: var(--shadow); white-space: nowrap; }
+    #measure-result.show { display: flex; }
+    #measure-result strong { color: var(--blue); font-size: 1rem; font-weight: 800; }
+    .measure-sep { width: 1px; height: 20px; background: var(--border); }
+    .measure-clear-btn { background: none; border: 1px solid var(--border); color: var(--mid); border-radius: 6px; padding: 3px 9px; font-size: 0.72rem; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.15s; min-height: 44px; }
+    .measure-clear-btn:hover { background: var(--bg); color: var(--ink); }
+    .measure-tooltip { background: var(--ink) !important; border: none !important; color: #93c5fd !important; font-family: 'Plus Jakarta Sans', sans-serif !important; font-size: 0.75rem !important; font-weight: 600 !important; border-radius: 6px !important; padding: 4px 9px !important; box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important; }
+    .measure-tooltip::before { display: none !important; }
+    #map.measuring { cursor: crosshair !important; }
+    #map.measuring .leaflet-interactive { cursor: crosshair !important; }
+
+    /* ── AUTH OVERLAY ── */
+    .auth-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 9000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); padding: 16px; }
+    .auth-overlay.hidden { display: none; }
+    .auth-box { background: var(--white); border-radius: 16px; padding: 28px 24px; width: 100%; max-width: 380px; box-shadow: 0 24px 64px rgba(0,0,0,0.18); }
+    .auth-title { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 4px; }
+    .auth-sub { font-size: 0.77rem; color: var(--mid); margin-bottom: 20px; }
+    .auth-input { width: 100%; background: var(--bg); border: 1.5px solid var(--border); border-radius: 8px; padding: 11px 13px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.88rem; color: var(--ink); outline: none; margin-bottom: 12px; transition: border-color 0.2s; min-height: 44px; }
+    .auth-input:focus { border-color: var(--blue); }
+    .auth-btn { width: 100%; background: var(--blue); color: white; border: none; border-radius: 8px; padding: 12px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: background 0.2s; margin-top: 4px; min-height: 44px; }
+    .auth-btn:hover { background: #6F9F84; }
+    .auth-switch { font-size: 0.77rem; color: var(--mid); text-align: center; margin-top: 14px; }
+    .auth-switch a { color: var(--blue); cursor: pointer; font-weight: 600; text-decoration: none; }
+    .auth-msg { font-size: 0.8rem; padding: 9px 12px; border-radius: 8px; margin-bottom: 12px; display: none; }
+    .auth-msg.err { background: rgba(220,38,38,0.07); color: #dc2626; border: 1px solid rgba(220,38,38,0.2); display: block; }
+    .auth-msg.ok  { background: rgba(22,163,74,0.07); color: #16a34a; border: 1px solid rgba(22,163,74,0.2); display: block; }
+    .auth-close { float: right; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--muted); margin-top: -4px; }
+
+    /* MOBILE */
+    @media (max-width: 768px) {
+      main { display: block; position: relative; height: 100%; }
+      .map-wrap { position: absolute; inset: 0; height: 100%; }
+      .panel { position: absolute; bottom: 0; left: 0; right: 0; z-index: 1000; border-right: none; border-top: 1px solid var(--border); border-radius: 20px 20px 0 0; box-shadow: 0 -6px 32px rgba(0,0,0,0.12); height: calc(var(--panel-h) + 20px); transition: height 0.38s cubic-bezier(0.4,0,0.2,1); overflow: hidden; display: flex; flex-direction: column; background: var(--white); }
+      .panel.mid  { height: 48%; }
+      .panel.open { height: 85%; }
+      .panel-handle { display: flex; flex-direction: column; align-items: center; gap: 0; padding: 10px 0 6px; cursor: grab; user-select: none; -webkit-user-select: none; flex-shrink: 0; touch-action: none; }
+      .panel-handle:active { cursor: grabbing; }
+      .panel-pill { width: 40px; height: 5px; background: var(--muted); border-radius: 2.5px; margin-bottom: 8px; }
+      .panel-handle-label { font-size: 0.85rem; font-weight: 700; color: var(--ink); display: flex; align-items: center; gap: 6px; user-select: none; }
+      .panel-handle-count { font-size: 0.7rem; font-weight: 700; color: var(--white); background: var(--blue); border-radius: 20px; padding: 1px 8px; display: none; }
+      .panel-handle-count.show { display: inline-block; }
+      .panel-scroll { overflow-y: scroll; -webkit-overflow-scrolling: touch; flex: 1; min-height: 0; padding: 16px 16px 120px; overscroll-behavior: contain; }
+      .hero { display: none; }
+      .form-section { padding: 13px; margin-bottom: 9px; }
+      .form-label { margin-bottom: 9px; font-size: 0.75rem; }
+      .field { margin-bottom: 12px; }
+      .btn-row { gap: 10px; }
+      input[type=text], input[type=number], input[type=date] { font-size: 16px !important; padding: 12px 13px; min-height: 44px; }
+      .dpe-input { font-size: 16px !important; padding: 12px 13px; min-height: 44px; }
+      .dpe-class-btn { min-height: 44px; padding: 10px 6px; font-size: 14px; }
+      .tol-pill { min-height: 44px; padding: 9px 11px; font-size: 0.78rem; }
+      .btn-search, .btn-reset { min-height: 44px; padding: 12px; font-size: 0.88rem; }
+      .form-row-2 { grid-template-columns: 1fr; gap: 7px; }
+      @media (max-width: 480px) {
+        .dpe-class-buttons { gap: 4px; }
+        .dpe-class-btn { padding: 8px 4px; font-size: 12px; }
+        .card-thumb { flex-direction: column; height: auto; }
+        .card-thumb-sv { width: 100%; height: 256px; }
+        .card-thumb-right { width: 100%; height: auto; flex-direction: row; }
+        .card-thumb-info { width: 50%; height: 256px; border-bottom: none; border-right: 1px solid var(--blue-bd); }
+        .card-thumb-ign { width: 50%; height: 256px; }
+        .panel-scroll { padding-top: 8px; }
+      }
+      #commune-suggestions { max-height: 280px; border-radius: 10px; }
+      #commune-suggestions li { padding: 12px 12px; min-height: 44px; }
+      input:focus { scroll-margin-top: 80px; }
+      button, a, input { touch-action: manipulation; }
+      .leaflet-bottom.leaflet-left { bottom: calc(var(--panel-h) + 24px) !important; left: 10px !important; transition: bottom 0.38s cubic-bezier(0.4,0,0.2,1); }
+      body.panel-mid .leaflet-bottom.leaflet-left  { bottom: calc(48% + 10px) !important; }
+      body.panel-open .leaflet-bottom.leaflet-left { bottom: calc(85% + 10px) !important; }
+      .leaflet-top.leaflet-right { top: 14px; right: 10px; }
+      .leaflet-top.leaflet-left  { top: 14px; left: 10px; }
+      #map-count { top: 10px; right: 10px; font-size: 0.78rem; padding: 5px 10px; }
+      #measure-toolbar { top: 10px; left: 50%; transform: translateX(-50%); }
+      .measure-btn { padding: 8px 11px; gap: 4px; font-size: 0.7rem; min-height: 40px; }
+      .measure-btn .btn-label { display: none; }
+      #measure-result { bottom: calc(var(--panel-h) + 30px); transition: bottom 0.38s cubic-bezier(0.4,0,0.2,1); font-size: 0.78rem; padding: 8px 12px; gap: 10px; }
+      body.panel-mid  #measure-result { bottom: calc(48% + 10px); }
+      body.panel-open #measure-result { bottom: calc(85% + 10px); }
+      .map-footer { bottom: calc(var(--panel-h) + 28px); transition: bottom 0.38s cubic-bezier(0.4,0,0.2,1); font-size: 0.6rem; padding: 4px 12px; }
+      body.panel-mid  .map-footer { bottom: calc(48% + 8px); }
+      body.panel-open .map-footer { bottom: calc(85% + 8px); }
+      #results-list { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Parcelle<span class="logo-id">ID</span><span class="logo-sub">Cadastre France</span></div>
+  <div class="header-sep"></div>
+  <div class="header-tag">V5 · Cadastre IGN</div>
+  <div id="auth-header">
+    <button class="user-badge" onclick="openAuth('login')">Se connecter</button>
+  </div>
+</header>
+
+<!-- AUTH MODAL -->
+<div class="auth-overlay hidden" id="auth-overlay">
+  <div class="auth-box">
+    <button class="auth-close" onclick="closeAuth()">&#x2715;</button>
+    <div id="auth-login-view">
+      <div class="auth-title">Connexion</div>
+      <div class="auth-sub">Accédez à votre compte ParcelleID</div>
+      <div class="auth-msg" id="login-msg"></div>
+      <input class="auth-input" type="email" id="login-email" placeholder="Email"/>
+      <input class="auth-input" type="password" id="login-pwd" placeholder="Mot de passe"/>
+      <button class="auth-btn" onclick="doLogin()">Se connecter</button>
+      <div class="auth-switch">Pas de compte ? <a onclick="switchAuth('register')">Créer un compte</a></div>
+    </div>
+    <div id="auth-register-view" style="display:none">
+      <div class="auth-title">Créer un compte</div>
+      <div class="auth-sub">5 recherches gratuites pour commencer</div>
+      <div class="auth-msg" id="register-msg"></div>
+      <input class="auth-input" type="email" id="reg-email" placeholder="Email"/>
+      <input class="auth-input" type="password" id="reg-pwd" placeholder="Mot de passe (8 car. min)"/>
+      <button class="auth-btn" onclick="doRegister()">Créer mon compte</button>
+      <div class="auth-switch">Déjà un compte ? <a onclick="switchAuth('login')">Se connecter</a></div>
+    </div>
+    <div id="auth-verify-view" style="display:none">
+      <div class="auth-title">✉️ Vérifiez votre email</div>
+      <div class="auth-sub" id="verify-sub">Un lien de confirmation a été envoyé à votre adresse.</div>
+    </div>
+  </div>
+</div>
+
+<main>
+  <aside class="panel" id="mobile-panel">
+    <div class="panel-handle" id="panel-handle">
+      <div class="panel-pill"></div>
+      <div class="panel-handle-label">
+        🔍 Rechercher une parcelle
+        <span class="panel-handle-count" id="handle-count"></span>
+      </div>
+    </div>
+
+    <div class="panel-scroll">
+      <div class="credits-bar" id="credits-bar">
+        🔍 Crédits restants : <strong id="credits-count">—</strong> / 5
+        &nbsp;·&nbsp; <a href="#" style="color:var(--blue);font-weight:600" onclick="alert('Packs bientôt disponibles !')">Acheter →</a>
+      </div>
+
+      <div class="search-summary" id="search-summary" role="button" tabindex="0" onclick="expandSearch()">
+        <div class="search-summary-content">
+          <div class="search-summary-location" id="search-summary-location">📍 —</div>
+          <div class="search-summary-chips" id="search-summary-chips"></div>
+        </div>
+        <span class="search-summary-edit">✏️ Modifier</span>
+      </div>
+
+      <div id="search-form-block">
+      <div class="hero">
+        <div class="hero-eyebrow">🏠 Outil d'analyse d'annonces</div>
+        <h1>Retrouvez la parcelle de votre annonce immo</h1>
+        <p>Commune + surface → les parcelles correspondantes s'affichent sur la carte.</p>
+      </div>
+
+      <div class="form-section">
+        <div class="form-label">Commune ou code postal</div>
+        <div class="field">
+          <div class="ac-wrap">
+            <input type="text" id="commune-input" placeholder="Commune ou code postal…" autocomplete="off"/>
+            <ul id="commune-suggestions"></ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-row-2">
+          <div>
+            <div class="form-label">Surface logement (m²)</div>
+            <input type="number" id="surface-logement-input" placeholder="Ex : 85" min="1" class="dpe-input"/>
+          </div>
+          <div>
+            <div class="form-label">Date diagnostic</div>
+            <input type="date" id="dpe-date-input" class="dpe-input">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-label">Surface cadastrale</div>
+        <div class="field">
+          <div class="surface-row">
+            <input type="number" id="surface-input" placeholder="Ex : 450" min="1"/>
+            <div class="tol-pill">±<span id="tol-val">15</span>%</div>
+          </div>
+          <input type="range" id="tol-range" min="0" max="25" value="3" step="1"/>
+        </div>
+        <div style="font-size:0.7rem;color:var(--muted);margin-top:5px;margin-bottom:10px">
+          Entre <span id="surf-min" style="color:var(--blue);font-weight:600">—</span>
+          et <span id="surf-max" style="color:var(--blue);font-weight:600">—</span> m²
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-label">Classe énergie</div>
+        <div class="field">
+          <div class="dpe-class-buttons">
+            <button type="button" class="dpe-class-btn energie-btn" data-class="A">A</button>
+            <button type="button" class="dpe-class-btn energie-btn" data-class="B">B</button>
+            <button type="button" class="dpe-class-btn energie-btn" data-class="C">C</button>
+            <button type="button" class="dpe-class-btn energie-btn" data-class="D">D</button>
+            <button type="button" class="dpe-class-btn energie-btn" data-class="E">E</button>
+            <button type="button" class="dpe-class-btn energie-btn" data-class="F">F</button>
+            <button type="button" class="dpe-class-btn energie-btn" data-class="G">G</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-label">Classe GES</div>
+        <div class="field">
+          <div class="dpe-class-buttons">
+            <button type="button" class="dpe-class-btn ges-btn" data-class="A">A</button>
+            <button type="button" class="dpe-class-btn ges-btn" data-class="B">B</button>
+            <button type="button" class="dpe-class-btn ges-btn" data-class="C">C</button>
+            <button type="button" class="dpe-class-btn ges-btn" data-class="D">D</button>
+            <button type="button" class="dpe-class-btn ges-btn" data-class="E">E</button>
+            <button type="button" class="dpe-class-btn ges-btn" data-class="F">F</button>
+            <button type="button" class="dpe-class-btn ges-btn" data-class="G">G</button>
+          </div>
+        </div>
+      </div>
+
+      <input type="hidden" id="dpe-energie-selected" value="">
+      <input type="hidden" id="dpe-ges-selected" value="">
+
+      <div class="btn-row">
+        <button class="btn-search" id="search-btn" onclick="doSearch()">Afficher les parcelles</button>
+        <button class="btn-reset" onclick="doReset()">↺ Reset</button>
+      </div>
+
+      <div id="search-hint" style="font-size:0.75rem;color:#dc2626;text-align:center;margin-bottom:10px;display:none;">⚠️ Renseignez au moins un critère (surface, classe DPE/GES ou date diagnostic)</div>
+      </div>
+
+      <div class="progress-wrap" id="progress-wrap"><div class="progress-bar" id="progress-bar"></div></div>
+      <div id="status"></div>
+
+      <div class="results-head">
+        <span class="results-label">Parcelles trouvées</span>
+        <span class="results-count" id="r-count"></span>
+      </div>
+      <div id="results-list">
+        <div style="font-size:0.8rem;color:var(--muted);text-align:center;padding:20px 0;border:1px dashed var(--border);border-radius:8px;grid-column:1/-1;">Les résultats apparaîtront ici</div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="map-wrap">
+    <div id="map"></div>
+
+    <div id="measure-toolbar">
+      <button class="measure-btn" id="btn-measure-dist" onclick="toggleMeasureMode('distance')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="8" x2="2" y2="16"/><line x1="22" y1="8" x2="22" y2="16"/></svg>
+        <span class="btn-label">Distance</span>
+      </button>
+      <button class="measure-btn" id="btn-measure-area" onclick="toggleMeasureMode('area')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+        <span class="btn-label">Superficie</span>
+      </button>
+      <button class="measure-btn" onclick="stopMeasure()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <span class="btn-label">Annuler</span>
+      </button>
+    </div>
+
+    <div id="measure-result">
+      <span id="measure-label">Distance</span>
+      <div class="measure-sep"></div>
+      <span><strong id="measure-val">—</strong></span>
+      <div class="measure-sep" id="measure-sep2" style="display:none"></div>
+      <span id="measure-area-wrap" style="display:none">Superficie : <strong id="measure-area-val">—</strong></span>
+      <div class="measure-sep"></div>
+      <button class="measure-clear-btn" onclick="clearMeasure()">✕ Effacer</button>
+    </div>
+
+    <div id="overlay" style="background: transparent !important; z-index: 1;"></div>
+
+    <div id="map-count"></div>
+    <div class="map-footer">Données : <span>IGN · Cadastre officiel français</span> — Licence Ouverte Etalab</div>
+  </div>
+
+  <div id="sv-modal">
+    <div id="sv-modal-content">
+      <button id="sv-modal-close" onclick="closeSVModal()">✕</button>
+      <iframe id="sv-modal-iframe"></iframe>
+    </div>
+  </div>
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD1pMAMR9M6vLrsfoLJ5GDyIbkDTgLvqg4&libraries=streetView,geometry&loading=async"></script>
+<script>
+// MOBILE PANEL
+const isMobile = () => window.innerWidth <= 768;
+const mobilePanel = document.getElementById('mobile-panel');
+const panelHandle = document.getElementById('panel-handle');
+let panelState = '';
+
+function setPanelState(state) {
+  panelState = state;
+  mobilePanel.classList.remove('mid', 'open');
+  document.body.classList.remove('panel-mid', 'panel-open');
+  if (state === 'mid')  { mobilePanel.classList.add('mid');  document.body.classList.add('panel-mid'); }
+  if (state === 'open') { mobilePanel.classList.add('open'); document.body.classList.add('panel-open'); }
+}
+
+let dragStartY = 0, dragStartState = '';
+let isDragging = false;
+
+function onDragStart(e) {
+  if (!isMobile()) return;
+  isDragging = true;
+  dragStartY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+  dragStartState = panelState;
+  mobilePanel.style.transition = 'none';
+  document.body.style.userSelect = 'none';
+}
+
+function onDragMove(e) {
+  if (!isDragging || !isMobile()) return;
+}
+
+function onDragEnd(e) {
+  if (!isDragging || !isMobile()) return;
+  isDragging = false;
+  mobilePanel.style.transition = '';
+  document.body.style.userSelect = '';
+  const endY = e.type === 'touchend' ? e.changedTouches[0].clientY : e.clientY;
+  const delta = dragStartY - endY;
+  if (delta > 40) {
+    if (dragStartState === '')     setPanelState('mid');
+    else if (dragStartState === 'mid') setPanelState('open');
+    else setPanelState('open');
+  } else if (delta < -40) {
+    if (dragStartState === 'open') setPanelState('mid');
+    else if (dragStartState === 'mid') setPanelState('');
+    else setPanelState('');
+  } else {
+    if (dragStartState === '') setPanelState('mid');
+    else if (dragStartState === 'mid') setPanelState('');
+    else setPanelState('mid');
+  }
+}
+
+panelHandle.addEventListener('touchstart', onDragStart, { passive: true });
+panelHandle.addEventListener('mousedown', onDragStart);
+window.addEventListener('touchmove', onDragMove, { passive: true });
+window.addEventListener('mousemove', onDragMove);
+window.addEventListener('touchend', onDragEnd);
+window.addEventListener('mouseup', onDragEnd);
+
+// CARTE
+const map = L.map('map', { zoomControl: true, maxZoom: 22 }).setView([46.6, 2.3], 5);
+const tileVoyager   = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { attribution: '© OpenStreetMap contributors © CARTO', subdomains: 'abcd', maxZoom: 20 });
+const tileSatellite = L.tileLayer('https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}', { attribution: '© IGN BD Ortho', maxZoom: 22, maxNativeZoom: 19 });
+const tilePLU = L.tileLayer.wms('https://data.geopf.fr/wms-v/ows', { layers: 'du', format: 'image/png', transparent: true, version: '1.3.0', opacity: 0.7, attribution: '© Géoportail Urbanisme', maxZoom: 22, minZoom: 0, maxNativeZoom: 15 });
+let pluActive = false;
+tileVoyager.addTo(map);
+
+const LayerControl = L.Control.extend({
+  options: { position: 'bottomleft' },
+  onAdd() {
+    const wrap = L.DomUtil.create('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:6px;';
+    let isSat = false;
+    const mkBtn = (imgSrc, label) => {
+      const el = L.DomUtil.create('div', '', wrap);
+      el.style.cssText = 'width:68px;cursor:pointer;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.15);border:2px solid;';
+      el.innerHTML = `<img src="${imgSrc}" style="width:68px;height:46px;object-fit:cover;display:block;"/><div style="font-size:0.6rem;font-weight:700;text-align:center;padding:3px 0;letter-spacing:0.06em;text-transform:uppercase;">${label}</div>`;
+      return el;
+    };
+    const btnCarte = mkBtn('https://a.basemaps.cartocdn.com/rastertiles/voyager/5/16/11.png', 'Carte');
+    const btnSat   = mkBtn('https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg&TILEMATRIXSET=PM&TILEMATRIX=5&TILEROW=11&TILECOL=16', 'Satellite');
+    const styleBtn = (btn, active) => {
+      btn.style.borderColor = active ? '#8AB89A' : '#E5E1D6';
+      btn.querySelector('div').style.cssText = `font-size:0.6rem;font-weight:700;text-align:center;padding:3px 0;letter-spacing:0.06em;text-transform:uppercase;background:${active ? '#8AB89A' : 'rgba(255,255,255,0.9)'};color:${active ? 'white' : '#6B7771'};`;
+    };
+    styleBtn(btnCarte, true); styleBtn(btnSat, false);
+    L.DomEvent.on(btnCarte, 'click', () => {
+      if (isSat) { map.removeLayer(tileSatellite); tileVoyager.addTo(map); isSat = false; styleBtn(btnCarte, true); styleBtn(btnSat, false); }
+      if (pluActive) { map.removeLayer(tilePLU); pluActive = false; styleBtn(btnPLU, false); }
+    });
+    L.DomEvent.on(btnSat, 'click', () => {
+      if (!isSat) { map.removeLayer(tileVoyager); tileSatellite.addTo(map); isSat = true; styleBtn(btnCarte, false); styleBtn(btnSat, true); }
+      if (pluActive) { map.removeLayer(tilePLU); pluActive = false; styleBtn(btnPLU, false); }
+    });
+    const svgPLU = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="68" height="46"><rect width="68" height="46" fill="#f5e642"/></svg>');
+    const btnPLU = mkBtn(svgPLU, 'PLU');
+    styleBtn(btnPLU, false);
+    L.DomEvent.on(btnPLU, 'click', () => {
+      pluActive = !pluActive;
+      if (pluActive) { tilePLU.addTo(map); styleBtn(btnPLU, true); }
+      else { map.removeLayer(tilePLU); styleBtn(btnPLU, false); }
+    });
+    L.DomEvent.disableClickPropagation(wrap);
+    return wrap;
+  }
+});
+new LayerControl().addTo(map);
+
+// ÉTAT
+let parcelsLayer = null, communeLayer = null;
+let allFeatures = [], renderedCount = 0;
+let activeFeature = null;
+let currentTargetSurf = 0, currentIsLogement = false;
+let currentFilters = { surfLog: 0, surfCad: 0, dpeE: '', dpeG: '', dpeDate: '' };
+const BATCH = 10;
+
+const STYLE_DEFAULT  = { color: '#8AB89A', weight: 2, opacity: 0.9, fillOpacity: 0 };
+const STYLE_HOVER    = { color: '#E89878', weight: 3, opacity: 1, fillOpacity: 0 };
+const STYLE_SELECTED = { color: '#E89878', weight: 3, opacity: 1, fillOpacity: 0 };
+
+function setProgress(pct) {
+  const wrap = document.getElementById('progress-wrap'), bar = document.getElementById('progress-bar');
+  wrap.classList.add('show'); bar.style.width = pct + '%';
+  if (pct >= 100) setTimeout(() => { wrap.classList.remove('show'); bar.style.width = '0%'; }, 600);
+}
+
+const tolRange = document.getElementById('tol-range'), surfInput = document.getElementById('surface-input');
+function updateTol() {
+  const tol = parseInt(tolRange.value), surf = parseFloat(surfInput.value);
+  document.getElementById('tol-val').textContent = tol;
+  if (surf > 0) {
+    document.getElementById('surf-min').textContent = Math.round(surf * (1 - tol / 100));
+    document.getElementById('surf-max').textContent = Math.round(surf * (1 + tol / 100));
+  } else { document.getElementById('surf-min').textContent = '—'; document.getElementById('surf-max').textContent = '—'; }
+}
+tolRange.addEventListener('input', updateTol);
+surfInput.addEventListener('input', updateTol);
+updateTol();
+
+const communeInput = document.getElementById('commune-input'), communeSugg = document.getElementById('commune-suggestions');
+let selectedCommune = null, acTimer;
+communeInput.addEventListener('input', () => {
+  selectedCommune = null; clearTimeout(acTimer);
+  const q = communeInput.value.trim();
+  if (q.length < 2) { communeSugg.style.display = 'none'; return; }
+  acTimer = setTimeout(() => fetchCommunes(q), 280);
+});
+document.addEventListener('click', e => { if (!e.target.closest('.ac-wrap')) communeSugg.style.display = 'none'; });
+
+async function fetchCommunes(q) {
+  try {
+    const isCP = /^\d{3,5}$/.test(q);
+    const url = isCP
+      ? `https://geo.api.gouv.fr/communes?codePostal=${encodeURIComponent(q)}&fields=nom,code,codeDepartement,centre&limit=20`
+      : `https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(q)}&fields=nom,code,codeDepartement,centre&boost=population&limit=8`;
+    const data = await fetch(url).then(r => r.json());
+    communeSugg.innerHTML = '';
+    if (!data.length) { communeSugg.style.display = 'none'; return; }
+    data.forEach(c => {
+      const li = document.createElement('li');
+      li.innerHTML = `<span>${c.nom}</span><small>${c.code}</small>`;
+      li.addEventListener('click', () => {
+        communeInput.value = c.nom;
+        selectedCommune = { nom: c.nom, code: c.code, lat: c.centre?.coordinates[1], lng: c.centre?.coordinates[0] };
+        communeSugg.style.display = 'none';
+      });
+      communeSugg.appendChild(li);
+    });
+    communeSugg.style.display = 'block';
+  } catch { communeSugg.style.display = 'none'; }
+}
+
+function setStatus(msg, type = '') { const el = document.getElementById('status'); el.innerHTML = msg; el.className = 'show' + (type ? ' ' + type : ''); }
+function clearStatus() { document.getElementById('status').className = ''; }
+
+// Calcule la position & l'orientation Street View pour viser la parcelle.
+// Heuristique gratuite : on prend le milieu du côté le plus long du polygone
+// (souvent le côté donnant sur la rue) comme position caméra, et le heading
+// pointe vers le centroïde du polygone — la caméra "regarde la parcelle".
+function computeParcelView(feature) {
+  let coords = null;
+  try {
+    const g = feature.geometry;
+    coords = g.type === 'MultiPolygon' ? g.coordinates[0][0] : g.coordinates[0];
+  } catch {}
+  if (!coords || coords.length < 3) return { lat: 0, lng: 0, heading: null };
+  let cLng = 0, cLat = 0;
+  for (const c of coords) { cLng += c[0]; cLat += c[1]; }
+  cLng /= coords.length; cLat /= coords.length;
+  // Côté le plus long (en distance projetée; négligeable à l'échelle d'une parcelle)
+  let maxLen = -1, mLng = cLng, mLat = cLat;
+  for (let i = 0; i < coords.length - 1; i++) {
+    const dx = coords[i+1][0] - coords[i][0];
+    const dy = coords[i+1][1] - coords[i][1];
+    const len = dx*dx + dy*dy;
+    if (len > maxLen) {
+      maxLen = len;
+      mLng = (coords[i][0] + coords[i+1][0]) / 2;
+      mLat = (coords[i][1] + coords[i+1][1]) / 2;
+    }
+  }
+  // Bearing midpoint → centroïde (formule sphérique)
+  const toRad = d => d * Math.PI / 180;
+  const φ1 = toRad(mLat), φ2 = toRad(cLat);
+  const Δλ = toRad(cLng - mLng);
+  const y = Math.sin(Δλ) * Math.cos(φ2);
+  const x = Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
+  const heading = (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+  return { lat: mLat, lng: mLng, heading: Math.round(heading) };
+}
+
+function computeFitZoom(coords, canvasSize, fillRatio) {
+  let mnLat = Infinity, mxLat = -Infinity, mnLng = Infinity, mxLng = -Infinity;
+  coords.forEach(c => { mnLng = Math.min(mnLng, c[0]); mxLng = Math.max(mxLng, c[0]); mnLat = Math.min(mnLat, c[1]); mxLat = Math.max(mxLat, c[1]); });
+  const yNorm = lat => (1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2;
+  const maxDim = Math.max((mxLng - mnLng) / 360, Math.abs(yNorm(mxLat) - yNorm(mnLat)));
+  if (maxDim <= 0) return 19;
+  const zFrac = Math.log2(fillRatio * canvasSize / (256 * maxDim));
+  return Math.max(15, Math.min(19, Math.floor(zFrac)));
+}
+
+function drawThumb(canvas, feature, zoom) {
+  zoom = zoom || 18;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.fillStyle = '#e5e7eb'; ctx.fillRect(0, 0, W, H);
+  let coords;
+  try {
+    const geom = feature.geometry;
+    coords = geom.type === 'MultiPolygon' ? geom.coordinates[0][0] : geom.coordinates[0];
+  } catch(e) { return Promise.resolve(); }
+  if (!coords || !coords.length) return Promise.resolve();
+  let minLat = Infinity, maxLat = -Infinity, minLng = Infinity, maxLng = -Infinity;
+  coords.forEach(c => { minLng = Math.min(minLng, c[0]); maxLng = Math.max(maxLng, c[0]); minLat = Math.min(minLat, c[1]); maxLat = Math.max(maxLat, c[1]); });
+  const cLat = (minLat + maxLat) / 2, cLng = (minLng + maxLng) / 2;
+  const n = Math.pow(2, zoom), tileSize = 256;
+  const lngToWorldX = lng => (lng + 180) / 360 * n * tileSize;
+  const latToWorldY = lat => (1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * n * tileSize;
+  const cWorldX = lngToWorldX(cLng), cWorldY = latToWorldY(cLat);
+  const xTile = Math.floor(cWorldX / tileSize), yTile = Math.floor(cWorldY / tileSize);
+  const toPixel = (lat, lng) => [lngToWorldX(lng) - cWorldX + W / 2, latToWorldY(lat) - cWorldY + H / 2];
+  const promises = [];
+  for (let dy = -1; dy <= 1; dy++) {
+    for (let dx = -1; dx <= 1; dx++) {
+      const tx = xTile + dx, ty = yTile + dy;
+      const url = `https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg&TILEMATRIXSET=PM&TILEMATRIX=${zoom}&TILEROW=${ty}&TILECOL=${tx}`;
+      promises.push(new Promise(resolve => {
+        const img = new Image(); img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          const drawX = (tx - xTile) * tileSize - (cWorldX % tileSize) + W / 2;
+          const drawY = (ty - yTile) * tileSize - (cWorldY % tileSize) + H / 2;
+          ctx.drawImage(img, Math.round(drawX), Math.round(drawY), tileSize, tileSize);
+          resolve();
+        };
+        img.onerror = resolve;
+        img.src = url;
+      }));
+    }
+  }
+  return Promise.all(promises).then(() => {
+    ctx.beginPath();
+    coords.forEach((c, i) => { const [px, py] = toPixel(c[1], c[0]); i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py); });
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(138,184,154,0.18)'; ctx.fill();
+    ctx.strokeStyle = '#8AB89A'; ctx.lineWidth = 2; ctx.stroke();
+  });
+}
+
+function selectFeature(feature, card) {
+  if (activeFeature && parcelsLayer) parcelsLayer.eachLayer(l => { if (l.feature === activeFeature) l.setStyle(STYLE_DEFAULT); });
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+  activeFeature = feature;
+  if (card) card.classList.add('active');
+  if (parcelsLayer) parcelsLayer.eachLayer(l => { if (l.feature === feature) { l.setStyle(STYLE_SELECTED); l.bringToFront(); } });
+}
+
+function renderCards(features, targetSurf, isLogement = false) {
+  allFeatures = features; renderedCount = 0;
+  currentTargetSurf = targetSurf; currentIsLogement = isLogement;
+  const list = document.getElementById('results-list'), countEl = document.getElementById('r-count');
+  list.innerHTML = '';
+  if (!features.length) {
+    countEl.textContent = '0 résultat';
+    list.innerHTML = `<div style="font-size:0.8rem;color:var(--muted);text-align:center;padding:20px 0;border:1px dashed var(--border);border-radius:8px;grid-column:1/-1;">Aucune parcelle trouvée.<br/>Essayez d'augmenter la tolérance.</div>`;
+    const hc = document.getElementById('handle-count');
+    hc.textContent = '0'; hc.classList.remove('show');
+    return;
+  }
+  const txt = features.length + ' parcelle' + (features.length > 1 ? 's' : '');
+  countEl.textContent = txt;
+  const hc = document.getElementById('handle-count');
+  hc.textContent = features.length; hc.classList.add('show');
+  loadMoreCards(targetSurf, isLogement);
+}
+
+function loadMoreCards(targetSurf, isLogement = false) {
+  const list = document.getElementById('results-list');
+  const oldBtn = list.querySelector('.load-more');
+  if (oldBtn) oldBtn.remove();
+  const batch = allFeatures.slice(renderedCount, renderedCount + BATCH);
+  batch.forEach((f, idx) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.dataset.featureIdx = renderedCount + idx;
+    const thumb = document.createElement('div'); thumb.className = 'card-thumb';
+    const thumbSV = document.createElement('div'); thumbSV.className = 'card-thumb-sv';
+    const svPlaceholder = document.createElement('div'); svPlaceholder.className = 'card-thumb-sv-placeholder';
+    svPlaceholder.innerHTML = '<span style="font-size:1.4rem">📷</span><small style="font-size:0.6rem;color:#93c5fd;font-weight:600">Chargement…</small>';
+    thumbSV.appendChild(svPlaceholder);
+
+    const thumbRight = document.createElement('div'); thumbRight.className = 'card-thumb-right';
+
+    const thumbInfo = document.createElement('div'); thumbInfo.className = 'card-thumb-info';
+    const surfHab = parseFloat(f.properties?.surface_habitable ?? 0);
+    const dpeClass = f.properties?.classe_energie || '';
+    const gesClass = f.properties?.classe_ges || '';
+    const dateDpe = f.properties?.date_dpe || '';
+    const surfParc = parseFloat(f.properties?.surface ?? f.properties?.contenance ?? 0);
+    const dpeColorsLocal = {A:'#0f7c3a',B:'#5cb85c',C:'#f0d000',D:'#ff9900',E:'#e74c3c',F:'#d92a2a',G:'#c1121f'};
+    const diffPct = (val, target) => target > 0 && val > 0 ? Math.abs(val - target) / target * 100 : null;
+    const diffColor = d => d === null ? 'var(--muted)' : d <= 5 ? '#15803d' : d <= 15 ? '#a16207' : '#dc2626';
+    const dHab = diffPct(surfHab, currentFilters.surfLog);
+    const dParc = diffPct(surfParc, currentFilters.surfCad);
+    const dpeMismatch = currentFilters.dpeE && dpeClass && dpeClass !== currentFilters.dpeE;
+    const gesMismatch = currentFilters.dpeG && gesClass && gesClass !== currentFilters.dpeG;
+    const dateMismatch = currentFilters.dpeDate && dateDpe && dateDpe < currentFilters.dpeDate;
+    const fmtDate = d => { if (!d) return '—'; const p = d.split('-'); return p.length === 3 ? `${p[2]}/${p[1]}/${p[0].slice(2)}` : d; };
+    const badge = (cls, mismatch, icon) => cls
+      ? `<span class="info-badge${mismatch ? ' info-badge-mismatch' : ''}" style="background:${dpeColorsLocal[cls] || '#999'};color:${cls === 'C' ? '#333' : '#fff'}">${icon}${cls}</span>`
+      : `<span class="info-badge info-badge-empty">${icon}—</span>`;
+    const diffHtml = (d) => d === null ? '' : `<span class="info-diff" style="color:${diffColor(d)}">±${d.toFixed(1)}%</span>`;
+    thumbInfo.innerHTML = `
+      <div class="info-line"><span class="info-icon">🏠</span><span class="info-val">${surfHab > 0 ? Math.round(surfHab) + ' m²' : '—'}</span>${diffHtml(dHab)}</div>
+      <div class="info-line"><span class="info-icon">📐</span><span class="info-val">${surfParc > 0 ? Math.round(surfParc) + ' m²' : '—'}</span>${diffHtml(dParc)}</div>
+      <div class="info-line info-badges">${badge(dpeClass, dpeMismatch, '⚡')}${badge(gesClass, gesMismatch, '🌿')}${(dpeMismatch || gesMismatch) ? '<span class="info-warn" title="Classe différente du filtre">⚠️</span>' : ''}</div>
+      <div class="info-line"><span class="info-icon">📅</span><span class="info-val${dateMismatch ? ' info-val-mismatch' : ''}">${fmtDate(dateDpe)}</span></div>
+    `;
+
+    const thumbIGN = document.createElement('div'); thumbIGN.className = 'card-thumb-ign';
+    const canvas = document.createElement('canvas'); canvas.width = 256; canvas.height = 256;
+    thumbIGN.appendChild(canvas);
+
+    thumbRight.appendChild(thumbInfo);
+    thumbRight.appendChild(thumbIGN);
+    thumb.appendChild(thumbSV);
+    thumb.appendChild(thumbRight);
+    card.appendChild(thumb);
+    card.addEventListener('mouseenter', () => { if (!parcelsLayer) return; parcelsLayer.eachLayer(l => { if (l.feature === f && l.feature !== activeFeature) l.setStyle(STYLE_HOVER); }); });
+    card.addEventListener('mouseleave', () => { if (!parcelsLayer) return; parcelsLayer.eachLayer(l => { if (l.feature === f && l.feature !== activeFeature) l.setStyle(STYLE_DEFAULT); }); });
+    const observer = new IntersectionObserver(entries => {
+      if (!entries[0].isIntersecting) return;
+      observer.disconnect();
+      let lat = 0, lng = 0;
+      try {
+        const geom = f.geometry;
+        const coords = geom.type === 'MultiPolygon' ? geom.coordinates[0][0] : geom.coordinates[0];
+        let mnLat = Infinity, mxLat = -Infinity, mnLng = Infinity, mxLng = -Infinity;
+        coords.forEach(c => { mnLng = Math.min(mnLng, c[0]); mxLng = Math.max(mxLng, c[0]); mnLat = Math.min(mnLat, c[1]); mxLat = Math.max(mxLat, c[1]); });
+        lat = (mnLat + mxLat) / 2; lng = (mnLng + mxLng) / 2;
+      } catch {}
+      const thumbCoords = (f.geometry.type === 'MultiPolygon' ? f.geometry.coordinates[0][0] : f.geometry.coordinates[0]);
+      drawThumb(canvas, f, computeFitZoom(thumbCoords, 256, 0.8));
+      const view = computeParcelView(f);
+      const svLat = view.lat || lat;
+      const svLng = view.lng || lng;
+      const headingParam = view.heading !== null ? `&heading=${view.heading}` : '';
+      const embedUrl = `https://www.google.com/maps/embed/v1/streetview?key=AIzaSyD1pMAMR9M6vLrsfoLJ5GDyIbkDTgLvqg4&location=${svLat},${svLng}${headingParam}&fov=100&pitch=0`;
+      const iframe = document.createElement('iframe');
+      iframe.src = embedUrl;
+      iframe.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:none;';
+      iframe.loading = 'lazy';
+      iframe.allowFullscreen = true;
+      svPlaceholder.remove();
+      thumbSV.appendChild(iframe);
+    }, { threshold: 0.1 });
+    observer.observe(card);
+    let mouseOverSV = false;
+    thumbSV.addEventListener('mouseenter', () => { mouseOverSV = true; });
+    thumbSV.addEventListener('mouseleave', () => { mouseOverSV = false; });
+    card.addEventListener('click', () => {
+      if (mouseOverSV) return;
+      selectFeature(f, card);
+      if (!parcelsLayer) return;
+      parcelsLayer.eachLayer(l => {
+        if (l.feature === f) {
+          map.fitBounds(l.getBounds(), { padding: [80, 80] });
+          l.getPopup().setLatLng(L.latLng(l.getBounds().getNorth(), l.getBounds().getCenter().lng)).openOn(map);
+        }
+      });
+      if (isMobile()) setPanelState('');
+    });
+    list.appendChild(card);
+  });
+  renderedCount += batch.length;
+  if (renderedCount < allFeatures.length) {
+    const sentinel = document.createElement('div');
+    sentinel.style.cssText = 'height:10px;grid-column:1/-1;';
+    list.appendChild(sentinel);
+    const scrollObs = new IntersectionObserver(entries => {
+      if (!entries[0].isIntersecting) return;
+      scrollObs.disconnect(); sentinel.remove(); loadMoreCards(targetSurf, isLogement);
+    }, { threshold: 0.1 });
+    scrollObs.observe(sentinel);
+  }
+}
+
+function openGoogleEarth(lat, lng) {
+  return `https://earth.google.com/web/@${lat},${lng},50a,150d,75y,0h,1t,0r`;
+}
+
+function bringFeatureToTop(f) {
+  const oldIdx = allFeatures.indexOf(f);
+  if (oldIdx < 0) return;
+  if (oldIdx > 0) {
+    allFeatures.splice(oldIdx, 1);
+    allFeatures.unshift(f);
+  }
+  const list = document.getElementById('results-list');
+  list.innerHTML = '';
+  renderedCount = 0;
+  loadMoreCards(currentTargetSurf, currentIsLogement);
+}
+
+function bindParcelClick(layer) {
+  layer.on('click', function() {
+    if (measureMode) return;
+    const f = layer.feature;
+    bringFeatureToTop(f);
+    const card = document.querySelector('.card[data-feature-idx="0"]');
+    selectFeature(f, card);
+    layer.getPopup().setLatLng(L.latLng(layer.getBounds().getNorth(), layer.getBounds().getCenter().lng)).openOn(map);
+    const ps = document.querySelector('.panel-scroll');
+    if (ps) ps.scrollTop = 0;
+    if (isMobile()) setPanelState('mid');
+  });
+}
+
+function drawParcels(features, targetSurf, isLogement = false) {
+  if (parcelsLayer) { map.removeLayer(parcelsLayer); parcelsLayer = null; }
+  activeFeature = null;
+  parcelsLayer = L.geoJSON(features, {
+    style: () => ({ ...STYLE_DEFAULT }),
+    onEachFeature: (f, layer) => {
+      const surf = parseFloat(f.properties?.surface ?? f.properties?.contenance ?? 0);
+      const sh = parseFloat(f.properties?.surface_habitable ?? 0);
+      const compareTo = isLogement ? sh : surf;
+      const hasEcart = targetSurf > 0 && compareTo > 0;
+      const ecart = hasEcart ? Math.abs(compareTo - targetSurf) / targetSurf * 100 : 0;
+      const ecartLabel = isLogement ? 'Écart hab.' : 'Écart';
+      const ecartHtml = hasEcart
+        ? '<strong style="color:' + (ecart <= 5 ? '#15803d' : ecart <= 15 ? '#a16207' : '#dc2626') + '">±' + ecart.toFixed(1) + '%</strong>'
+        : '<strong style="color:var(--muted)">—</strong>';
+      const uid = Math.random().toString(36).slice(2, 8);
+      let lat = 0, lng = 0;
+      try { lat = layer.getBounds().getCenter().lat; lng = layer.getBounds().getCenter().lng; } catch {}
+      const popupHtml = '<div class="popup-id"><span class="popup-dot"></span><span id="addr-' + uid + '">Chargement adresse…</span></div>'
+        + '<div style="color:var(--mid)">Surface : <strong style="color:var(--ink)">' + Math.round(surf) + ' m²</strong> · ' + ecartLabel + ' : ' + ecartHtml + '</div>'
+        + '<div class="popup-links">'
+        + '<a class="popup-link" href="https://explore.data.gouv.fr/fr/immobilier?lng=' + lng + '&lat=' + lat + '&zoom=17" target="_blank">Ventes DVF</a>'
+        + '<a class="popup-link" id="earth-' + uid + '" href="#" target="_blank">🌍 Google Earth</a>'
+        + '<a class="popup-link" id="geo-' + uid + '" href="#" target="_blank">Géoportail</a>'
+        + '</div>';
+      layer.bindPopup(popupHtml);
+      layer.on('mouseover', function() { if (layer.feature !== activeFeature) layer.setStyle(STYLE_HOVER); });
+      layer.on('mouseout',  function() { if (layer.feature !== activeFeature) layer.setStyle(STYLE_DEFAULT); });
+      bindParcelClick(layer);
+      layer.on('popupopen', async () => {
+        try {
+          const tryAddr = async (params) => { const d = await fetch(`https://api-adresse.data.gouv.fr/reverse/?lon=${lng}&lat=${lat}&limit=1${params}`).then(r => r.json()); return d.features?.[0]?.properties?.label || null; };
+          const addr = await tryAddr('&type=housenumber') || await tryAddr('');
+          const el = document.getElementById(`addr-${uid}`); if (el) el.textContent = addr || 'Adresse non trouvée';
+        } catch {}
+        const elEarth = document.getElementById('earth-' + uid);
+        if (elEarth) elEarth.href = openGoogleEarth(lat, lng);
+        const elGeo = document.getElementById('geo-' + uid);
+        if (elGeo) elGeo.href = 'https://www.geoportail-urbanisme.gouv.fr/map/#lon=' + lng + '&lat=' + lat + '&zoom=19';
+      });
+    }
+  }).addTo(map);
+  if (features.length) { try { map.fitBounds(parcelsLayer.getBounds(), { padding: [40, 40] }); } catch {} }
+}
+
+const INSEE_ARRONDISSEMENTS = {
+  '75056': Array.from({length: 20}, (_, i) => String(75101 + i)),
+  '13055': Array.from({length: 16}, (_, i) => String(13201 + i)),
+  '69123': Array.from({length: 9},  (_, i) => String(69381 + i))
+};
+
+async function fetchParcelles({ insee, surfCad = 0, tolCad = 0, surfLog = 0, tolLog = 4 }) {
+  const codes = INSEE_ARRONDISSEMENTS[insee] || [insee];
+  const classeEnergie = document.getElementById('dpe-energie-selected').value;
+  const classeGes = document.getElementById('dpe-ges-selected').value;
+  const dateMin = document.getElementById('dpe-date-input').value;
+  const buildUrl = (code) => {
+    let url = `https://parcelleid.duckdns.org/parcelles?insee=${code}`;
+    if (surfCad > 0) url += `&surf=${surfCad}&tol=${tolCad}`;
+    if (surfLog > 0) url += `&surf_log=${surfLog}&tol_log=${tolLog}`;
+    if (classeEnergie) url += `&classe_energie=${classeEnergie}`;
+    if (classeGes) url += `&classe_ges=${classeGes}`;
+    if (dateMin) url += `&date_dpe_min=${dateMin}`;
+    return url;
+  };
+  const responses = await Promise.all(codes.map(c => fetch(buildUrl(c)).catch(() => null)));
+  if (!responses.some(r => r && r.ok)) throw new Error("Impossible de joindre l'API.");
+  const all = [];
+  for (const r of responses) {
+    if (!r || !r.ok) continue;
+    const fc = await r.json().catch(() => null);
+    if (fc?.features) all.push(...fc.features);
+  }
+  return all;
+}
+
+async function doSearch() {
+  const surfLogement = parseFloat(document.getElementById('surface-logement-input').value);
+  const surfCadastrale = parseFloat(surfInput.value);
+  const tol = parseInt(tolRange.value);
+  const commune = selectedCommune;
+  if (!commune) { setStatus('⚠️ Sélectionnez une commune dans la liste.', 'err'); return; }
+  const dpeE = document.getElementById('dpe-energie-selected').value;
+  const dpeG = document.getElementById('dpe-ges-selected').value;
+  const dpeDate = document.getElementById('dpe-date-input').value;
+  const hasSurf = (surfLogement > 0) || (surfCadastrale > 0);
+  const hasDpe = !!(dpeE || dpeG || dpeDate);
+  if (!hasSurf && !hasDpe) { setStatus('⚠️ Renseignez au moins un critère (surface, classe DPE/GES ou date diagnostic).', 'err'); return; }
+  currentFilters = {
+    surfLog: surfLogement > 0 ? surfLogement : 0,
+    surfCad: surfCadastrale > 0 ? surfCadastrale : 0,
+    dpeE, dpeG, dpeDate
+  };
+  // Cible pour le tri et l'affichage de l'écart % sur les cartes.
+  const surf = surfLogement > 0 ? surfLogement : surfCadastrale;
+  const btn = document.getElementById('search-btn'); btn.disabled = true;
+  setProgress(5); setStatus('<span class="spinner"></span>Chargement du contour de la commune…');
+  try {
+    const communeGeo = await fetch(`https://geo.api.gouv.fr/communes/${commune.code}?fields=contour&format=geojson&geometry=contour`).then(r => { if (!r.ok) throw new Error('Contour commune introuvable'); return r.json(); });
+    if (communeLayer) map.removeLayer(communeLayer);
+    communeLayer = L.geoJSON(communeGeo, { style: { color: '#8AB89A', weight: 1.5, fillOpacity: 0.03, dashArray: '5,4', opacity: 0.4 } }).addTo(map);
+    map.fitBounds(communeLayer.getBounds(), { padding: [20, 20] });
+    setProgress(10); setStatus('<span class="spinner"></span>Interrogation de l\'API cadastre…');
+    const features = await fetchParcelles({
+      insee: commune.code,
+      surfCad: surfCadastrale > 0 ? surfCadastrale : 0,
+      tolCad: tol,
+      surfLog: surfLogement > 0 ? surfLogement : 0,
+      tolLog: 4
+    });
+    features.sort((a, b) => {
+      if (surfLogement > 0) {
+        const shA = parseFloat(a.properties?.surface_habitable ?? 0);
+        const shB = parseFloat(b.properties?.surface_habitable ?? 0);
+        return Math.abs(shA - surfLogement) - Math.abs(shB - surfLogement);
+      }
+      const sA = parseFloat(a.properties?.surface ?? a.properties?.contenance ?? 0);
+      const sB = parseFloat(b.properties?.surface ?? b.properties?.contenance ?? 0);
+      return Math.abs(sA - surf) - Math.abs(sB - surf);
+    });
+    setProgress(100);
+    document.getElementById('overlay').classList.add('gone');
+    const mc = document.getElementById('map-count'); mc.style.display = 'block'; mc.innerHTML = `<em>${features.length}</em> parcelle${features.length > 1 ? 's' : ''}`;
+    const isLogement = surfLogement > 0;
+    drawParcels(features, surf, isLogement);
+    renderCards(features, surf, isLogement);
+    if (features.length > 0) clearStatus(); else setStatus("Aucune parcelle trouvée. Essayez d'augmenter la tolérance.", 'err');
+    if (features.length > 0) collapseSearch();
+    if (isMobile()) setPanelState('mid');
+  } catch (err) { setStatus(`❌ ${err.message}`, 'err'); setProgress(100); }
+  btn.disabled = false;
+}
+
+function doReset() {
+  document.getElementById('commune-input').value = '';
+  document.getElementById('surface-input').value = '';
+  document.getElementById('surface-logement-input').value = '';
+  document.getElementById('dpe-date-input').value = '';
+  document.getElementById('dpe-energie-selected').value = '';
+  document.getElementById('dpe-ges-selected').value = '';
+  document.querySelectorAll('.dpe-class-btn.active').forEach(b => b.classList.remove('active'));
+  document.getElementById('tol-range').value = 3;
+  selectedCommune = null; allFeatures = []; renderedCount = 0; activeFeature = null;
+  updateTol();
+  if (parcelsLayer) { map.removeLayer(parcelsLayer); parcelsLayer = null; }
+  if (communeLayer) { map.removeLayer(communeLayer); communeLayer = null; }
+  document.getElementById('results-list').innerHTML = `<div style="font-size:0.8rem;color:var(--muted);text-align:center;padding:20px 0;border:1px dashed var(--border);border-radius:8px;grid-column:1/-1;">Les résultats apparaîtront ici</div>`;
+  document.getElementById('r-count').textContent = '';
+  document.getElementById('map-count').style.display = 'none';
+  document.getElementById('overlay').classList.remove('gone');
+  const hc = document.getElementById('handle-count'); hc.classList.remove('show');
+  clearStatus();
+  map.setView([46.6, 2.3], 5);
+  clearMeasure(); stopMeasure();
+  expandSearch();
+  updateSearchBtn();
+  if (isMobile()) setPanelState('mid');
+}
+
+function buildSearchSummary() {
+  const commune = selectedCommune ? selectedCommune.nom : '—';
+  const surfLog = parseFloat(document.getElementById('surface-logement-input').value);
+  const surfCad = parseFloat(document.getElementById('surface-input').value);
+  const tol = parseInt(document.getElementById('tol-range').value);
+  const dpeE = document.getElementById('dpe-energie-selected').value;
+  const dpeG = document.getElementById('dpe-ges-selected').value;
+  const dpeDate = document.getElementById('dpe-date-input').value;
+
+  document.getElementById('search-summary-location').textContent = '📍 ' + commune;
+
+  const chips = [];
+  if (surfLog > 0) chips.push(`🏠 ${surfLog} m²`);
+  if (surfCad > 0) {
+    if (tol === 0) {
+      chips.push(`📐 parcelle ${surfCad} m² (exact)`);
+    } else {
+      const min = Math.round(surfCad * (1 - tol / 100));
+      const max = Math.round(surfCad * (1 + tol / 100));
+      chips.push(`📐 parcelle entre ${min} et ${max} m²`);
+    }
+  }
+  if (dpeE) chips.push(`DPE ${dpeE}`);
+  if (dpeG) chips.push(`GES ${dpeG}`);
+  if (dpeDate) chips.push(`📅 ${dpeDate}`);
+  document.getElementById('search-summary-chips').innerHTML =
+    chips.map(c => `<span class="search-summary-chip">${c}</span>`).join('');
+}
+
+function collapseSearch() {
+  buildSearchSummary();
+  document.getElementById('search-form-block').classList.add('collapsed');
+  document.getElementById('search-summary').classList.add('show');
+  const ps = document.querySelector('.panel-scroll');
+  if (ps) ps.scrollTop = 0;
+}
+
+function expandSearch() {
+  document.getElementById('search-form-block').classList.remove('collapsed');
+  document.getElementById('search-summary').classList.remove('show');
+  if (isMobile()) {
+    setPanelState('open');
+    const ps = document.querySelector('.panel-scroll');
+    if (ps) ps.scrollTop = 0;
+  }
+}
+
+communeInput.addEventListener('keydown', e => { if (e.key === 'Enter' && selectedCommune) doSearch(); });
+surfInput.addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
+
+if (isMobile()) setPanelState('mid');
+
+// OUTIL DE MESURE
+let measureMode = null, measurePoints = [], measureLines = [], liveTooltip = null;
+
+function haversineM(a, b) {
+  const R = 6371000, toRad = x => x * Math.PI / 180, dLat = toRad(b.lat - a.lat), dLng = toRad(b.lng - a.lng);
+  const x = Math.sin(dLat/2)**2 + Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
+}
+function totalDist(pts) { let d = 0; for (let i = 1; i < pts.length; i++) d += haversineM(pts[i-1], pts[i]); return d; }
+function polyAreaM2(pts) {
+  if (pts.length < 3) return 0;
+  const R = 6371000, ref = pts[0].lat * Math.PI / 180;
+  const xy = pts.map(p => ({ x: p.lng * Math.PI / 180 * R * Math.cos(ref), y: p.lat * Math.PI / 180 * R }));
+  let area = 0;
+  for (let i = 0; i < xy.length; i++) { const j = (i + 1) % xy.length; area += xy[i].x * xy[j].y - xy[j].x * xy[i].y; }
+  return Math.abs(area / 2);
+}
+const fmtDist = m => m >= 1000 ? (m/1000).toFixed(2)+' km' : Math.round(m)+' m';
+const fmtArea = m2 => m2 >= 10000 ? (m2/10000).toFixed(2)+' ha' : Math.round(m2)+' m²';
+
+function updateMeasureResult() {
+  const box = document.getElementById('measure-result');
+  if (!measurePoints.length) { box.classList.remove('show'); return; }
+  box.classList.add('show');
+  document.getElementById('measure-label').textContent = measureMode === 'area' ? '📐 Périmètre' : '📏 Distance';
+  document.getElementById('measure-val').textContent = fmtDist(totalDist(measurePoints));
+  const hasArea = measureMode === 'area' && measurePoints.length >= 3;
+  document.getElementById('measure-area-wrap').style.display = hasArea ? 'inline' : 'none';
+  document.getElementById('measure-sep2').style.display = hasArea ? 'inline-block' : 'none';
+  if (hasArea) document.getElementById('measure-area-val').textContent = fmtArea(polyAreaM2(measurePoints));
+}
+
+function redrawMeasure(live) {
+  measureLines.forEach(l => map.removeLayer(l)); measureLines = [];
+  if (liveTooltip) { map.removeLayer(liveTooltip); liveTooltip = null; }
+  if (!measurePoints.length) return;
+  const pts = live ? [...measurePoints, live] : [...measurePoints];
+  const color = measureMode === 'distance' ? '#8AB89A' : '#16a34a';
+  if (pts.length >= 2) measureLines.push(L.polyline(pts, { color, weight: 2.5, opacity: 0.9 }).addTo(map));
+  if (measureMode === 'area' && pts.length >= 3) {
+    measureLines.push(L.polygon(pts, { color, weight: 2, fillColor: color, fillOpacity: 0.12 }).addTo(map));
+    const cLat = pts.reduce((s, p) => s + p.lat, 0) / pts.length;
+    const cLng = pts.reduce((s, p) => s + p.lng, 0) / pts.length;
+    measureLines.push(L.tooltip({ permanent: true, direction: 'center', className: 'measure-tooltip' }).setLatLng([cLat, cLng]).setContent(fmtArea(polyAreaM2(pts))).addTo(map));
+  }
+  measurePoints.forEach((pt, i) => measureLines.push(L.circleMarker(pt, { radius: i === 0 ? 7 : 5, color, weight: 2, fillColor: i === 0 ? color : 'white', fillOpacity: 1 }).addTo(map)));
+  if (live && measurePoints.length) {
+    const last = measurePoints[measurePoints.length - 1];
+    liveTooltip = L.tooltip({ permanent: true, direction: 'top', offset: [0, -6], className: 'measure-tooltip' }).setLatLng([(last.lat + live.lat) / 2, (last.lng + live.lng) / 2]).setContent(fmtDist(haversineM(last, live))).addTo(map);
+  }
+  if (!live && measurePoints.length >= 2) {
+    const last = measurePoints[measurePoints.length - 1];
+    measureLines.push(L.tooltip({ permanent: true, direction: 'top', offset: [0, -10], className: 'measure-tooltip' }).setLatLng(last).setContent(fmtDist(totalDist(measurePoints))).addTo(map));
+  }
+}
+
+function toggleMeasureMode(mode) {
+  if (measureMode === mode) { stopMeasure(); return; }
+  clearMeasure(); measureMode = mode;
+  map.getContainer().classList.add('measuring'); map.closePopup();
+  document.getElementById('btn-measure-dist').classList.toggle('active', mode === 'distance');
+  document.getElementById('btn-measure-area').classList.toggle('active', mode === 'area');
+  if (parcelsLayer) parcelsLayer.eachLayer(l => l.off('click'));
+  map.on('click', onMeasureClick); map.on('mousemove', onMeasureMove); map.on('dblclick', onMeasureDblClick);
+  map.doubleClickZoom.disable();
+  if (isMobile()) setPanelState('');
+}
+
+function stopMeasure() {
+  measureMode = null; map.getContainer().classList.remove('measuring');
+  map.off('click', onMeasureClick); map.off('mousemove', onMeasureMove); map.off('dblclick', onMeasureDblClick);
+  map.doubleClickZoom.enable();
+  document.getElementById('btn-measure-dist').classList.remove('active');
+  document.getElementById('btn-measure-area').classList.remove('active');
+  if (liveTooltip) { map.removeLayer(liveTooltip); liveTooltip = null; }
+  if (parcelsLayer) parcelsLayer.eachLayer(l => bindParcelClick(l));
+  redrawMeasure(null); updateMeasureResult();
+}
+
+function clearMeasure() {
+  measurePoints = []; measureLines.forEach(l => map.removeLayer(l)); measureLines = [];
+  if (liveTooltip) { map.removeLayer(liveTooltip); liveTooltip = null; }
+  document.getElementById('measure-result').classList.remove('show');
+}
+
+function onMeasureClick(e) { L.DomEvent.stopPropagation(e); map.closePopup(); measurePoints.push(e.latlng); redrawMeasure(null); updateMeasureResult(); }
+function onMeasureMove(e) { if (measurePoints.length) redrawMeasure(e.latlng); }
+function onMeasureDblClick(e) { L.DomEvent.stopPropagation(e); if (measureMode === 'distance' && measurePoints.length) measurePoints.pop(); stopMeasure(); }
+
+// AUTH
+const API = 'https://parcelleid.duckdns.org';
+let authUser = null;
+
+function getToken() { return localStorage.getItem('access_token'); }
+function saveTokens(access, refresh) { localStorage.setItem('access_token', access); if (refresh) localStorage.setItem('refresh_token', refresh); }
+function clearTokens() { localStorage.removeItem('access_token'); localStorage.removeItem('refresh_token'); }
+
+async function refreshAccessToken() {
+  const rt = localStorage.getItem('refresh_token'); if (!rt) return false;
+  try {
+    const r = await fetch(`${API}/auth/refresh`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({refresh_token: rt}) });
+    if (!r.ok) { clearTokens(); return false; }
+    const d = await r.json(); localStorage.setItem('access_token', d.access_token); return true;
+  } catch { return false; }
+}
+
+async function authFetch(url, opts = {}) {
+  opts.headers = { ...opts.headers, 'Authorization': `Bearer ${getToken()}` };
+  let r = await fetch(url, opts);
+  if (r.status === 401) { const ok = await refreshAccessToken(); if (ok) { opts.headers['Authorization'] = `Bearer ${getToken()}`; r = await fetch(url, opts); } }
+  return r;
+}
+
+async function loadMe() {
+  if (!getToken()) return;
+  try {
+    const r = await authFetch(`${API}/auth/me`);
+    if (!r.ok) { clearTokens(); updateAuthUI(null); return; }
+    authUser = await r.json();
+    updateAuthUI(authUser);
+  } catch {}
+}
+
+function updateAuthUI(user) {
+  const hdr = document.getElementById('auth-header');
+  const cb = document.getElementById('credits-bar');
+  if (!user) {
+    hdr.innerHTML = `<button class="user-badge" onclick="openAuth('login')">Se connecter</button>`;
+    cb.classList.remove('show'); return;
+  }
+  const isPro = user.plan === 'pro';
+  hdr.innerHTML = `<div class="user-badge" onclick="doLogout()" style="cursor:pointer"><span>${user.email.split('@')[0]}</span><span class="plan-pill ${isPro?'pro':''}">${isPro?'Pro':'Free'}</span></div>`;
+  if (!isPro) { cb.classList.add('show'); document.getElementById('credits-count').textContent = user.credits; }
+  else { cb.classList.remove('show'); }
+}
+
+function openAuth(view) { document.getElementById('auth-overlay').classList.remove('hidden'); switchAuth(view); }
+function closeAuth() { document.getElementById('auth-overlay').classList.add('hidden'); }
+function switchAuth(view) {
+  document.getElementById('auth-login-view').style.display = view === 'login' ? '' : 'none';
+  document.getElementById('auth-register-view').style.display = view === 'register' ? '' : 'none';
+  document.getElementById('auth-verify-view').style.display = view === 'verify' ? '' : 'none';
+}
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pwd = document.getElementById('login-pwd').value;
+  const msg = document.getElementById('login-msg');
+  msg.className = 'auth-msg'; msg.textContent = '';
+  try {
+    const r = await fetch(`${API}/auth/login`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({email, password: pwd}) });
+    const d = await r.json();
+    if (!r.ok) { msg.className = 'auth-msg err'; msg.textContent = d.detail || 'Erreur de connexion'; return; }
+    saveTokens(d.access_token, d.refresh_token);
+    await loadMe(); closeAuth();
+  } catch { msg.className = 'auth-msg err'; msg.textContent = 'Erreur réseau'; }
+}
+
+async function doRegister() {
+  const email = document.getElementById('reg-email').value.trim();
+  const pwd = document.getElementById('reg-pwd').value;
+  const msg = document.getElementById('register-msg');
+  msg.className = 'auth-msg'; msg.textContent = '';
+  try {
+    const r = await fetch(`${API}/auth/register`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({email, password: pwd}) });
+    const d = await r.json();
+    if (!r.ok) { msg.className = 'auth-msg err'; msg.textContent = d.detail || 'Erreur'; return; }
+    document.getElementById('verify-sub').textContent = `Un lien de confirmation a été envoyé à ${email}.`;
+    switchAuth('verify');
+  } catch { msg.className = 'auth-msg err'; msg.textContent = 'Erreur réseau'; }
+}
+
+function doLogout() { clearTokens(); authUser = null; updateAuthUI(null); }
+
+async function checkVerifyToken() {
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('verify'); if (!token) return;
+  try {
+    const r = await fetch(`${API}/auth/verify-email?token=${token}`, { method: 'POST' });
+    if (r.ok) {
+      openAuth('login');
+      const m = document.getElementById('login-msg');
+      m.className = 'auth-msg ok';
+      m.textContent = '✅ Email vérifié ! Vous pouvez vous connecter.';
+    }
+  } catch {}
+  window.history.replaceState({}, '', window.location.pathname);
+}
+
+// STREET VIEW MODAL
+function openSVModal(lat, lng, feature = null) {
+  let svLat = lat, svLng = lng, headingParam = '';
+  if (feature) {
+    const view = computeParcelView(feature);
+    if (view.lat && view.lng) { svLat = view.lat; svLng = view.lng; }
+    if (view.heading !== null) headingParam = `&heading=${view.heading}`;
+  }
+  const url = `https://www.google.com/maps/embed/v1/streetview?key=AIzaSyD1pMAMR9M6vLrsfoLJ5GDyIbkDTgLvqg4&location=${svLat},${svLng}${headingParam}&fov=100&pitch=0`;
+  document.getElementById('sv-modal-iframe').src = url;
+  document.getElementById('sv-modal').classList.add('show');
+}
+
+function closeSVModal() {
+  document.getElementById('sv-modal').classList.remove('show');
+  document.getElementById('sv-modal-iframe').src = '';
+}
+
+document.getElementById('sv-modal').addEventListener('click', (e) => {
+  if (e.target.id === 'sv-modal') closeSVModal();
+});
+
+// SEARCH BTN INIT
+const surfLogementInput = document.getElementById('surface-logement-input');
+const searchBtn = document.getElementById('search-btn');
+const searchHint = document.getElementById('search-hint');
+
+function updateSearchBtn() {
+  const surfLog = parseFloat(surfLogementInput.value);
+  const surfCad = parseFloat(surfInput.value);
+  const dpeE = document.getElementById('dpe-energie-selected').value;
+  const dpeG = document.getElementById('dpe-ges-selected').value;
+  const dpeDate = document.getElementById('dpe-date-input').value;
+  const hasFilter = (surfLog > 0) || (surfCad > 0) || dpeE || dpeG || dpeDate;
+  searchBtn.disabled = !hasFilter;
+  searchHint.style.display = hasFilter ? 'none' : 'block';
+}
+
+surfLogementInput.addEventListener('input', updateSearchBtn);
+surfInput.addEventListener('input', updateSearchBtn);
+document.getElementById('dpe-date-input').addEventListener('input', updateSearchBtn);
+updateSearchBtn();
+loadMe();
+checkVerifyToken();
+
+document.querySelectorAll('.energie-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    const already = btn.classList.contains('active');
+    document.querySelectorAll('.energie-btn').forEach(b => b.classList.remove('active'));
+    if (!already) { btn.classList.add('active'); document.getElementById('dpe-energie-selected').value = btn.dataset.class; }
+    else { document.getElementById('dpe-energie-selected').value = ''; }
+    updateSearchBtn();
+  });
+});
+
+document.querySelectorAll('.ges-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    const already = btn.classList.contains('active');
+    document.querySelectorAll('.ges-btn').forEach(b => b.classList.remove('active'));
+    if (!already) { btn.classList.add('active'); document.getElementById('dpe-ges-selected').value = btn.dataset.class; }
+    else { document.getElementById('dpe-ges-selected').value = ''; }
+    updateSearchBtn();
+  });
+});
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('overlay').classList.add('gone');
+  }, 500);
+});
+
+// ── Bootstrap depuis la landing ScanImmo : lit les params URL et lance la recherche
+(function scanimmoBootstrap() {
+  const params = new URLSearchParams(window.location.search);
+  if (!params.has('commune') && !params.has('insee')) return;
+  const communeName = params.get('commune') || '';
+  const insee = params.get('insee') || '';
+  const lat = parseFloat(params.get('lat')) || null;
+  const lng = parseFloat(params.get('lng')) || null;
+  if (communeName) document.getElementById('commune-input').value = communeName;
+  if (insee) { selectedCommune = { nom: communeName || insee, code: insee, lat, lng }; }
+  const surfLog = params.get('surf_log');
+  if (surfLog) document.getElementById('surface-logement-input').value = surfLog;
+  const surfCad = params.get('surf_cad');
+  if (surfCad) document.getElementById('surface-input').value = surfCad;
+  const tol = params.get('tol');
+  if (tol !== null && tol !== '' && !isNaN(parseInt(tol, 10))) {
+    document.getElementById('tol-range').value = parseInt(tol, 10);
+    if (typeof updateTol === 'function') updateTol();
+  }
+  const dpe = params.get('dpe');
+  if (dpe && /^[A-G]$/i.test(dpe)) {
+    const btn = document.querySelector(`.energie-btn[data-class="${dpe.toUpperCase()}"]`);
+    if (btn) btn.click();
+  }
+  const ges = params.get('ges');
+  if (ges && /^[A-G]$/i.test(ges)) {
+    const btn = document.querySelector(`.ges-btn[data-class="${ges.toUpperCase()}"]`);
+    if (btn) btn.click();
+  }
+  const date = params.get('date');
+  if (date) document.getElementById('dpe-date-input').value = date;
+  window.history.replaceState({}, '', window.location.pathname);
+  if (selectedCommune && selectedCommune.code) {
+    if (typeof updateSearchBtn === 'function') updateSearchBtn();
+    setTimeout(() => { if (typeof doSearch === 'function') doSearch(); }, 200);
+  }
+})();
+</script>
+</body>
+</html>

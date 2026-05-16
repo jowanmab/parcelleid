@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <title>ScanImmo · Géolocaliser une annonce immo</title>
+  <title>ScanImmo · D'où viennent les données ?</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="./assets/favicon.svg">
   <link rel="stylesheet" href="./styles.css">
@@ -20,14 +20,12 @@
 
   <script src="./image-slot.js"></script>
   <script type="text/babel" src="./js/icons.jsx"></script>
-  <script type="text/babel" src="./js/Illustrations.jsx"></script>
-  <script type="text/babel" src="./js/HeroForm.jsx"></script>
-  <script type="text/babel" src="./js/HowItWorks.jsx"></script>
-  <script type="text/babel" src="./js/Landing.jsx"></script>
+  <script type="text/babel" src="./js/BlogIllustrations.jsx"></script>
+  <script type="text/babel" src="./js/Article.jsx"></script>
   <script type="text/babel">
     const root = ReactDOM.createRoot(document.getElementById('root'));
     const isMobile = window.innerWidth < 720;
-    root.render(<Landing device={isMobile ? 'mobile' : 'desktop'} style="chaleureux" decor="personnages" energy="aere"/>);
+    root.render(<Article variant="sober" device={isMobile ? 'mobile' : 'desktop'} style="chaleureux" decor="personnages" energy="aere"/>);
   </script>
 </body>
 </html>

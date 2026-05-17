@@ -915,9 +915,14 @@ function loadMoreCards(targetSurf, isLogement = false) {
       ? `<span class="info-badge${mismatch ? ' info-badge-mismatch' : ''}" style="background:${dpeColorsLocal[cls] || '#999'};color:${cls === 'C' ? '#333' : '#fff'}">${icon}${cls}</span>`
       : `<span class="info-badge info-badge-empty">${icon}—</span>`;
     const diffHtml = (d) => d === null ? '' : `<span class="info-diff" style="color:${diffColor(d)}">±${d.toFixed(1)}%</span>`;
-    const multiTip = `${nbLogements} logements correspondent à vos critères dans cet immeuble (DPE, GES ou date différents). Précisez la classe DPE, GES ou la date du diagnostic pour distinguer le bon.`;
+    const hasDpeFilter = !!(currentFilters.surfLog || currentFilters.dpeE || currentFilters.dpeG || currentFilters.dpeDate);
+    const multiTip = hasDpeFilter
+      ? `${nbLogements} logements correspondent à vos critères dans cet immeuble (autres classes DPE/GES ou dates différentes). Précisez la classe DPE, GES ou la date du diagnostic pour distinguer le bon.`
+      : `Cette parcelle compte ${nbLogements} logements avec un DPE recensé. Ajoutez une surface logement, une classe DPE/GES ou une date pour cibler un logement précis.`;
     const multiHtml = nbLogements > 1
-      ? `<div class="info-multi" title="${multiTip}">🏘️ +${nbLogements - 1} autre${nbLogements > 2 ? 's' : ''} logement${nbLogements > 2 ? 's' : ''} ici · Affinez votre recherche</div>`
+      ? (hasDpeFilter
+          ? `<div class="info-multi" title="${multiTip}">🏘️ +${nbLogements - 1} autre${nbLogements > 2 ? 's' : ''} logement${nbLogements > 2 ? 's' : ''} ici · Affinez votre recherche</div>`
+          : `<div class="info-multi" title="${multiTip}">🏘️ ${nbLogements} logements DPE sur cette parcelle · Affinez pour cibler</div>`)
       : '';
     thumbInfo.innerHTML = `
       <div class="info-line"><span class="info-icon">🏠</span><span class="info-val">${surfHab > 0 ? Math.round(surfHab) + ' m²' : '—'}</span>${diffHtml(dHab)}</div>

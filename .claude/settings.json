@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl https://parcelleid.duckdns.org/parcelles*)"
+    ]
+  }
+}

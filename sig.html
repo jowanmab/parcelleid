@@ -685,11 +685,71 @@ const LayerControl = L.Control.extend({
       if (pluActive) { tilePLU.addTo(map); styleBtn(btnPLU, true); }
       else { map.removeLayer(tilePLU); styleBtn(btnPLU, false); }
     });
+    // DEBUG : toggle points DPE (à supprimer plus tard) — vert = mappé, rouge = orphelin
+    const svgDPE = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="68" height="46"><rect width="68" height="46" fill="#222"/><circle cx="20" cy="23" r="5" fill="#22c55e"/><circle cx="34" cy="23" r="5" fill="#ef4444"/><circle cx="48" cy="23" r="5" fill="#22c55e"/></svg>');
+    const btnDPE = mkBtn(svgDPE, 'DPE');
+    styleBtn(btnDPE, false);
+    L.DomEvent.on(btnDPE, 'click', () => {
+      dpeActive = !dpeActive;
+      if (dpeActive) { fetchAndShowDpePoints(); styleBtn(btnDPE, true); }
+      else { hideDpePoints(); styleBtn(btnDPE, false); }
+    });
     L.DomEvent.disableClickPropagation(wrap);
     return wrap;
   }
 });
 new LayerControl().addTo(map);
+
+// DEBUG : affichage des points DPE de la commune (à retirer plus tard)
+let dpeActive = false;
+let dpeLayer = null;
+async function fetchAndShowDpePoints() {
+  if (!selectedCommune) {
+    setStatus('⚠️ Sélectionnez d\'abord une commune.', 'err');
+    return;
+  }
+  const codes = INSEE_ARRONDISSEMENTS[selectedCommune.code] || [selectedCommune.code];
+  try {
+    const responses = await Promise.all(codes.map(c => fetch(`https://parcelleid.duckdns.org/dpe-points?insee=${c}`).then(r => r.json()).catch(() => null)));
+    if (dpeLayer) { map.removeLayer(dpeLayer); dpeLayer = null; }
+    const all = [];
+    let mapped = 0;
+    for (const fc of responses) {
+      if (!fc?.features) continue;
+      for (const f of fc.features) {
+        all.push(f);
+        if (f.properties.is_mapped) mapped++;
+      }
+    }
+    dpeLayer = L.geoJSON({ type: 'FeatureCollection', features: all }, {
+      pointToLayer: (f, latlng) => L.circleMarker(latlng, {
+        radius: 4,
+        color: f.properties.is_mapped ? '#22c55e' : '#ef4444',
+        weight: 1.5,
+        fillColor: f.properties.is_mapped ? '#22c55e' : '#ef4444',
+        fillOpacity: 0.7
+      }),
+      onEachFeature: (f, layer) => {
+        const p = f.properties;
+        layer.bindPopup(
+          `<div style="font-size:0.75rem"><b>${p.is_mapped ? '🟢 Mappé' : '🔴 Orphelin'}</b><br/>`
+          + `<b>n°</b> ${p.numero_dpe || '—'}<br/>`
+          + `<b>Surface :</b> ${p.surface_habitable ?? '—'} m²<br/>`
+          + `<b>DPE :</b> ${p.classe_energie || '—'} · <b>GES :</b> ${p.classe_ges || '—'}<br/>`
+          + `<b>Date :</b> ${p.date_dpe || '—'}<br/>`
+          + `<b>Adresse :</b> ${p.adresse || '—'}</div>`
+        );
+      }
+    }).addTo(map);
+    setStatus(`📍 ${all.length} DPE chargés (${mapped} mappés / ${all.length - mapped} orphelins)`, 'ok');
+    setTimeout(clearStatus, 4000);
+  } catch (e) {
+    setStatus('❌ Erreur chargement points DPE: ' + e.message, 'err');
+  }
+}
+function hideDpePoints() {
+  if (dpeLayer) { map.removeLayer(dpeLayer); dpeLayer = null; }
+}
 
 // ÉTAT
 let parcelsLayer = null, communeLayer = null;

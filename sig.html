@@ -694,6 +694,15 @@ const LayerControl = L.Control.extend({
       if (dpeActive) { fetchAndShowDpePoints(); styleBtn(btnDPE, true); }
       else { hideDpePoints(); styleBtn(btnDPE, false); }
     });
+    // DEBUG : toggle toutes les parcelles de la commune (à supprimer plus tard)
+    const svgPARC = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="68" height="46"><rect width="68" height="46" fill="#1a2e3a"/><path d="M5 8 L25 6 L30 18 L15 22 Z M28 8 L52 12 L48 30 L26 25 Z M52 6 L63 14 L60 28 L48 26 Z M8 25 L24 28 L20 40 L4 38 Z M28 28 L46 32 L42 41 L26 38 Z" stroke="#8AB89A" stroke-width="1" fill="none"/></svg>');
+    const btnPARC = mkBtn(svgPARC, 'PARC');
+    styleBtn(btnPARC, false);
+    L.DomEvent.on(btnPARC, 'click', () => {
+      parcAllActive = !parcAllActive;
+      if (parcAllActive) { fetchAndShowAllParcelles(); styleBtn(btnPARC, true); }
+      else { hideAllParcelles(); styleBtn(btnPARC, false); }
+    });
     L.DomEvent.disableClickPropagation(wrap);
     return wrap;
   }
@@ -749,6 +758,41 @@ async function fetchAndShowDpePoints() {
 }
 function hideDpePoints() {
   if (dpeLayer) { map.removeLayer(dpeLayer); dpeLayer = null; }
+}
+
+// DEBUG : affichage de toutes les parcelles de la commune (à retirer plus tard)
+let parcAllActive = false;
+let parcAllLayer = null;
+async function fetchAndShowAllParcelles() {
+  if (!selectedCommune) {
+    setStatus('⚠️ Sélectionnez d\'abord une commune.', 'err');
+    return;
+  }
+  const codes = INSEE_ARRONDISSEMENTS[selectedCommune.code] || [selectedCommune.code];
+  try {
+    setStatus('<span class="spinner"></span>Chargement des parcelles…');
+    const responses = await Promise.all(codes.map(c => fetch(`https://parcelleid.duckdns.org/parcelles-all?insee=${c}`).then(r => r.json()).catch(() => null)));
+    if (parcAllLayer) { map.removeLayer(parcAllLayer); parcAllLayer = null; }
+    const all = [];
+    for (const fc of responses) {
+      if (!fc?.features) continue;
+      for (const f of fc.features) all.push(f);
+    }
+    parcAllLayer = L.geoJSON({ type: 'FeatureCollection', features: all }, {
+      style: () => ({ color: '#6B7771', weight: 0.6, opacity: 0.55, fillOpacity: 0 }),
+      onEachFeature: (f, layer) => {
+        layer.bindTooltip(`${f.properties.id} · ${Math.round(f.properties.surface)} m²`, { sticky: true, direction: 'top' });
+      }
+    }).addTo(map);
+    parcAllLayer.bringToBack();
+    setStatus(`📋 ${all.length} parcelles affichées sur la commune`, 'ok');
+    setTimeout(clearStatus, 4000);
+  } catch (e) {
+    setStatus('❌ Erreur chargement parcelles: ' + e.message, 'err');
+  }
+}
+function hideAllParcelles() {
+  if (parcAllLayer) { map.removeLayer(parcAllLayer); parcAllLayer = null; }
 }
 
 // ÉTAT

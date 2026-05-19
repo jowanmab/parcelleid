@@ -109,15 +109,26 @@ def insert_batch(conn, items):
 
 
 def map_to_parcels(conn, new_ids):
+    """
+    Mappe chaque nouveau DPE a UNE parcelle (la plus proche dans 10m).
+    Si le point DPE est a >10m de toute parcelle, il n'est pas mappe
+    (acceptable : mieux vaut "pas mappe" que "mappe au mauvais voisin").
+    """
     if not new_ids:
         return 0
     cur = conn.cursor()
     cur.execute("""
-        INSERT INTO parcelle_dpe_match (parcelle_gid, dpe_id)
-        SELECT p.gid, d.id
-        FROM dpe d JOIN parcelles p ON ST_Contains(p.geom, d.geom)
+        INSERT INTO parcelle_dpe_match (dpe_id, parcelle_gid)
+        SELECT d.id, closest.gid
+        FROM dpe d
+        CROSS JOIN LATERAL (
+          SELECT p.gid FROM parcelles p
+          WHERE ST_DWithin(p.geom, d.geom, 0.0001)  -- ~10m
+          ORDER BY ST_Distance(p.geom, d.geom)
+          LIMIT 1
+        ) closest
         WHERE d.id = ANY(%s) AND d.geom IS NOT NULL
-        ON CONFLICT DO NOTHING
+        ON CONFLICT (dpe_id) DO NOTHING
     """, (new_ids,))
     n = cur.rowcount
     conn.commit()

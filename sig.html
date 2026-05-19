@@ -677,123 +677,18 @@ const LayerControl = L.Control.extend({
       if (!isSat) { map.removeLayer(tileVoyager); tileSatellite.addTo(map); isSat = true; styleBtn(btnCarte, false); styleBtn(btnSat, true); }
       if (pluActive) { map.removeLayer(tilePLU); pluActive = false; styleBtn(btnPLU, false); }
     });
-    const svgPLU = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="68" height="46"><rect width="68" height="46" fill="#f5e642"/></svg>');
-    const btnPLU = mkBtn(svgPLU, 'PLU');
+    const btnPLU = mkBtn('./assets/plu-icon.jpg', 'PLU');
     styleBtn(btnPLU, false);
     L.DomEvent.on(btnPLU, 'click', () => {
       pluActive = !pluActive;
       if (pluActive) { tilePLU.addTo(map); styleBtn(btnPLU, true); }
       else { map.removeLayer(tilePLU); styleBtn(btnPLU, false); }
     });
-    // DEBUG : toggle points DPE (à supprimer plus tard) — vert = mappé, rouge = orphelin
-    const svgDPE = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="68" height="46"><rect width="68" height="46" fill="#222"/><circle cx="20" cy="23" r="5" fill="#22c55e"/><circle cx="34" cy="23" r="5" fill="#ef4444"/><circle cx="48" cy="23" r="5" fill="#22c55e"/></svg>');
-    const btnDPE = mkBtn(svgDPE, 'DPE');
-    styleBtn(btnDPE, false);
-    L.DomEvent.on(btnDPE, 'click', () => {
-      dpeActive = !dpeActive;
-      if (dpeActive) { fetchAndShowDpePoints(); styleBtn(btnDPE, true); }
-      else { hideDpePoints(); styleBtn(btnDPE, false); }
-    });
-    // DEBUG : toggle toutes les parcelles de la commune (à supprimer plus tard)
-    const svgPARC = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="68" height="46"><rect width="68" height="46" fill="#1a2e3a"/><path d="M5 8 L25 6 L30 18 L15 22 Z M28 8 L52 12 L48 30 L26 25 Z M52 6 L63 14 L60 28 L48 26 Z M8 25 L24 28 L20 40 L4 38 Z M28 28 L46 32 L42 41 L26 38 Z" stroke="#8AB89A" stroke-width="1" fill="none"/></svg>');
-    const btnPARC = mkBtn(svgPARC, 'PARC');
-    styleBtn(btnPARC, false);
-    L.DomEvent.on(btnPARC, 'click', () => {
-      parcAllActive = !parcAllActive;
-      if (parcAllActive) { fetchAndShowAllParcelles(); styleBtn(btnPARC, true); }
-      else { hideAllParcelles(); styleBtn(btnPARC, false); }
-    });
     L.DomEvent.disableClickPropagation(wrap);
     return wrap;
   }
 });
 new LayerControl().addTo(map);
-
-// DEBUG : affichage des points DPE de la commune (à retirer plus tard)
-let dpeActive = false;
-let dpeLayer = null;
-async function fetchAndShowDpePoints() {
-  if (!selectedCommune) {
-    setStatus('⚠️ Sélectionnez d\'abord une commune.', 'err');
-    return;
-  }
-  const codes = INSEE_ARRONDISSEMENTS[selectedCommune.code] || [selectedCommune.code];
-  try {
-    const responses = await Promise.all(codes.map(c => fetch(`https://parcelleid.duckdns.org/dpe-points?insee=${c}`).then(r => r.json()).catch(() => null)));
-    if (dpeLayer) { map.removeLayer(dpeLayer); dpeLayer = null; }
-    const all = [];
-    let mapped = 0;
-    for (const fc of responses) {
-      if (!fc?.features) continue;
-      for (const f of fc.features) {
-        all.push(f);
-        if (f.properties.is_mapped) mapped++;
-      }
-    }
-    dpeLayer = L.geoJSON({ type: 'FeatureCollection', features: all }, {
-      pointToLayer: (f, latlng) => L.circleMarker(latlng, {
-        radius: 4,
-        color: f.properties.is_mapped ? '#22c55e' : '#ef4444',
-        weight: 1.5,
-        fillColor: f.properties.is_mapped ? '#22c55e' : '#ef4444',
-        fillOpacity: 0.7
-      }),
-      onEachFeature: (f, layer) => {
-        const p = f.properties;
-        layer.bindPopup(
-          `<div style="font-size:0.75rem"><b>${p.is_mapped ? '🟢 Mappé' : '🔴 Orphelin'}</b><br/>`
-          + `<b>n°</b> ${p.numero_dpe || '—'}<br/>`
-          + `<b>Surface :</b> ${p.surface_habitable ?? '—'} m²<br/>`
-          + `<b>DPE :</b> ${p.classe_energie || '—'} · <b>GES :</b> ${p.classe_ges || '—'}<br/>`
-          + `<b>Date :</b> ${p.date_dpe || '—'}<br/>`
-          + `<b>Adresse :</b> ${p.adresse || '—'}</div>`
-        );
-      }
-    }).addTo(map);
-    setStatus(`📍 ${all.length} DPE chargés (${mapped} mappés / ${all.length - mapped} orphelins)`, 'ok');
-    setTimeout(clearStatus, 4000);
-  } catch (e) {
-    setStatus('❌ Erreur chargement points DPE: ' + e.message, 'err');
-  }
-}
-function hideDpePoints() {
-  if (dpeLayer) { map.removeLayer(dpeLayer); dpeLayer = null; }
-}
-
-// DEBUG : affichage de toutes les parcelles de la commune (à retirer plus tard)
-let parcAllActive = false;
-let parcAllLayer = null;
-async function fetchAndShowAllParcelles() {
-  if (!selectedCommune) {
-    setStatus('⚠️ Sélectionnez d\'abord une commune.', 'err');
-    return;
-  }
-  const codes = INSEE_ARRONDISSEMENTS[selectedCommune.code] || [selectedCommune.code];
-  try {
-    setStatus('<span class="spinner"></span>Chargement des parcelles…');
-    const responses = await Promise.all(codes.map(c => fetch(`https://parcelleid.duckdns.org/parcelles-all?insee=${c}`).then(r => r.json()).catch(() => null)));
-    if (parcAllLayer) { map.removeLayer(parcAllLayer); parcAllLayer = null; }
-    const all = [];
-    for (const fc of responses) {
-      if (!fc?.features) continue;
-      for (const f of fc.features) all.push(f);
-    }
-    parcAllLayer = L.geoJSON({ type: 'FeatureCollection', features: all }, {
-      style: () => ({ color: '#6B7771', weight: 0.6, opacity: 0.55, fillOpacity: 0 }),
-      onEachFeature: (f, layer) => {
-        layer.bindTooltip(`${f.properties.id} · ${Math.round(f.properties.surface)} m²`, { sticky: true, direction: 'top' });
-      }
-    }).addTo(map);
-    parcAllLayer.bringToBack();
-    setStatus(`📋 ${all.length} parcelles affichées sur la commune`, 'ok');
-    setTimeout(clearStatus, 4000);
-  } catch (e) {
-    setStatus('❌ Erreur chargement parcelles: ' + e.message, 'err');
-  }
-}
-function hideAllParcelles() {
-  if (parcAllLayer) { map.removeLayer(parcAllLayer); parcAllLayer = null; }
-}
 
 // ÉTAT
 let parcelsLayer = null, communeLayer = null;

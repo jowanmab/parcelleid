@@ -1245,16 +1245,21 @@ async function doSearch() {
       surfLog: surfLogement > 0 ? surfLogement : 0,
       tolLog: 4
     });
-    features.sort((a, b) => {
+    // Score = somme des écarts relatifs sur les critères saisis.
+    // Plus de critères proches → meilleur score (= rang plus haut).
+    const scoreOf = (f) => {
+      let s = 0;
       if (surfLogement > 0) {
-        const shA = parseFloat(a.properties?.surface_habitable ?? 0);
-        const shB = parseFloat(b.properties?.surface_habitable ?? 0);
-        return Math.abs(shA - surfLogement) - Math.abs(shB - surfLogement);
+        const sh = parseFloat(f.properties?.surface_habitable ?? 0);
+        s += sh > 0 ? Math.abs(sh - surfLogement) / surfLogement : 1;
       }
-      const sA = parseFloat(a.properties?.surface ?? a.properties?.contenance ?? 0);
-      const sB = parseFloat(b.properties?.surface ?? b.properties?.contenance ?? 0);
-      return Math.abs(sA - surf) - Math.abs(sB - surf);
-    });
+      if (surfCadastrale > 0) {
+        const sc = parseFloat(f.properties?.surface ?? f.properties?.contenance ?? 0);
+        s += sc > 0 ? Math.abs(sc - surfCadastrale) / surfCadastrale : 1;
+      }
+      return s;
+    };
+    features.sort((a, b) => scoreOf(a) - scoreOf(b));
     setProgress(100);
     document.getElementById('overlay').classList.add('gone');
     const mc = document.getElementById('map-count'); mc.style.display = 'block'; mc.innerHTML = `<em>${features.length}</em> parcelle${features.length > 1 ? 's' : ''}`;

@@ -13,7 +13,7 @@
     #sv-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 9500; display: none; align-items: center; justify-content: center; }
     #sv-modal.show { display: flex; }
     #sv-modal-content { position: relative; width: 90%; height: 90%; max-width: 1000px; background: var(--white); border-radius: 16px; overflow: hidden; }
-    #sv-modal iframe { position: absolute; left: 0; right: 0; top: -50px; width: 100%; height: calc(100% + 50px); border: none; }
+    #sv-modal iframe { width: 100%; height: 100%; border: none; }
     #sv-modal-close { position: absolute; top: 14px; right: 14px; background: var(--white); border: none; border-radius: 50%; width: 44px; height: 44px; cursor: pointer; font-size: 24px; color: var(--ink); z-index: 9600; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
     #sv-modal-close:hover { background: var(--bg); }
 
@@ -236,7 +236,7 @@
     .card-thumb-ign { position: relative; width: 100%; height: 50%; overflow: hidden; flex-shrink: 0; }
     .card-thumb-ign canvas { position: absolute; top: 0; left: 0; width: 100% !important; height: 100% !important; display: block; }
     .card-thumb canvas { position: absolute; top: 0; left: 0; width: 100% !important; height: 100% !important; display: block; }
-    .card-addr { position: absolute; top: 0; left: 0; right: 0; padding: 7px 12px; background: linear-gradient(to bottom, rgba(0,0,0,0.7), rgba(0,0,0,0)); color: white; font-size: 0.74rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; z-index: 3; pointer-events: none; text-shadow: 0 1px 2px rgba(0,0,0,0.5); letter-spacing: 0.01em; }
+    .card-addr { position: absolute; top: 0; left: 0; right: 0; min-height: 44px; padding: 9px 12px 6px; background: linear-gradient(to bottom, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.82) 60%, rgba(0,0,0,0) 100%); color: white; font-size: 0.74rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; z-index: 3; pointer-events: none; text-shadow: 0 1px 2px rgba(0,0,0,0.6); letter-spacing: 0.01em; }
     .load-more { width: 100%; grid-column: 1/-1; background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 10px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.82rem; font-weight: 600; color: var(--mid); cursor: pointer; transition: background 0.15s; margin-top: 2px; }
     .load-more:hover { background: var(--bg); color: var(--ink); }
 
@@ -965,9 +965,7 @@ function loadMoreCards(targetSurf, isLogement = false) {
       const embedUrl = `https://www.google.com/maps/embed/v1/streetview?key=AIzaSyD1pMAMR9M6vLrsfoLJ5GDyIbkDTgLvqg4&location=${svLat},${svLng}${headingParam}&fov=100&pitch=0`;
       const iframe = document.createElement('iframe');
       iframe.src = embedUrl;
-      // Décalage vers le haut (-40px) pour masquer la barre d'adresse Google qui
-      // ne correspond souvent pas à la parcelle visée (BAN snap au plus proche).
-      iframe.style.cssText = 'position:absolute;left:0;right:0;top:-40px;width:100%;height:calc(100% + 40px);border:none;';
+      iframe.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:none;';
       iframe.loading = 'lazy';
       iframe.allowFullscreen = true;
       svPlaceholder.remove();

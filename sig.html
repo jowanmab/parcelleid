@@ -13,7 +13,7 @@
     #sv-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 9500; display: none; align-items: center; justify-content: center; }
     #sv-modal.show { display: flex; }
     #sv-modal-content { position: relative; width: 90%; height: 90%; max-width: 1000px; background: var(--white); border-radius: 16px; overflow: hidden; }
-    #sv-modal iframe { width: 100%; height: 100%; border: none; }
+    #sv-modal iframe { position: absolute; left: 0; right: 0; top: -50px; width: 100%; height: calc(100% + 50px); border: none; }
     #sv-modal-close { position: absolute; top: 14px; right: 14px; background: var(--white); border: none; border-radius: 50%; width: 44px; height: 44px; cursor: pointer; font-size: 24px; color: var(--ink); z-index: 9600; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
     #sv-modal-close:hover { background: var(--bg); }
 
@@ -123,7 +123,7 @@
     .plan-pill.pro { background: var(--orange); }
 
     /* ── LAYOUT DESKTOP ── */
-    main { flex: 1; display: grid; grid-template-columns: 720px 1fr; overflow: hidden; }
+    main { flex: 1; display: grid; grid-template-columns: 600px 1fr; overflow: hidden; }
 
     /* ── PANEL DESKTOP ── */
     .panel { background: var(--white); border-right: 1px solid var(--soft); display: flex; flex-direction: column; overflow: hidden; }
@@ -214,44 +214,29 @@
     .card-thumb-sv iframe { pointer-events: auto; }
     .card:hover { border-color: var(--blue-bd); box-shadow: 0 2px 12px rgba(138,184,154,0.18); }
     .card.active { border-color: var(--orange); box-shadow: 0 2px 12px rgba(232,152,120,0.18); }
-    .card-thumb { position: relative; width: 100%; display: flex; flex-direction: row; background: #e5e7eb; overflow: hidden; height: 256px; }
-    .card-thumb-sv { position: relative; width: 50%; height: 100%; overflow: hidden; flex-shrink: 0; background: #1a1a2e; }
+    .card-thumb { position: relative; width: 100%; display: flex; flex-direction: row; background: #e5e7eb; overflow: hidden; height: 512px; }
+    .card-thumb-sv { position: relative; width: 60%; height: 100%; overflow: hidden; flex-shrink: 0; background: #1a1a2e; }
     .card-thumb-sv-placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
     .card-thumb-sv-placeholder span { font-size: 1.6rem; }
     .card-thumb-sv-placeholder small { font-size: 0.6rem; color: #93c5fd; font-weight: 600; letter-spacing: 0.05em; }
-    .card-thumb-right { position: relative; width: 50%; height: 100%; display: flex; flex-direction: column; overflow: hidden; }
+    .card-thumb-right { position: relative; width: 40%; height: 100%; display: flex; flex-direction: column; overflow: hidden; }
     .card-thumb-info { position: relative; width: 100%; height: 50%; background: var(--blue-lt); padding: 8px 9px; overflow: hidden; border-bottom: 1px solid var(--blue-bd); display: flex; flex-direction: column; gap: 4px; justify-content: center; }
-    .info-line { display: flex; align-items: center; gap: 6px; font-size: 0.72rem; line-height: 1; }
-    .info-icon { font-size: 0.85rem; flex-shrink: 0; }
-    .info-val { font-weight: 700; color: var(--ink); }
+    .info-line { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; line-height: 1.2; }
+    .info-label { font-size: 0.6rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
+    .info-value-group { display: inline-flex; align-items: baseline; gap: 5px; }
+    .info-val { font-weight: 700; color: var(--ink); font-size: 0.84rem; }
     .info-val-mismatch { color: #dc2626; text-decoration: underline dotted; }
-    .info-diff { font-weight: 600; font-size: 0.65rem; margin-left: auto; padding-left: 4px; }
-    .info-badges { gap: 5px; flex-wrap: wrap; }
-    .info-badge { display: inline-flex; align-items: center; gap: 1px; font-size: 0.7rem; font-weight: 800; padding: 3px 7px; border-radius: 5px; letter-spacing: 0.02em; }
+    .info-diff { font-weight: 600; font-size: 0.65rem; }
+    .info-diff-badge { position: absolute; top: 6px; right: 8px; background: var(--white); padding: 3px 9px; border-radius: 12px; font-size: 0.72rem; font-weight: 800; box-shadow: 0 1px 3px rgba(0,0,0,0.12); border: 1px solid var(--border); letter-spacing: 0.01em; line-height: 1; }
+    .info-badges { justify-content: flex-start; gap: 14px; align-items: center; }
+    .info-badge-row { display: inline-flex; align-items: center; gap: 5px; }
+    .info-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; font-size: 0.78rem; font-weight: 800; padding: 3px 7px; border-radius: 4px; line-height: 1; }
     .info-badge-empty { background: var(--border); color: var(--muted); }
     .info-badge-mismatch { box-shadow: 0 0 0 2px #ef4444; }
-    .info-warn { font-size: 0.85rem; margin-left: 2px; }
-    .info-multi {
-      font-size: 0.62rem;
-      font-weight: 600;
-      color: #B05030;
-      background: rgba(232,152,120,0.15);
-      border: 1px solid rgba(232,152,120,0.35);
-      border-radius: 4px;
-      padding: 3px 6px;
-      margin-top: 3px;
-      line-height: 1.2;
-      cursor: help;
-      display: inline-flex;
-      align-self: flex-start;
-      align-items: center;
-      gap: 4px;
-    }
-    .info-multi:hover { background: rgba(232,152,120,0.25); }
     .card-thumb-ign { position: relative; width: 100%; height: 50%; overflow: hidden; flex-shrink: 0; }
     .card-thumb-ign canvas { position: absolute; top: 0; left: 0; width: 100% !important; height: 100% !important; display: block; }
     .card-thumb canvas { position: absolute; top: 0; left: 0; width: 100% !important; height: 100% !important; display: block; }
-    .card-addr { position: absolute; top: 0; left: 0; right: 0; padding: 4px 6px; background: rgba(0,0,0,0.55); color: white; font-size: 0.58rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; z-index: 1; }
+    .card-addr { position: absolute; top: 0; left: 0; right: 0; padding: 7px 12px; background: linear-gradient(to bottom, rgba(0,0,0,0.7), rgba(0,0,0,0)); color: white; font-size: 0.74rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; z-index: 3; pointer-events: none; text-shadow: 0 1px 2px rgba(0,0,0,0.5); letter-spacing: 0.01em; }
     .load-more { width: 100%; grid-column: 1/-1; background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 10px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.82rem; font-weight: 600; color: var(--mid); cursor: pointer; transition: background 0.15s; margin-top: 2px; }
     .load-more:hover { background: var(--bg); color: var(--ink); }
 
@@ -272,6 +257,9 @@
     /* ── OVERLAY ── */
     #overlay { position: absolute; inset: 0; background: rgba(249,250,251,0.92); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; z-index: 600; transition: opacity 0.4s; }
     #overlay.gone { opacity: 0; pointer-events: none; }
+    #search-loader { position: absolute; inset: 0; z-index: 650; background: rgba(250,249,245,0.55); backdrop-filter: blur(2px); transition: opacity 0.3s; pointer-events: none; }
+    #search-loader.hidden { opacity: 0; }
+    #search-loader iframe { width: 100%; height: 100%; border: none; display: block; background: transparent; }
     .overlay-icon { font-size: 2.8rem; }
     .overlay-title { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.02em; }
     .overlay-sub { font-size: 0.82rem; color: var(--mid); text-align: center; max-width: 280px; line-height: 1.5; }
@@ -420,7 +408,7 @@
     <div class="panel-handle" id="panel-handle">
       <div class="panel-pill"></div>
       <div class="panel-handle-label">
-        🔍 Rechercher une parcelle
+        🔍 Rechercher un bien
         <span class="panel-handle-count" id="handle-count"></span>
       </div>
     </div>
@@ -442,8 +430,8 @@
       <div id="search-form-block">
       <div class="hero">
         <div class="hero-eyebrow">🏠 Outil d'analyse d'annonces</div>
-        <h1>Retrouvez la parcelle de votre annonce immo</h1>
-        <p>Commune + surface → les parcelles correspondantes s'affichent sur la carte.</p>
+        <h1>Retrouvez le bien de votre annonce immo</h1>
+        <p>Commune + surface → les biens correspondants s'affichent sur la carte.</p>
       </div>
 
       <div class="form-section">
@@ -518,7 +506,7 @@
       <input type="hidden" id="dpe-ges-selected" value="">
 
       <div class="btn-row">
-        <button class="btn-search" id="search-btn" onclick="doSearch()">Afficher les parcelles</button>
+        <button class="btn-search" id="search-btn" onclick="doSearch()">Afficher les biens</button>
         <button class="btn-reset" onclick="doReset()">↺ Reset</button>
       </div>
 
@@ -529,7 +517,7 @@
       <div id="status"></div>
 
       <div class="results-head">
-        <span class="results-label">Parcelles trouvées</span>
+        <span class="results-label">Biens trouvés</span>
         <span class="results-count" id="r-count"></span>
       </div>
       <div id="results-list">
@@ -540,6 +528,10 @@
 
   <div class="map-wrap">
     <div id="map"></div>
+
+    <div id="search-loader" class="hidden">
+      <iframe id="search-loader-iframe" src="assets/loader.html" title="Chargement…" loading="eager"></iframe>
+    </div>
 
     <div id="measure-toolbar">
       <button class="measure-btn" id="btn-measure-dist" onclick="toggleMeasureMode('distance')">
@@ -865,12 +857,12 @@ function renderCards(features, targetSurf, isLogement = false) {
   list.innerHTML = '';
   if (!features.length) {
     countEl.textContent = '0 résultat';
-    list.innerHTML = `<div style="font-size:0.8rem;color:var(--muted);text-align:center;padding:20px 0;border:1px dashed var(--border);border-radius:8px;grid-column:1/-1;">Aucune parcelle trouvée.<br/>Essayez d'augmenter la tolérance.</div>`;
+    list.innerHTML = `<div style="font-size:0.8rem;color:var(--muted);text-align:center;padding:20px 0;border:1px dashed var(--border);border-radius:8px;grid-column:1/-1;">Aucun bien trouvé.<br/>Essayez d'augmenter la tolérance.</div>`;
     const hc = document.getElementById('handle-count');
     hc.textContent = '0'; hc.classList.remove('show');
     return;
   }
-  const txt = features.length + ' parcelle' + (features.length > 1 ? 's' : '');
+  const txt = features.length + ' bien' + (features.length > 1 ? 's' : '');
   countEl.textContent = txt;
   const hc = document.getElementById('handle-count');
   hc.textContent = features.length; hc.classList.add('show');
@@ -891,6 +883,15 @@ function loadMoreCards(targetSurf, isLogement = false) {
     const svPlaceholder = document.createElement('div'); svPlaceholder.className = 'card-thumb-sv-placeholder';
     svPlaceholder.innerHTML = '<span style="font-size:1.4rem">📷</span><small style="font-size:0.6rem;color:#93c5fd;font-weight:600">Chargement…</small>';
     thumbSV.appendChild(svPlaceholder);
+    // Adresse DPE en overlay (remplace l'adresse Google cachée par le décalage iframe).
+    const adresseDpe = f.properties?.adresse;
+    if (adresseDpe) {
+      const addrEl = document.createElement('div');
+      addrEl.className = 'card-addr';
+      addrEl.textContent = adresseDpe;
+      addrEl.title = adresseDpe;
+      thumbSV.appendChild(addrEl);
+    }
 
     const thumbRight = document.createElement('div'); thumbRight.className = 'card-thumb-right';
 
@@ -908,27 +909,29 @@ function loadMoreCards(targetSurf, isLogement = false) {
     const dpeMismatch = currentFilters.dpeE && dpeClass && dpeClass !== currentFilters.dpeE;
     const gesMismatch = currentFilters.dpeG && gesClass && gesClass !== currentFilters.dpeG;
     const dateMismatch = currentFilters.dpeDate && dateDpe && dateDpe < currentFilters.dpeDate;
-    const nbLogements = parseInt(f.properties?.nb_logements ?? 1) || 1;
     const fmtDate = d => { if (!d) return '—'; const p = d.split('-'); return p.length === 3 ? `${p[2]}/${p[1]}/${p[0].slice(2)}` : d; };
-    const badge = (cls, mismatch, icon) => cls
-      ? `<span class="info-badge${mismatch ? ' info-badge-mismatch' : ''}" style="background:${dpeColorsLocal[cls] || '#999'};color:${cls === 'C' ? '#333' : '#fff'}">${icon}${cls}</span>`
-      : `<span class="info-badge info-badge-empty">${icon}—</span>`;
-    const diffHtml = (d) => d === null ? '' : `<span class="info-diff" style="color:${diffColor(d)}">±${d.toFixed(1)}%</span>`;
-    const hasDpeFilter = !!(currentFilters.surfLog || currentFilters.dpeE || currentFilters.dpeG || currentFilters.dpeDate);
-    const multiTip = hasDpeFilter
-      ? `${nbLogements} logements correspondent à vos critères dans cet immeuble (autres classes DPE/GES ou dates différentes). Précisez la classe DPE, GES ou la date du diagnostic pour distinguer le bon.`
-      : `Cette parcelle compte ${nbLogements} logements avec un DPE recensé. Ajoutez une surface logement, une classe DPE/GES ou une date pour cibler un logement précis.`;
-    const multiHtml = nbLogements > 1
-      ? (hasDpeFilter
-          ? `<div class="info-multi" title="${multiTip}">🏘️ +${nbLogements - 1} autre${nbLogements > 2 ? 's' : ''} logement${nbLogements > 2 ? 's' : ''} ici · Affinez votre recherche</div>`
-          : `<div class="info-multi" title="${multiTip}">🏘️ ${nbLogements} logements DPE sur cette parcelle · Affinez pour cibler</div>`)
+    const badge = (cls, mismatch) => cls
+      ? `<span class="info-badge${mismatch ? ' info-badge-mismatch' : ''}" style="background:${dpeColorsLocal[cls] || '#999'};color:${cls === 'C' ? '#333' : '#fff'}" title="${mismatch ? 'Classe différente du filtre' : ''}">${cls}</span>`
+      : `<span class="info-badge info-badge-empty">—</span>`;
+    // Parse "14118000HA0075" → "HA 0075" (section + n° de parcelle).
+    const parseRef = (id) => { if (!id) return '—'; const m = /([A-Z]{1,3})(\d{1,5})$/.exec(id); return m ? `${m[1]} ${m[2]}` : id; };
+    // Badge écart en haut à droite : priorise l'habitable si l'utilisateur a saisi une surf logement, sinon le terrain.
+    let primaryDiff = null;
+    if (currentFilters.surfLog > 0 && dHab !== null) primaryDiff = dHab;
+    else if (currentFilters.surfCad > 0 && dParc !== null) primaryDiff = dParc;
+    const diffBadge = primaryDiff !== null
+      ? `<span class="info-diff-badge" style="color:${diffColor(primaryDiff)}">±${primaryDiff.toFixed(1)}%</span>`
       : '';
     thumbInfo.innerHTML = `
-      <div class="info-line"><span class="info-icon">🏠</span><span class="info-val">${surfHab > 0 ? Math.round(surfHab) + ' m²' : '—'}</span>${diffHtml(dHab)}</div>
-      <div class="info-line"><span class="info-icon">📐</span><span class="info-val">${surfParc > 0 ? Math.round(surfParc) + ' m²' : '—'}</span>${diffHtml(dParc)}</div>
-      <div class="info-line info-badges">${badge(dpeClass, dpeMismatch, '⚡')}${badge(gesClass, gesMismatch, '🌿')}${(dpeMismatch || gesMismatch) ? '<span class="info-warn" title="Classe différente du filtre">⚠️</span>' : ''}</div>
-      <div class="info-line"><span class="info-icon">📅</span><span class="info-val${dateMismatch ? ' info-val-mismatch' : ''}">${fmtDate(dateDpe)}</span></div>
-      ${multiHtml}
+      ${diffBadge}
+      <div class="info-line"><span class="info-label">Surface habitable</span><span class="info-val">${surfHab > 0 ? Math.round(surfHab) + ' m²' : '—'}</span></div>
+      <div class="info-line"><span class="info-label">Surface terrain</span><span class="info-val">${surfParc > 0 ? Math.round(surfParc) + ' m²' : '—'}</span></div>
+      <div class="info-line info-badges">
+        <div class="info-badge-row"><span class="info-label">DPE</span>${badge(dpeClass, dpeMismatch)}</div>
+        <div class="info-badge-row"><span class="info-label">GES</span>${badge(gesClass, gesMismatch)}</div>
+      </div>
+      <div class="info-line"><span class="info-label">Date diagnostic</span><span class="info-val${dateMismatch ? ' info-val-mismatch' : ''}">${fmtDate(dateDpe)}</span></div>
+      <div class="info-line"><span class="info-label">Réf. cadastrale</span><span class="info-val">${parseRef(f.properties?.id)}</span></div>
     `;
 
     const thumbIGN = document.createElement('div'); thumbIGN.className = 'card-thumb-ign';
@@ -962,7 +965,9 @@ function loadMoreCards(targetSurf, isLogement = false) {
       const embedUrl = `https://www.google.com/maps/embed/v1/streetview?key=AIzaSyD1pMAMR9M6vLrsfoLJ5GDyIbkDTgLvqg4&location=${svLat},${svLng}${headingParam}&fov=100&pitch=0`;
       const iframe = document.createElement('iframe');
       iframe.src = embedUrl;
-      iframe.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:none;';
+      // Décalage vers le haut (-40px) pour masquer la barre d'adresse Google qui
+      // ne correspond souvent pas à la parcelle visée (BAN snap au plus proche).
+      iframe.style.cssText = 'position:absolute;left:0;right:0;top:-40px;width:100%;height:calc(100% + 40px);border:none;';
       iframe.loading = 'lazy';
       iframe.allowFullscreen = true;
       svPlaceholder.remove();
@@ -1060,11 +1065,18 @@ function drawParcels(features, targetSurf, isLogement = false) {
       layer.on('mouseout',  function() { if (layer.feature !== activeFeature) layer.setStyle(STYLE_DEFAULT); });
       bindParcelClick(layer);
       layer.on('popupopen', async () => {
-        try {
-          const tryAddr = async (params) => { const d = await fetch(`https://api-adresse.data.gouv.fr/reverse/?lon=${lng}&lat=${lat}&limit=1${params}`).then(r => r.json()); return d.features?.[0]?.properties?.label || null; };
-          const addr = await tryAddr('&type=housenumber') || await tryAddr('');
-          const el = document.getElementById(`addr-${uid}`); if (el) el.textContent = addr || 'Adresse non trouvée';
-        } catch {}
+        const el = document.getElementById(`addr-${uid}`);
+        // Source unique : adresse DPE prioritaire (officielle), fallback BAN reverse si pas de DPE.
+        const dpeAdresse = f.properties?.adresse;
+        if (dpeAdresse) {
+          if (el) el.textContent = dpeAdresse;
+        } else {
+          try {
+            const tryAddr = async (params) => { const d = await fetch(`https://api-adresse.data.gouv.fr/reverse/?lon=${lng}&lat=${lat}&limit=1${params}`).then(r => r.json()); return d.features?.[0]?.properties?.label || null; };
+            const addr = await tryAddr('&type=housenumber') || await tryAddr('');
+            if (el) el.textContent = addr || 'Adresse non trouvée';
+          } catch { if (el) el.textContent = 'Adresse non trouvée'; }
+        }
         const elEarth = document.getElementById('earth-' + uid);
         if (elEarth) elEarth.href = openGoogleEarth(lat, lng);
         const elGeo = document.getElementById('geo-' + uid);
@@ -1126,6 +1138,7 @@ async function doSearch() {
   // Cible pour le tri et l'affichage de l'écart % sur les cartes.
   const surf = surfLogement > 0 ? surfLogement : surfCadastrale;
   const btn = document.getElementById('search-btn'); btn.disabled = true;
+  showSearchLoader();
   setProgress(5); setStatus('<span class="spinner"></span>Chargement du contour de la commune…');
   try {
     const communeGeo = await fetch(`https://geo.api.gouv.fr/communes/${commune.code}?fields=contour&format=geojson&geometry=contour`).then(r => { if (!r.ok) throw new Error('Contour commune introuvable'); return r.json(); });
@@ -1157,16 +1170,52 @@ async function doSearch() {
     features.sort((a, b) => scoreOf(a) - scoreOf(b));
     setProgress(100);
     document.getElementById('overlay').classList.add('gone');
-    const mc = document.getElementById('map-count'); mc.style.display = 'block'; mc.innerHTML = `<em>${features.length}</em> parcelle${features.length > 1 ? 's' : ''}`;
+    const mc = document.getElementById('map-count'); mc.style.display = 'block'; mc.innerHTML = `<em>${features.length}</em> bien${features.length > 1 ? 's' : ''}`;
     const isLogement = surfLogement > 0;
     drawParcels(features, surf, isLogement);
     renderCards(features, surf, isLogement);
-    if (features.length > 0) clearStatus(); else setStatus("Aucune parcelle trouvée. Essayez d'augmenter la tolérance.", 'err');
+    if (features.length > 0) clearStatus(); else setStatus("Aucun bien trouvé. Essayez d'augmenter la tolérance.", 'err');
     if (features.length > 0) collapseSearch();
     if (isMobile()) setPanelState('mid');
+    updateShareableUrl();
   } catch (err) { setStatus(`❌ ${err.message}`, 'err'); setProgress(100); }
+  hideSearchLoader();
   btn.disabled = false;
 }
+
+let _searchLoaderTimer = null;
+function showSearchLoader() {
+  clearTimeout(_searchLoaderTimer);
+  // Affiche seulement si la recherche dure > 3s — évite le flash visuel sur les requêtes rapides.
+  _searchLoaderTimer = setTimeout(() => {
+    document.getElementById('search-loader').classList.remove('hidden');
+  }, 3000);
+}
+
+function hideSearchLoader() {
+  clearTimeout(_searchLoaderTimer);
+  document.getElementById('search-loader').classList.add('hidden');
+}
+
+// Une fois l'iframe loader chargée (au démarrage), on lui injecte un peu
+// de CSS pour rendre ses fonds transparents — sinon la carte Leaflet
+// derrière n'est pas visible (le bundler dessine un fond beige opaque).
+document.getElementById('search-loader-iframe').addEventListener('load', function() {
+  try {
+    const doc = this.contentDocument;
+    if (!doc) return;
+    const inject = () => {
+      const style = doc.createElement('style');
+      style.textContent = 'html, body, #__bundler_thumbnail, [id^=__bundler] { background: transparent !important; }';
+      (doc.head || doc.documentElement).appendChild(style);
+    };
+    inject();
+    // Le bundler swap documentElement après unpack -> on ré-injecte.
+    const obs = new MutationObserver(() => inject());
+    obs.observe(doc.documentElement, { childList: true, subtree: false });
+    setTimeout(() => obs.disconnect(), 5000);
+  } catch (e) { /* cross-origin, on laisse tomber */ }
+});
 
 function doReset() {
   document.getElementById('commune-input').value = '';
@@ -1539,12 +1588,34 @@ window.addEventListener('load', () => {
   }
   const date = params.get('date');
   if (date) document.getElementById('dpe-date-input').value = date;
-  window.history.replaceState({}, '', window.location.pathname);
   if (selectedCommune && selectedCommune.code) {
     if (typeof updateSearchBtn === 'function') updateSearchBtn();
     setTimeout(() => { if (typeof doSearch === 'function') doSearch(); }, 200);
   }
 })();
+
+// Mise à jour de l'URL après une recherche réussie -> permet de copier/partager.
+function updateShareableUrl() {
+  if (!selectedCommune) return;
+  const p = new URLSearchParams();
+  p.set('insee', selectedCommune.code);
+  if (selectedCommune.nom) p.set('commune', selectedCommune.nom);
+  if (selectedCommune.lat) p.set('lat', selectedCommune.lat);
+  if (selectedCommune.lng) p.set('lng', selectedCommune.lng);
+  const surfLog = document.getElementById('surface-logement-input').value;
+  const surfCad = document.getElementById('surface-input').value;
+  const tol = document.getElementById('tol-range').value;
+  const dpe = document.getElementById('dpe-energie-selected').value;
+  const ges = document.getElementById('dpe-ges-selected').value;
+  const date = document.getElementById('dpe-date-input').value;
+  if (surfLog) p.set('surf_log', surfLog);
+  if (surfCad) p.set('surf_cad', surfCad);
+  if (tol !== null && tol !== '') p.set('tol', tol);
+  if (dpe) p.set('dpe', dpe);
+  if (ges) p.set('ges', ges);
+  if (date) p.set('date', date);
+  window.history.replaceState({}, '', `${window.location.pathname}?${p.toString()}`);
+}
 </script>
 </body>
 </html>

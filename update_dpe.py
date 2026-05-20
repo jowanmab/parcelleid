@@ -123,7 +123,7 @@ def map_to_parcels(conn, new_ids):
         FROM dpe d
         CROSS JOIN LATERAL (
           SELECT p.gid FROM parcelles p
-          WHERE ST_DWithin(p.geom, d.geom, 0.0001)  -- ~10m
+          WHERE ST_DWithin(p.geom, d.geom, 0.00015)  -- ~15m
           ORDER BY ST_Distance(p.geom, d.geom)
           LIMIT 1
         ) closest

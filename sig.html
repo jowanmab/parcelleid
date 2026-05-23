@@ -209,7 +209,17 @@
 
 /* ── CARDS ── */
     #results-list { display: grid; grid-template-columns: 1fr; gap: 8px; }
-    .card { background: var(--white); border: 1.5px solid var(--soft); border-radius: var(--radius); cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s, transform 0.12s; overflow: hidden; }
+    .card { position: relative; background: var(--white); border: 1.5px solid var(--soft); border-radius: var(--radius); cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s, transform 0.12s; overflow: hidden; }
+    .fav-btn { position: absolute; top: 8px; right: 8px; width: 36px; height: 36px; background: rgba(255,255,255,0.95); border: 1.5px solid var(--border); border-radius: 50%; cursor: pointer; font-size: 1.05rem; line-height: 1; display: flex; align-items: center; justify-content: center; z-index: 10; transition: transform 0.12s, color 0.15s, border-color 0.15s, background 0.15s; color: var(--muted); box-shadow: 0 2px 6px rgba(0,0,0,0.15); font-family: 'Plus Jakarta Sans', sans-serif; padding: 0; }
+    .fav-btn:hover { background: var(--white); transform: scale(1.08); color: var(--orange); }
+    .fav-btn:disabled { opacity: 0.6; cursor: wait; }
+    .fav-btn.active { color: var(--orange); border-color: var(--orange); background: var(--white); }
+    .fav-btn.active:hover { color: var(--mid); border-color: var(--border); }
+    #favorites-banner { display: none; align-items: center; gap: 8px; padding: 8px 12px; background: var(--blue-lt); border: 1px solid var(--blue-bd); border-radius: 8px; margin-bottom: 8px; font-size: 0.78rem; font-weight: 600; color: var(--blue); }
+    #favorites-banner.show { display: flex; }
+    #favorites-banner .fav-back { background: var(--white); border: 1.5px solid var(--blue-bd); border-radius: 6px; padding: 5px 10px; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.75rem; font-weight: 700; color: var(--blue); min-height: 34px; }
+    #favorites-banner .fav-back:hover { background: var(--blue-bd); }
+    .fav-header-btn .plan-pill { background: var(--orange); }
     .card-thumb-sv { pointer-events: auto; }
     .card-thumb-sv iframe { pointer-events: auto; }
     .card:hover { border-color: var(--blue-bd); box-shadow: 0 2px 12px rgba(138,184,154,0.18); }
@@ -369,6 +379,12 @@
   <div class="logo">Parcelle<span class="logo-id">ID</span><span class="logo-sub">Cadastre France</span></div>
   <div class="header-sep"></div>
   <div class="header-tag">V5 · Cadastre IGN</div>
+  <div id="favorites-header" style="display:none">
+    <button class="user-badge fav-header-btn" onclick="toggleFavoritesView()" title="Voir mes parcelles favorites">
+      <span>★ Mes favoris</span>
+      <span class="plan-pill" id="fav-count-badge">0</span>
+    </button>
+  </div>
   <div id="auth-header">
     <button class="user-badge" onclick="openAuth('login')">Se connecter</button>
   </div>
@@ -516,8 +532,13 @@
       <div class="progress-wrap" id="progress-wrap"><div class="progress-bar" id="progress-bar"></div></div>
       <div id="status"></div>
 
+      <div id="favorites-banner">
+        <span style="flex:1">★ Vos parcelles sauvegardées</span>
+        <button class="fav-back" onclick="exitFavoritesView()">⟵ Retour</button>
+      </div>
+
       <div class="results-head">
-        <span class="results-label">Biens trouvés</span>
+        <span class="results-label" id="results-label">Biens trouvés</span>
         <span class="results-count" id="r-count"></span>
       </div>
       <div id="results-list">
@@ -943,6 +964,17 @@ function loadMoreCards(targetSurf, isLogement = false) {
     thumb.appendChild(thumbSV);
     thumb.appendChild(thumbRight);
     card.appendChild(thumb);
+
+    const parcelleId = f.properties?.id;
+    if (parcelleId) {
+      const favBtn = document.createElement('button');
+      const isFav = userFavorites.has(parcelleId);
+      favBtn.className = 'fav-btn' + (isFav ? ' active' : '');
+      favBtn.innerHTML = isFav ? '★' : '☆';
+      favBtn.title = isFav ? 'Retirer des favoris' : 'Ajouter aux favoris';
+      favBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleFavorite(parcelleId, favBtn); });
+      card.appendChild(favBtn);
+    }
     card.addEventListener('mouseenter', () => { if (!parcelsLayer) return; parcelsLayer.eachLayer(l => { if (l.feature === f && l.feature !== activeFeature) l.setStyle(STYLE_HOVER); }); });
     card.addEventListener('mouseleave', () => { if (!parcelsLayer) return; parcelsLayer.eachLayer(l => { if (l.feature === f && l.feature !== activeFeature) l.setStyle(STYLE_DEFAULT); }); });
     const observer = new IntersectionObserver(entries => {
@@ -1117,6 +1149,11 @@ async function fetchParcelles({ insee, surfCad = 0, tolCad = 0, surfLog = 0, tol
 }
 
 async function doSearch() {
+  if (inFavoritesView) {
+    inFavoritesView = false; lastSearchFeatures = null;
+    document.getElementById('favorites-banner').classList.remove('show');
+    document.getElementById('results-label').textContent = 'Biens trouvés';
+  }
   const surfLogement = parseFloat(document.getElementById('surface-logement-input').value);
   const surfCadastrale = parseFloat(surfInput.value);
   const tol = parseInt(tolRange.value);
@@ -1216,6 +1253,11 @@ document.getElementById('search-loader-iframe').addEventListener('load', functio
 });
 
 function doReset() {
+  if (inFavoritesView) {
+    inFavoritesView = false; lastSearchFeatures = null;
+    document.getElementById('favorites-banner').classList.remove('show');
+    document.getElementById('results-label').textContent = 'Biens trouvés';
+  }
   document.getElementById('commune-input').value = '';
   document.getElementById('surface-input').value = '';
   document.getElementById('surface-logement-input').value = '';
@@ -1385,6 +1427,9 @@ function onMeasureDblClick(e) { L.DomEvent.stopPropagation(e); if (measureMode =
 // AUTH
 const API = 'https://parcelleid.duckdns.org';
 let authUser = null;
+let userFavorites = new Set();
+let inFavoritesView = false;
+let lastSearchFeatures = null;
 
 function getToken() { return localStorage.getItem('access_token'); }
 function saveTokens(access, refresh) { localStorage.setItem('access_token', access); if (refresh) localStorage.setItem('refresh_token', refresh); }
@@ -1413,18 +1458,22 @@ async function loadMe() {
     if (!r.ok) { clearTokens(); updateAuthUI(null); return; }
     authUser = await r.json();
     updateAuthUI(authUser);
+    loadFavoriteIds();
   } catch {}
 }
 
 function updateAuthUI(user) {
   const hdr = document.getElementById('auth-header');
+  const favHdr = document.getElementById('favorites-header');
   const cb = document.getElementById('credits-bar');
   if (!user) {
     hdr.innerHTML = `<button class="user-badge" onclick="openAuth('login')">Se connecter</button>`;
+    favHdr.style.display = 'none';
     cb.classList.remove('show'); return;
   }
   const isPro = user.plan === 'pro';
   hdr.innerHTML = `<div class="user-badge" onclick="doLogout()" style="cursor:pointer"><span>${user.email.split('@')[0]}</span><span class="plan-pill ${isPro?'pro':''}">${isPro?'Pro':'Free'}</span></div>`;
+  favHdr.style.display = '';
   if (!isPro) { cb.classList.add('show'); document.getElementById('credits-count').textContent = user.credits; }
   else { cb.classList.remove('show'); }
 }
@@ -1465,7 +1514,88 @@ async function doRegister() {
   } catch { msg.className = 'auth-msg err'; msg.textContent = 'Erreur réseau'; }
 }
 
-function doLogout() { clearTokens(); authUser = null; updateAuthUI(null); }
+function doLogout() {
+  clearTokens(); authUser = null; userFavorites = new Set();
+  if (inFavoritesView) exitFavoritesView();
+  updateAuthUI(null);
+}
+
+// ── FAVORITES ──
+function updateFavCount() {
+  const c = document.getElementById('fav-count-badge');
+  if (c) c.textContent = userFavorites.size;
+}
+
+async function loadFavoriteIds() {
+  if (!getToken()) return;
+  try {
+    const r = await authFetch(`${API}/me/favorites/ids`);
+    if (!r.ok) return;
+    const d = await r.json();
+    userFavorites = new Set(d.ids || []);
+    updateFavCount();
+  } catch {}
+}
+
+async function toggleFavorite(parcelleId, btn) {
+  if (!parcelleId) return;
+  if (!authUser) { openAuth('login'); return; }
+  const isFav = userFavorites.has(parcelleId);
+  const method = isFav ? 'DELETE' : 'POST';
+  btn.disabled = true;
+  try {
+    const r = await authFetch(`${API}/me/favorites/${encodeURIComponent(parcelleId)}`, { method });
+    if (!r.ok) throw new Error('failed');
+    if (isFav) {
+      userFavorites.delete(parcelleId);
+      btn.classList.remove('active'); btn.innerHTML = '☆'; btn.title = 'Ajouter aux favoris';
+    } else {
+      userFavorites.add(parcelleId);
+      btn.classList.add('active'); btn.innerHTML = '★'; btn.title = 'Retirer des favoris';
+    }
+    updateFavCount();
+  } catch {}
+  btn.disabled = false;
+}
+
+function toggleFavoritesView() {
+  if (!authUser) { openAuth('login'); return; }
+  inFavoritesView ? exitFavoritesView() : showFavorites();
+}
+
+async function showFavorites() {
+  if (!authUser) { openAuth('login'); return; }
+  try {
+    const r = await authFetch(`${API}/me/favorites`);
+    if (!r.ok) return;
+    const data = await r.json();
+    if (!inFavoritesView) lastSearchFeatures = allFeatures.slice();
+    inFavoritesView = true;
+    document.getElementById('favorites-banner').classList.add('show');
+    document.getElementById('results-label').textContent = '★ Mes favoris';
+    currentFilters = { surfLog: 0, surfCad: 0, dpeE: '', dpeG: '', dpeDate: '' };
+    const features = data.features || [];
+    renderCards(features, 0, false);
+    drawParcels(features, 0, false);
+  } catch {}
+}
+
+function exitFavoritesView() {
+  inFavoritesView = false;
+  document.getElementById('favorites-banner').classList.remove('show');
+  document.getElementById('results-label').textContent = 'Biens trouvés';
+  if (lastSearchFeatures && lastSearchFeatures.length) {
+    renderCards(lastSearchFeatures, currentTargetSurf, currentIsLogement);
+    drawParcels(lastSearchFeatures, currentTargetSurf, currentIsLogement);
+  } else {
+    if (parcelsLayer) { map.removeLayer(parcelsLayer); parcelsLayer = null; }
+    const list = document.getElementById('results-list');
+    list.innerHTML = `<div style="font-size:0.8rem;color:var(--muted);text-align:center;padding:20px 0;border:1px dashed var(--border);border-radius:8px;grid-column:1/-1;">Les résultats apparaîtront ici</div>`;
+    document.getElementById('r-count').textContent = '';
+    const hc = document.getElementById('handle-count'); hc.textContent = '0'; hc.classList.remove('show');
+  }
+  lastSearchFeatures = null;
+}
 
 async function checkVerifyToken() {
   const params = new URLSearchParams(window.location.search);

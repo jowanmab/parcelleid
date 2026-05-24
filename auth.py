@@ -31,7 +31,7 @@ ALGORITHM    = "HS256"
 ACCESS_EXP   = 15          # minutes
 REFRESH_EXP  = 30          # jours
 FROM_EMAIL   = "onboarding@resend.dev"
-FRONT_URL    = "https://jowanmab.github.io/parcelleid"
+FRONT_URL    = "https://jowanmab.github.io/parcelleid/sig.html"
 
 resend.api_key = RESEND_KEY
 

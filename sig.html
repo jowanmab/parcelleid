@@ -594,7 +594,7 @@
     <div id="overlay" style="background: transparent !important; z-index: 1;"></div>
 
     <div id="map-count"></div>
-    <div class="map-footer">Données : <span>IGN · Cadastre officiel français</span> — Licence Ouverte Etalab</div>
+    <div class="map-footer">Données : <span>IGN · Cadastre officiel français</span> — Licence Ouverte Etalab<span id="ademe-update" style="margin-left:10px;"></span></div>
   </div>
 
   <div id="sv-modal">
@@ -1430,6 +1430,15 @@ function onMeasureDblClick(e) { L.DomEvent.stopPropagation(e); if (measureMode =
 
 // AUTH
 const API = 'https://parcelleid.duckdns.org';
+
+fetch(`${API}/system/last-update`).then(r => r.json()).then(d => {
+  if (!d.date) return;
+  const el = document.getElementById('ademe-update');
+  if (!el) return;
+  const months = ['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+  const dt = new Date(d.date);
+  el.textContent = `· ADEME au ${dt.getDate()} ${months[dt.getMonth()]} ${dt.getFullYear()}`;
+}).catch(() => {});
 let authUser = null;
 let favoritesSet = new Set();
 let favoritesList = [];

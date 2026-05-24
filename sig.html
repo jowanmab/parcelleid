@@ -236,7 +236,19 @@
     .card-thumb-ign { position: relative; width: 100%; height: 50%; overflow: hidden; flex-shrink: 0; }
     .card-thumb-ign canvas { position: absolute; top: 0; left: 0; width: 100% !important; height: 100% !important; display: block; }
     .card-thumb canvas { position: absolute; top: 0; left: 0; width: 100% !important; height: 100% !important; display: block; }
-    .card-addr { position: absolute; top: 0; left: 0; right: 0; min-height: 44px; padding: 9px 12px 6px; background: linear-gradient(to bottom, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.82) 60%, rgba(0,0,0,0) 100%); color: white; font-size: 0.74rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; z-index: 3; pointer-events: none; text-shadow: 0 1px 2px rgba(0,0,0,0.6); letter-spacing: 0.01em; }
+    .card-addr { position: absolute; top: 0; left: 0; right: 0; min-height: 44px; padding: 9px 52px 6px 12px; background: linear-gradient(to bottom, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.82) 60%, rgba(0,0,0,0) 100%); color: white; font-size: 0.74rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; z-index: 3; pointer-events: none; text-shadow: 0 1px 2px rgba(0,0,0,0.6); letter-spacing: 0.01em; }
+    .fav-btn { position: absolute; top: 8px; right: 8px; width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,0.95); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--muted); z-index: 5; box-shadow: 0 1px 4px rgba(0,0,0,0.22); transition: transform 0.12s, background 0.15s, color 0.15s; }
+    .fav-btn:hover { background: var(--white); transform: scale(1.08); color: var(--orange); }
+    .fav-btn:active { transform: scale(0.92); }
+    .fav-btn.is-fav { color: var(--orange); }
+    .fav-toggle { font-size: 0.72rem; font-weight: 700; color: var(--mid); background: var(--white); border: 1.5px solid var(--border); border-radius: 16px; padding: 5px 12px; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; display: none; align-items: center; gap: 5px; min-height: 30px; transition: background 0.15s, color 0.15s, border-color 0.15s; }
+    .fav-toggle.show { display: inline-flex; }
+    .fav-toggle:hover { background: var(--bg); color: var(--ink); }
+    .fav-toggle.active { background: var(--orange); color: var(--white); border-color: var(--orange); }
+    .fav-toggle .fav-count { background: var(--blue-lt); color: var(--blue); font-size: 0.65rem; font-weight: 800; padding: 1px 6px; border-radius: 8px; }
+    .fav-toggle.active .fav-count { background: rgba(255,255,255,0.25); color: var(--white); }
+    .fav-empty { font-size: 0.85rem; color: var(--mid); text-align: center; padding: 32px 16px; border: 1px dashed var(--border); border-radius: 10px; line-height: 1.6; }
+    .fav-empty-icon { font-size: 2rem; display: block; margin-bottom: 6px; }
     .load-more { width: 100%; grid-column: 1/-1; background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 10px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.82rem; font-weight: 600; color: var(--mid); cursor: pointer; transition: background 0.15s; margin-top: 2px; }
     .load-more:hover { background: var(--bg); color: var(--ink); }
 
@@ -385,6 +397,7 @@
       <input class="auth-input" type="email" id="login-email" placeholder="Email"/>
       <input class="auth-input" type="password" id="login-pwd" placeholder="Mot de passe"/>
       <button class="auth-btn" onclick="doLogin()">Se connecter</button>
+      <div class="auth-switch"><a onclick="switchAuth('forgot')">Mot de passe oublié ?</a></div>
       <div class="auth-switch">Pas de compte ? <a onclick="switchAuth('register')">Créer un compte</a></div>
     </div>
     <div id="auth-register-view" style="display:none">
@@ -399,6 +412,21 @@
     <div id="auth-verify-view" style="display:none">
       <div class="auth-title">✉️ Vérifiez votre email</div>
       <div class="auth-sub" id="verify-sub">Un lien de confirmation a été envoyé à votre adresse.</div>
+    </div>
+    <div id="auth-forgot-view" style="display:none">
+      <div class="auth-title">Mot de passe oublié</div>
+      <div class="auth-sub">Entrez votre email, nous vous enverrons un lien de réinitialisation.</div>
+      <div class="auth-msg" id="forgot-msg"></div>
+      <input class="auth-input" type="email" id="forgot-email" placeholder="Email"/>
+      <button class="auth-btn" onclick="doForgot()">Envoyer le lien</button>
+      <div class="auth-switch"><a onclick="switchAuth('login')">Retour à la connexion</a></div>
+    </div>
+    <div id="auth-reset-view" style="display:none">
+      <div class="auth-title">Nouveau mot de passe</div>
+      <div class="auth-sub">Choisissez un nouveau mot de passe pour votre compte.</div>
+      <div class="auth-msg" id="reset-msg"></div>
+      <input class="auth-input" type="password" id="reset-pwd" placeholder="Nouveau mot de passe (8 car. min)"/>
+      <button class="auth-btn" onclick="doReset()">Mettre à jour</button>
     </div>
   </div>
 </div>
@@ -517,8 +545,13 @@
       <div id="status"></div>
 
       <div class="results-head">
-        <span class="results-label">Biens trouvés</span>
-        <span class="results-count" id="r-count"></span>
+        <span class="results-label" id="r-label">Biens trouvés</span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <button type="button" class="fav-toggle" id="fav-toggle" onclick="toggleFavoritesView()">
+            <span>⭐</span><span>Mes favoris</span><span class="fav-count" id="fav-count">0</span>
+          </button>
+          <span class="results-count" id="r-count"></span>
+        </div>
       </div>
       <div id="results-list">
         <div style="font-size:0.8rem;color:var(--muted);text-align:center;padding:20px 0;border:1px dashed var(--border);border-radius:8px;grid-column:1/-1;">Les résultats apparaîtront ici</div>
@@ -853,6 +886,7 @@ function selectFeature(feature, card) {
 function renderCards(features, targetSurf, isLogement = false) {
   allFeatures = features; renderedCount = 0;
   currentTargetSurf = targetSurf; currentIsLogement = isLogement;
+  if (inFavView) { inFavView = false; updateFavToggle(); document.getElementById('r-label').textContent = 'Biens trouvés'; }
   const list = document.getElementById('results-list'), countEl = document.getElementById('r-count');
   list.innerHTML = '';
   if (!features.length) {
@@ -891,6 +925,18 @@ function loadMoreCards(targetSurf, isLogement = false) {
       addrEl.textContent = adresseDpe;
       addrEl.title = adresseDpe;
       thumbSV.appendChild(addrEl);
+    }
+    // Bouton favori
+    const parcelleId = f.properties?.id;
+    if (parcelleId) {
+      const favBtn = document.createElement('button');
+      favBtn.type = 'button';
+      const isFav = favoritesSet.has(parcelleId);
+      favBtn.className = 'fav-btn' + (isFav ? ' is-fav' : '');
+      favBtn.innerHTML = isFav ? '★' : '☆';
+      favBtn.title = isFav ? 'Retirer des favoris' : 'Ajouter aux favoris';
+      favBtn.addEventListener('click', (ev) => { ev.stopPropagation(); toggleFavorite(f, favBtn, card); });
+      thumbSV.appendChild(favBtn);
     }
 
     const thumbRight = document.createElement('div'); thumbRight.className = 'card-thumb-right';
@@ -1385,6 +1431,9 @@ function onMeasureDblClick(e) { L.DomEvent.stopPropagation(e); if (measureMode =
 // AUTH
 const API = 'https://parcelleid.duckdns.org';
 let authUser = null;
+let favoritesSet = new Set();
+let favoritesList = [];
+let inFavView = false;
 
 function getToken() { return localStorage.getItem('access_token'); }
 function saveTokens(access, refresh) { localStorage.setItem('access_token', access); if (refresh) localStorage.setItem('refresh_token', refresh); }
@@ -1413,6 +1462,7 @@ async function loadMe() {
     if (!r.ok) { clearTokens(); updateAuthUI(null); return; }
     authUser = await r.json();
     updateAuthUI(authUser);
+    await loadFavorites();
   } catch {}
 }
 
@@ -1421,12 +1471,15 @@ function updateAuthUI(user) {
   const cb = document.getElementById('credits-bar');
   if (!user) {
     hdr.innerHTML = `<button class="user-badge" onclick="openAuth('login')">Se connecter</button>`;
-    cb.classList.remove('show'); return;
+    cb.classList.remove('show');
+    updateFavToggle();
+    return;
   }
   const isPro = user.plan === 'pro';
   hdr.innerHTML = `<div class="user-badge" onclick="doLogout()" style="cursor:pointer"><span>${user.email.split('@')[0]}</span><span class="plan-pill ${isPro?'pro':''}">${isPro?'Pro':'Free'}</span></div>`;
   if (!isPro) { cb.classList.add('show'); document.getElementById('credits-count').textContent = user.credits; }
   else { cb.classList.remove('show'); }
+  updateFavToggle();
 }
 
 function openAuth(view) { document.getElementById('auth-overlay').classList.remove('hidden'); switchAuth(view); }
@@ -1435,6 +1488,8 @@ function switchAuth(view) {
   document.getElementById('auth-login-view').style.display = view === 'login' ? '' : 'none';
   document.getElementById('auth-register-view').style.display = view === 'register' ? '' : 'none';
   document.getElementById('auth-verify-view').style.display = view === 'verify' ? '' : 'none';
+  document.getElementById('auth-forgot-view').style.display = view === 'forgot' ? '' : 'none';
+  document.getElementById('auth-reset-view').style.display = view === 'reset' ? '' : 'none';
 }
 
 async function doLogin() {
@@ -1448,6 +1503,8 @@ async function doLogin() {
     if (!r.ok) { msg.className = 'auth-msg err'; msg.textContent = d.detail || 'Erreur de connexion'; return; }
     saveTokens(d.access_token, d.refresh_token);
     await loadMe(); closeAuth();
+    // Refresh fav buttons sur les cartes déjà rendues
+    refreshFavButtonsOnCards();
   } catch { msg.className = 'auth-msg err'; msg.textContent = 'Erreur réseau'; }
 }
 
@@ -1465,21 +1522,290 @@ async function doRegister() {
   } catch { msg.className = 'auth-msg err'; msg.textContent = 'Erreur réseau'; }
 }
 
-function doLogout() { clearTokens(); authUser = null; updateAuthUI(null); }
+function doLogout() {
+  clearTokens(); authUser = null;
+  favoritesSet = new Set(); favoritesList = [];
+  if (inFavView) exitFavoritesView();
+  updateAuthUI(null);
+  refreshFavButtonsOnCards();
+}
+
+async function doForgot() {
+  const email = document.getElementById('forgot-email').value.trim();
+  const msg = document.getElementById('forgot-msg');
+  msg.className = 'auth-msg'; msg.textContent = '';
+  if (!email) { msg.className = 'auth-msg err'; msg.textContent = 'Email requis'; return; }
+  try {
+    const r = await fetch(`${API}/auth/forgot-password`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({email}) });
+    const d = await r.json();
+    if (!r.ok) { msg.className = 'auth-msg err'; msg.textContent = d.detail || 'Erreur'; return; }
+    msg.className = 'auth-msg ok';
+    msg.textContent = '✉️ Si un compte existe avec cet email, un lien vient d\'être envoyé.';
+  } catch { msg.className = 'auth-msg err'; msg.textContent = 'Erreur réseau'; }
+}
+
+let resetToken = null;
+async function doReset() {
+  const pwd = document.getElementById('reset-pwd').value;
+  const msg = document.getElementById('reset-msg');
+  msg.className = 'auth-msg'; msg.textContent = '';
+  if (!resetToken) { msg.className = 'auth-msg err'; msg.textContent = 'Lien invalide'; return; }
+  if (pwd.length < 8) { msg.className = 'auth-msg err'; msg.textContent = 'Mot de passe trop court (8 caractères min)'; return; }
+  try {
+    const r = await fetch(`${API}/auth/reset-password`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({token: resetToken, password: pwd}) });
+    const d = await r.json();
+    if (!r.ok) { msg.className = 'auth-msg err'; msg.textContent = d.detail || 'Erreur'; return; }
+    resetToken = null;
+    switchAuth('login');
+    const m = document.getElementById('login-msg');
+    m.className = 'auth-msg ok';
+    m.textContent = '✅ Mot de passe mis à jour ! Vous pouvez vous connecter.';
+  } catch { msg.className = 'auth-msg err'; msg.textContent = 'Erreur réseau'; }
+}
 
 async function checkVerifyToken() {
   const params = new URLSearchParams(window.location.search);
-  const token = params.get('verify'); if (!token) return;
+  const vToken = params.get('verify');
+  const rToken = params.get('reset');
+  if (vToken) {
+    try {
+      const r = await fetch(`${API}/auth/verify-email?token=${vToken}`, { method: 'POST' });
+      if (r.ok) {
+        openAuth('login');
+        const m = document.getElementById('login-msg');
+        m.className = 'auth-msg ok';
+        m.textContent = '✅ Email vérifié ! Vous pouvez vous connecter.';
+      }
+    } catch {}
+    window.history.replaceState({}, '', window.location.pathname);
+  } else if (rToken) {
+    resetToken = rToken;
+    openAuth('reset');
+    window.history.replaceState({}, '', window.location.pathname);
+  }
+}
+
+// FAVORITES
+async function loadFavorites() {
+  if (!getToken()) {
+    favoritesSet = new Set(); favoritesList = [];
+    updateFavToggle(); return;
+  }
   try {
-    const r = await fetch(`${API}/auth/verify-email?token=${token}`, { method: 'POST' });
-    if (r.ok) {
-      openAuth('login');
-      const m = document.getElementById('login-msg');
-      m.className = 'auth-msg ok';
-      m.textContent = '✅ Email vérifié ! Vous pouvez vous connecter.';
+    const r = await authFetch(`${API}/auth/favorites`);
+    if (!r.ok) return;
+    favoritesList = await r.json();
+    favoritesSet = new Set(favoritesList.map(f => f.parcelle_id));
+    updateFavToggle();
+  } catch {}
+}
+
+function updateFavToggle() {
+  const t = document.getElementById('fav-toggle');
+  if (!t) return;
+  if (!authUser) {
+    t.classList.remove('show'); t.classList.remove('active');
+    inFavView = false; return;
+  }
+  t.classList.add('show');
+  document.getElementById('fav-count').textContent = favoritesSet.size;
+  t.classList.toggle('active', inFavView);
+}
+
+function toggleFavoritesView() {
+  if (!authUser) { openAuth('login'); return; }
+  if (inFavView) exitFavoritesView();
+  else enterFavoritesView();
+}
+
+function enterFavoritesView() {
+  inFavView = true;
+  updateFavToggle();
+  document.getElementById('r-label').textContent = 'Mes favoris';
+  document.getElementById('r-count').textContent =
+    favoritesList.length + ' bien' + (favoritesList.length > 1 ? 's' : '');
+  renderFavoritesCards();
+}
+
+function exitFavoritesView() {
+  inFavView = false;
+  updateFavToggle();
+  document.getElementById('r-label').textContent = 'Biens trouvés';
+  const list = document.getElementById('results-list');
+  list.innerHTML = '';
+  if (allFeatures && allFeatures.length) {
+    document.getElementById('r-count').textContent =
+      allFeatures.length + ' bien' + (allFeatures.length > 1 ? 's' : '');
+    renderedCount = 0;
+    loadMoreCards(currentTargetSurf, currentIsLogement);
+  } else {
+    document.getElementById('r-count').textContent = '';
+    list.innerHTML = `<div style="font-size:0.8rem;color:var(--muted);text-align:center;padding:20px 0;border:1px dashed var(--border);border-radius:8px;grid-column:1/-1;">Les résultats apparaîtront ici</div>`;
+  }
+}
+
+function renderFavoritesCards() {
+  const list = document.getElementById('results-list');
+  list.innerHTML = '';
+  if (!favoritesList.length) {
+    list.innerHTML = `<div class="fav-empty"><span class="fav-empty-icon">⭐</span>Vous n'avez encore aucun favori.<br/>Cliquez sur l'étoile d'un résultat pour l'enregistrer.</div>`;
+    return;
+  }
+  favoritesList.forEach(fav => list.appendChild(createFavoriteCard(fav)));
+}
+
+function createFavoriteCard(fav) {
+  const dpeColors = {A:'#0f7c3a',B:'#5cb85c',C:'#f0d000',D:'#ff9900',E:'#e74c3c',F:'#d92a2a',G:'#c1121f'};
+  const parseRef = id => { if (!id) return '—'; const m = /([A-Z]{1,3})(\d{1,5})$/.exec(id); return m ? `${m[1]} ${m[2]}` : id; };
+  const fmtDate = d => { if (!d) return '—'; const p = d.split('-'); return p.length === 3 ? `${p[2]}/${p[1]}/${p[0].slice(2)}` : d; };
+  const badge = cls => cls
+    ? `<span class="info-badge" style="background:${dpeColors[cls] || '#999'};color:${cls === 'C' ? '#333' : '#fff'}">${cls}</span>`
+    : `<span class="info-badge info-badge-empty">—</span>`;
+
+  const card = document.createElement('div'); card.className = 'card';
+  const thumb = document.createElement('div'); thumb.className = 'card-thumb';
+  const thumbSV = document.createElement('div'); thumbSV.className = 'card-thumb-sv';
+  const svPlaceholder = document.createElement('div'); svPlaceholder.className = 'card-thumb-sv-placeholder';
+  svPlaceholder.innerHTML = '<span style="font-size:1.4rem">📷</span><small style="font-size:0.6rem;color:#93c5fd;font-weight:600">Chargement…</small>';
+  thumbSV.appendChild(svPlaceholder);
+  if (fav.adresse) {
+    const addrEl = document.createElement('div');
+    addrEl.className = 'card-addr';
+    addrEl.textContent = fav.adresse; addrEl.title = fav.adresse;
+    thumbSV.appendChild(addrEl);
+  }
+  const favBtn = document.createElement('button');
+  favBtn.type = 'button'; favBtn.className = 'fav-btn is-fav';
+  favBtn.innerHTML = '★'; favBtn.title = 'Retirer des favoris';
+  favBtn.addEventListener('click', async ev => {
+    ev.stopPropagation();
+    await removeFavorite(fav.parcelle_id);
+    card.style.transition = 'opacity 0.2s, transform 0.2s';
+    card.style.opacity = '0'; card.style.transform = 'scale(0.97)';
+    setTimeout(() => {
+      card.remove();
+      document.getElementById('r-count').textContent =
+        favoritesList.length + ' bien' + (favoritesList.length > 1 ? 's' : '');
+      if (!favoritesList.length) renderFavoritesCards();
+    }, 200);
+  });
+  thumbSV.appendChild(favBtn);
+
+  const thumbRight = document.createElement('div'); thumbRight.className = 'card-thumb-right';
+  const thumbInfo = document.createElement('div'); thumbInfo.className = 'card-thumb-info';
+  thumbInfo.innerHTML = `
+    <div class="info-line"><span class="info-label">Surface habitable</span><span class="info-val">${fav.surface_habitable ? Math.round(fav.surface_habitable) + ' m²' : '—'}</span></div>
+    <div class="info-line"><span class="info-label">Surface terrain</span><span class="info-val">${fav.surface_terrain ? Math.round(fav.surface_terrain) + ' m²' : '—'}</span></div>
+    <div class="info-line info-badges">
+      <div class="info-badge-row"><span class="info-label">DPE</span>${badge(fav.classe_energie)}</div>
+      <div class="info-badge-row"><span class="info-label">GES</span>${badge(fav.classe_ges)}</div>
+    </div>
+    <div class="info-line"><span class="info-label">Date diagnostic</span><span class="info-val">${fmtDate(fav.date_diagnostic)}</span></div>
+    <div class="info-line"><span class="info-label">Réf. cadastrale</span><span class="info-val">${parseRef(fav.parcelle_id)}</span></div>
+  `;
+  thumbRight.appendChild(thumbInfo);
+
+  const meta = document.createElement('div');
+  meta.style.cssText = 'position:relative;width:100%;height:50%;background:var(--bg);padding:10px 12px;display:flex;flex-direction:column;justify-content:center;gap:6px;font-size:0.74rem;color:var(--mid);';
+  const savedDate = fav.created_at ? new Date(fav.created_at).toLocaleDateString('fr-FR') : '—';
+  meta.innerHTML = `
+    <div><strong style="color:var(--ink);font-size:0.82rem">${fav.commune || '—'}</strong></div>
+    <div>INSEE : <strong>${fav.insee || '—'}</strong></div>
+    <div>Ajouté le ${savedDate}</div>
+  `;
+  thumbRight.appendChild(meta);
+  thumb.appendChild(thumbSV); thumb.appendChild(thumbRight);
+  card.appendChild(thumb);
+
+  if (fav.lat && fav.lng) {
+    const observer = new IntersectionObserver(entries => {
+      if (!entries[0].isIntersecting) return;
+      observer.disconnect();
+      const url = `https://www.google.com/maps/embed/v1/streetview?key=AIzaSyD1pMAMR9M6vLrsfoLJ5GDyIbkDTgLvqg4&location=${fav.lat},${fav.lng}&fov=100&pitch=0`;
+      const iframe = document.createElement('iframe');
+      iframe.src = url;
+      iframe.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:none;';
+      iframe.loading = 'lazy'; iframe.allowFullscreen = true;
+      svPlaceholder.remove();
+      thumbSV.appendChild(iframe);
+    }, { threshold: 0.1 });
+    observer.observe(card);
+  } else {
+    svPlaceholder.innerHTML = '<span style="font-size:1.4rem">📍</span><small style="font-size:0.6rem;color:#93c5fd;font-weight:600">Sans localisation</small>';
+  }
+  return card;
+}
+
+async function toggleFavorite(feature, btn, card) {
+  if (!authUser) { openAuth('login'); return; }
+  const id = feature.properties?.id;
+  if (!id) return;
+  if (favoritesSet.has(id)) {
+    await removeFavorite(id);
+    btn.classList.remove('is-fav');
+    btn.innerHTML = '☆'; btn.title = 'Ajouter aux favoris';
+  } else {
+    await addFavorite(feature);
+    btn.classList.add('is-fav');
+    btn.innerHTML = '★'; btn.title = 'Retirer des favoris';
+  }
+  updateFavToggle();
+}
+
+async function addFavorite(feature) {
+  const p = feature.properties || {};
+  let lat = null, lng = null;
+  try {
+    const g = feature.geometry;
+    const coords = g?.type === 'MultiPolygon' ? g.coordinates[0][0] : g?.coordinates?.[0];
+    if (coords && coords.length) {
+      let mnLat = Infinity, mxLat = -Infinity, mnLng = Infinity, mxLng = -Infinity;
+      coords.forEach(c => { mnLng = Math.min(mnLng, c[0]); mxLng = Math.max(mxLng, c[0]); mnLat = Math.min(mnLat, c[1]); mxLat = Math.max(mxLat, c[1]); });
+      lat = (mnLat + mxLat) / 2; lng = (mnLng + mxLng) / 2;
     }
   } catch {}
-  window.history.replaceState({}, '', window.location.pathname);
+  const body = {
+    parcelle_id: p.id,
+    insee: (typeof selectedCommune !== 'undefined' && selectedCommune) ? selectedCommune.code : null,
+    commune: ((typeof selectedCommune !== 'undefined' && selectedCommune) ? selectedCommune.nom : null) || p.commune || null,
+    adresse: p.adresse || null,
+    surface_habitable: p.surface_habitable ?? null,
+    surface_terrain: (p.surface ?? p.contenance) ?? null,
+    classe_energie: p.classe_energie || null,
+    classe_ges: p.classe_ges || null,
+    date_diagnostic: p.date_dpe || null,
+    lat, lng
+  };
+  const r = await authFetch(`${API}/auth/favorites`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(body)
+  });
+  if (!r.ok) return;
+  favoritesSet.add(p.id);
+  favoritesList.unshift({ ...body, created_at: new Date().toISOString() });
+}
+
+async function removeFavorite(parcelleId) {
+  const r = await authFetch(`${API}/auth/favorites/${encodeURIComponent(parcelleId)}`, { method: 'DELETE' });
+  if (!r.ok) return;
+  favoritesSet.delete(parcelleId);
+  favoritesList = favoritesList.filter(f => f.parcelle_id !== parcelleId);
+}
+
+function refreshFavButtonsOnCards() {
+  document.querySelectorAll('.card .fav-btn').forEach(btn => {
+    const card = btn.closest('.card');
+    const idx = card?.dataset?.featureIdx;
+    if (idx == null) return;
+    const f = allFeatures && allFeatures[parseInt(idx, 10)];
+    if (!f) return;
+    const id = f.properties?.id;
+    const isFav = id && favoritesSet.has(id);
+    btn.classList.toggle('is-fav', !!isFav);
+    btn.innerHTML = isFav ? '★' : '☆';
+    btn.title = isFav ? 'Retirer des favoris' : 'Ajouter aux favoris';
+  });
 }
 
 // STREET VIEW MODAL

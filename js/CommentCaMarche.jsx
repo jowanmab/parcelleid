@@ -8,7 +8,7 @@ const CM_STEPS = [
     num: '01',
     eyebrow: 'ENTRÉE',
     title: "Vous renseignez l'annonce",
-    lead: "Ce que demande ScanImmo, c'est exactement ce qui figure sur l'annonce.",
+    lead: "Ce que demande LocaliseImmo, c'est exactement ce qui figure sur l'annonce.",
     body: "Trois champs suffisent dans 90% des cas : la commune (ou le code postal), la surface du logement annoncée, et — si vous l'avez — la classe énergétique. La tolérance ±% se règle selon le sérieux de l'annonceur : ±2% si la surface est précise au mètre carré, ±10% si vous doutez.",
     bullets: [
       ["Commune", "Autocomplete sur les 35 000 communes via geo.api.gouv.fr"],
@@ -48,14 +48,14 @@ const CM_STEPS = [
 const CM_FAQ = [
   {
     q: "Est-ce vraiment gratuit ?",
-    a: "Oui, totalement. Pas de freemium, pas de compte obligatoire, pas de carte bleue. ScanImmo est financé par de la publicité Google Ads sur les articles de blog. Le coût d'infrastructure est ~5€/mois — un projet personnel.",
+    a: "Oui, totalement. Pas de freemium, pas de compte obligatoire, pas de carte bleue. LocaliseImmo est financé par de la publicité Google Ads sur les articles de blog. Le coût d'infrastructure est ~5€/mois — un projet personnel.",
   },
   {
     q: "D'où viennent les données de localisation ?",
     a: "IGN (BD Ortho, BD Topo, PLU), DGFiP (Cadastre officiel), Etalab (DVF — Demandes de Valeurs Foncières), geo.api.gouv.fr. Toutes des sources publiques françaises sous Licence Ouverte Etalab.",
   },
   {
-    q: "Que faire si ScanImmo trouve plusieurs emplacements compatibles ?",
+    q: "Que faire si LocaliseImmo trouve plusieurs emplacements compatibles ?",
     a: "C'est le cas le plus fréquent. Réduisez la tolérance à ±2%, ajoutez le DPE/GES, ou utilisez la rue dans l'autocomplete. Si le doute persiste, comparez les vues satellite : la photo de l'annonce trahit souvent le bon emplacement.",
   },
   {
@@ -64,7 +64,7 @@ const CM_FAQ = [
   },
   {
     q: "Ça marche pour les maisons et les appartements ?",
-    a: "Les deux. Pour les appartements, ScanImmo identifie le bâtiment (donc l'emplacement de l'immeuble) — pas l'étage. Croisé avec le DPE et la date de construction, c'est suffisant pour situer 95% des annonces.",
+    a: "Les deux. Pour les appartements, LocaliseImmo identifie le bâtiment (donc l'emplacement de l'immeuble) — pas l'étage. Croisé avec le DPE et la date de construction, c'est suffisant pour situer 95% des annonces.",
   },
   {
     q: "Pourquoi géolocaliser une annonce avant la visite ?",
@@ -133,7 +133,7 @@ function CommentCaMarche({ device = 'desktop', style = 'chaleureux', decor = 'pe
             On part d'une annonce. <em>Vous savez où elle est.</em>
           </h1>
           <p className="cm-lead">
-            Pas de magie, pas d'IA fantaisiste. ScanImmo croise <b>les données publiques officielles</b> avec ce que dit l'annonce, et vous donne en 30 secondes l'emplacement exact du bien — avec son voisinage, son terrain, son quartier et son historique.
+            Pas de magie, pas d'IA fantaisiste. LocaliseImmo croise <b>les données publiques officielles</b> avec ce que dit l'annonce, et vous donne en 30 secondes l'emplacement exact du bien — avec son voisinage, son terrain, son quartier et son historique.
           </p>
           <div className="cm-kpi-strip" data-device={device}>
             <div className="cm-kpi"><b>35 000</b><span>communes couvertes</span></div>
@@ -158,7 +158,7 @@ function CommentCaMarche({ device = 'desktop', style = 'chaleureux', decor = 'pe
                 Sans la localisation exacte, impossible de vérifier le voisinage immédiat, les commerces et transports à proximité, les contraintes d'urbanisme, ou l'historique de prix de la zone. Vous visitez à l'aveugle.
               </p>
               <p className="cm-body">
-                ScanImmo comble ce trou en 30 secondes — avec les mêmes données de localisation que les agents immobiliers, en libre accès.
+                LocaliseImmo comble ce trou en 30 secondes — avec les mêmes données de localisation que les agents immobiliers, en libre accès.
               </p>
             </div>
             <div className="cm-twocol-aside">
@@ -222,7 +222,7 @@ function CommentCaMarche({ device = 'desktop', style = 'chaleureux', decor = 'pe
               </div>
               <div className="cm-persona-role">Acheteuse particulière</div>
               <h3>Marie, 34 ans · Toulouse</h3>
-              <p>« Avant une visite, je passe l'annonce dans ScanImmo. Je vois où c'est exactement, le voisinage, les commerces, les transports. Ça m'a évité <b>3 visites inutiles</b> en deux mois. »</p>
+              <p>« Avant une visite, je passe l'annonce dans LocaliseImmo. Je vois où c'est exactement, le voisinage, les commerces, les transports. Ça m'a évité <b>3 visites inutiles</b> en deux mois. »</p>
               <div className="cm-persona-stats">
                 <span><b>~5</b> annonces / sem</span>
                 <span><b>2</b> visites évitées / mois</span>
@@ -234,7 +234,7 @@ function CommentCaMarche({ device = 'desktop', style = 'chaleureux', decor = 'pe
               </div>
               <div className="cm-persona-role">Chasseur immobilier indépendant</div>
               <h3>Karim, 41 ans · Bordeaux</h3>
-              <p>« Je traite 50&nbsp;+ annonces par semaine pour mes clients. ScanImmo c'est <b>5 minutes au lieu de 25</b> par dossier de qualification — je sais immédiatement où se trouve le bien, son quartier, ses contraintes. Le PLU et le DVF sur la même vue, c'est imbattable. »</p>
+              <p>« Je traite 50&nbsp;+ annonces par semaine pour mes clients. LocaliseImmo c'est <b>5 minutes au lieu de 25</b> par dossier de qualification — je sais immédiatement où se trouve le bien, son quartier, ses contraintes. Le PLU et le DVF sur la même vue, c'est imbattable. »</p>
               <div className="cm-persona-stats">
                 <span><b>50+</b> annonces / sem</span>
                 <span><b>~80%</b> temps gagné</span>
@@ -289,10 +289,10 @@ function CommentCaMarche({ device = 'desktop', style = 'chaleureux', decor = 'pe
             <a href="./sources.html">Sources & méthode</a>
             <a href="./blog.html">Blog</a>
             <a href="#" onClick={(e)=>e.preventDefault()}>Mentions légales</a>
-            <a href="mailto:contact@scanimmo.io">Contact</a>
+            <a href="mailto:contact@localiseimmo.fr">Contact</a>
           </div>
           <div className="legal">
-            Données cadastrales : IGN · Cadastre officiel français — Licence Ouverte Etalab. ScanImmo n'est pas affilié à un organisme public.
+            Données cadastrales : IGN · Cadastre officiel français — Licence Ouverte Etalab. LocaliseImmo n'est pas affilié à un organisme public.
           </div>
         </footer>
       </div>

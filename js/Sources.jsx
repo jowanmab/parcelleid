@@ -144,7 +144,7 @@ function Sources({ device = 'desktop', style = 'chaleureux', decor = 'personnage
           <span className="lp-hero-eyebrow"><span className="lp-hero-eyebrow-dot"></span>Sources & méthode</span>
           <h1 className="cm-h1">Nos données ne mentent pas. <em>Voici d'où elles viennent.</em></h1>
           <p className="cm-lead">
-            ScanImmo ne <b>collecte</b> aucune donnée, n'<b>achète</b> aucune base, ne <b>scrape</b> aucune annonce. Tout vient de six sources publiques françaises sous Licence Ouverte Etalab. Cette page liste précisément lesquelles, à quelle fréquence elles se mettent à jour, et ce qu'on en fait.
+            LocaliseImmo ne <b>collecte</b> aucune donnée, n'<b>achète</b> aucune base, ne <b>scrape</b> aucune annonce. Tout vient de six sources publiques françaises sous Licence Ouverte Etalab. Cette page liste précisément lesquelles, à quelle fréquence elles se mettent à jour, et ce qu'on en fait.
           </p>
           <div className="src-anchor-strip" data-device={device}>
             <a href="#sources">Les 6 sources ↓</a>
@@ -272,7 +272,7 @@ function Sources({ device = 'desktop', style = 'chaleureux', decor = 'personnage
             <div className="lp-sec-eyebrow">Vie privée</div>
             <h2 className="cm-h2">Vos recherches restent <em>chez vous.</em></h2>
             <p className="cm-body" style={{ maxWidth: 640 }}>
-              ScanImmo est conçu pour fonctionner sans rien savoir de vous. Pas par marketing — par architecture.
+              LocaliseImmo est conçu pour fonctionner sans rien savoir de vous. Pas par marketing — par architecture.
             </p>
           </div>
 
@@ -315,10 +315,10 @@ function Sources({ device = 'desktop', style = 'chaleureux', decor = 'personnage
             <a href="./sources.html">Sources & méthode</a>
             <a href="./blog.html">Blog</a>
             <a href="#" onClick={(e)=>e.preventDefault()}>Mentions légales</a>
-            <a href="mailto:contact@scanimmo.io">Contact</a>
+            <a href="mailto:contact@localiseimmo.fr">Contact</a>
           </div>
           <div className="legal">
-            Données cadastrales : IGN · Cadastre officiel français — Licence Ouverte Etalab. ScanImmo n'est pas affilié à un organisme public.
+            Données cadastrales : IGN · Cadastre officiel français — Licence Ouverte Etalab. LocaliseImmo n'est pas affilié à un organisme public.
           </div>
         </footer>
       </div>

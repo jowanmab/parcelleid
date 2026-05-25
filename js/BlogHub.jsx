@@ -3,7 +3,7 @@
 const HUB_ARTICLES = [
   {
     cat: 'Méthodologie',
-    title: "D'où viennent les données de ScanImmo ?",
+    title: "D'où viennent les données de LocaliseImmo ?",
     excerpt: "Parcelle cadastrale et DPE — deux sources, deux niveaux de fiabilité. Ce qu'on utilise, et pourquoi nous le disons.",
     date: '16 mai 2026', read: '8 min', featured: true,
   },
@@ -21,7 +21,7 @@ const HUB_ARTICLES = [
   },
   {
     cat: 'Méthodologie',
-    title: "BD TOPO IGN : comment ScanImmo détecte les parcelles construites",
+    title: "BD TOPO IGN : comment LocaliseImmo détecte les parcelles construites",
     excerpt: "Le pré-filtre qui élimine 60% du bruit avant que vous ne voyiez les résultats.",
     date: '4 mai 2026', read: '6 min',
   },
@@ -77,10 +77,10 @@ function BlogHub({ device = 'desktop', style = 'chaleureux', decor = 'personnage
       {/* HUB HEADER */}
       <div className={wrap}>
         <header className="hub-header">
-          <span className="lp-hero-eyebrow"><span className="lp-hero-eyebrow-dot"></span>Le blog ScanImmo</span>
+          <span className="lp-hero-eyebrow"><span className="lp-hero-eyebrow-dot"></span>Le blog LocaliseImmo</span>
           <h1 className="cm-h1">Tout ce qu'il faut savoir <em>avant d'acheter.</em></h1>
           <p className="cm-lead">
-            Guides pratiques, décryptages, méthodes. Le blog ScanImmo explique simplement les données publiques françaises qui font foi sur l'immobilier — pour que vous achetiez en connaissance de cause.
+            Guides pratiques, décryptages, méthodes. Le blog LocaliseImmo explique simplement les données publiques françaises qui font foi sur l'immobilier — pour que vous achetiez en connaissance de cause.
           </p>
         </header>
       </div>
@@ -162,7 +162,7 @@ function BlogHub({ device = 'desktop', style = 'chaleureux', decor = 'personnage
         <section className="hub-newsletter">
           <div className="hub-newsletter-inner">
             <h3>Un article par mois, dans votre boîte mail.</h3>
-            <p>Pas de spam, pas de revente. Juste les nouveaux articles ScanImmo.</p>
+            <p>Pas de spam, pas de revente. Juste les nouveaux articles LocaliseImmo.</p>
             <div className="hub-newsletter-form">
               <input className="lp-input" placeholder="votre@email.fr" type="email"/>
               <button className="lp-form-cta" style={{ marginTop: 0, width: 'auto' }}>S'abonner <span className="arrow"><Icons.ArrowRight s={14}/></span></button>
@@ -185,10 +185,10 @@ function BlogHub({ device = 'desktop', style = 'chaleureux', decor = 'personnage
             <a href="./sources.html">Sources & méthode</a>
             <a href="./blog.html">Blog</a>
             <a href="#" onClick={(e)=>e.preventDefault()}>Mentions légales</a>
-            <a href="mailto:contact@scanimmo.io">Contact</a>
+            <a href="mailto:contact@localiseimmo.fr">Contact</a>
           </div>
           <div className="legal">
-            Données cadastrales : IGN · Cadastre officiel français — Licence Ouverte Etalab. ScanImmo n'est pas affilié à un organisme public.
+            Données cadastrales : IGN · Cadastre officiel français — Licence Ouverte Etalab. LocaliseImmo n'est pas affilié à un organisme public.
           </div>
         </footer>
       </div>

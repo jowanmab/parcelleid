@@ -9,30 +9,30 @@ function HowItWorks({ device = 'desktop', decor = 'personnages', animated = fals
   const steps = [
     {
       num: '01',
-      title: 'Vous renseignez l\'annonce',
-      body: "Commune, surface, tolérance, et — si vous l'avez — la classe énergétique. Les seuls champs qu'une annonce immo donne toujours.",
+      title: "Vous renseignez les paramètres de l'annonce",
+      body: "Commune, surface, et la classe énergétique si vous l'avez. C'est tout ce qu'une annonce donne, c'est tout ce qu'on demande.",
       Illu: set[0],
     },
     {
       num: '02',
-      title: 'On géolocalise le bien',
-      body: "ScanImmo croise vos critères avec le cadastre officiel et l'imagerie satellite IGN. Les biens compatibles s'affichent sur la carte, avec leur emplacement précis.",
+      title: 'On trouve la parcelle exacte',
+      body: "LocaliseImmo croise ça avec les données officielles et le cadastre. Les maisons compatibles s'affichent sur la carte, à l'adresse près.",
       Illu: set[1],
     },
     {
       num: '03',
       title: 'Vous voyez tout du quartier',
-      body: "Voisinage, commerces, transports, contraintes d'urbanisme, historique des ventes. L'annonce vendait un bien — vous voyez maintenant le quartier.",
+      body: "Voisinage, commerces, transports, contraintes d'urbanisme, historique des ventes. De quoi vous projeter, ou éviter une visite inutile.",
       Illu: set[2],
     },
   ];
 
   return (
     <section className="lp-section" data-device={device}>
-      <div className="lp-sec-head">
+      <div className="lp-sec-head lp-sec-head--wide">
         <div className="lp-sec-eyebrow">Comment ça marche</div>
-        <h2 className="lp-sec-title">Trois étapes, <em>zéro friction.</em></h2>
-        <p className="lp-sec-sub">Pas de compte, pas de carte bleue. Les mêmes données de localisation que les agents immobiliers — directement dans votre navigateur.</p>
+        <h2 className="lp-sec-title">Trois étapes, <em>zéro déplacement inutile.</em></h2>
+        <p className="lp-sec-sub">Vérifiez avant de visiter. L'annonce dit beaucoup. L'emplacement dit le reste.</p>
       </div>
 
       <div className="lp-steps" data-device={device}>

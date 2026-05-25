@@ -1,5 +1,5 @@
 /* ════════════════════════════════════════════════════════════════════════════
-   ScanImmo — Bootstrap landing → SIG
+   LocaliseImmo — Bootstrap landing → SIG
    ────────────────────────────────────────────────────────────────────────────
    Lit les paramètres URL envoyés par la page d'accueil et préremplit le
    formulaire du SIG, puis lance la recherche automatiquement.
@@ -21,7 +21,7 @@
    ▸ L'URL est nettoyée après le bootstrap (replaceState) — pas de
      re-déclenchement sur refresh.
    ════════════════════════════════════════════════════════════════════════════ */
-(function scanimmoBootstrap() {
+(function localiseImmoBootstrap() {
   const params = new URLSearchParams(window.location.search);
   if (!params.has('commune') && !params.has('insee')) return;
 

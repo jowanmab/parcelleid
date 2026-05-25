@@ -1,5 +1,5 @@
 /* global React */
-// ScanImmo Landing — character illustrations (sage + peach, geometric flat)
+// LocaliseImmo Landing — character illustrations (sage + peach, geometric flat)
 // Theme: loupe (magnifying glass), jumelles (binoculars), parcelles, clé
 
 const ILLU = {

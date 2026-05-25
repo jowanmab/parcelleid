@@ -13,7 +13,7 @@ function Landing({ device = 'desktop', style = 'chaleureux', decor = 'personnage
         <nav className="lp-nav" data-device={device}>
           <div className="lp-logo">
             <img src="./assets/logo-mark.svg" alt=""/>
-            <span className="word">Scan<span className="b">Immo</span></span>
+            <span className="word">Localise<span className="b">Immo</span></span>
           </div>
           {device === 'desktop' && (
             <div className="lp-nav-links">
@@ -25,7 +25,7 @@ function Landing({ device = 'desktop', style = 'chaleureux', decor = 'personnage
           )}
           <div className="lp-nav-spacer"></div>
           {device === 'desktop' ? (
-            <button className="lp-nav-cta">Ouvrir l'outil <Icons.ArrowRight s={14}/></button>
+            <button className="lp-nav-cta">Connexion <Icons.ArrowRight s={14}/></button>
           ) : (
             <button className="lp-nav-burger">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
@@ -39,22 +39,16 @@ function Landing({ device = 'desktop', style = 'chaleureux', decor = 'personnage
         <section className="lp-hero" data-device={device}>
           {device === 'mobile' ? (
             <>
-              {/* MOBILE — form is what we see first */}
-              <div className="lp-hero-copy lp-hero-copy-tight">
-                <span className="lp-hero-eyebrow">
-                  <span className="lp-hero-eyebrow-dot"></span>
-                  Géolocalisation d'annonces · Gratuit
-                </span>
-                <h1>Sachez <em>où se trouve</em> vraiment l'annonce que vous regardez.</h1>
-              </div>
-
-              {/* The form — front and center */}
-              <div style={{ marginTop: 18 }}>
+              {/* MOBILE, form is what we see first, the rest comes after */}
+              <div>
                 <HeroForm device={device}/>
               </div>
 
-              {/* Trust strip + illustration come AFTER */}
-              <div className="lp-trust-row" style={{ marginTop: 22 }}>
+              <div className="lp-hero-copy lp-hero-copy-tight" style={{ marginTop: 28 }}>
+                <h1>Retrouvez <em>l'adresse exacte</em> de l'annonce immo que vous regardez.</h1>
+              </div>
+
+              <div className="lp-trust-row" style={{ marginTop: 18 }}>
                 <span className="item"><span className="dot"></span>Données IGN officielles</span>
                 <span className="item"><span className="dot"></span>35 000 communes</span>
                 <span className="item"><span className="dot"></span>~30 s par recherche</span>
@@ -69,19 +63,23 @@ function Landing({ device = 'desktop', style = 'chaleureux', decor = 'personnage
               )}
 
               <p className="lead" style={{ marginTop: 22 }}>
-                ScanImmo géolocalise précisément le bien d'une annonce à partir de sa commune, sa surface et son DPE. Voisinage, quartier, contraintes — tout ce que l'annonce ne dit pas.
+                On localise le bien à partir de la <b>surface du terrain</b> et des <b>infos de la maison</b>.
+              </p>
+              <p className="lp-lead-tip">
+                <strong>Astuce</strong> : la surface cadastrale est souvent la plus fiable : elle ne change pas dans le temps, contrairement à une maison qu'on peut agrandir.
               </p>
             </>
           ) : (
             <>
-              {/* DESKTOP — copy left, form right */}
+              {/* DESKTOP, copy left, form right */}
               <div className="lp-hero-copy">
                 <span className="lp-hero-eyebrow">
                   <span className="lp-hero-eyebrow-dot"></span>
-                  Géolocalisation d'annonces · Gratuit
+                  Géolocalisation d'annonces immo
                 </span>
-                <h1>Sachez <em>où se trouve</em> vraiment l'annonce immo que vous regardez.</h1>
-                <p className="lead">ScanImmo géolocalise précisément le bien à partir des informations de l'annonce — commune, surface, DPE. Vous voyez l'emplacement exact, le voisinage et le quartier avant la visite.</p>
+                <h1>Retrouvez <em>l'adresse exacte</em> de l'annonce immo que vous regardez.</h1>
+                <p className="lead">On localise le bien à partir de la <b>surface du terrain</b> et des <b>infos de la maison</b>.</p>
+                <p className="lp-lead-tip"><strong>Astuce</strong> : la surface cadastrale est souvent la donnée la plus fiable : elle ne change pas dans le temps, contrairement à une maison qu'on peut agrandir.</p>
                 <div className="lp-trust-row">
                   <span className="item"><span className="dot"></span>Données IGN officielles</span>
                   <span className="item"><span className="dot"></span>35 000 communes couvertes</span>
@@ -113,7 +111,7 @@ function Landing({ device = 'desktop', style = 'chaleureux', decor = 'personnage
         <footer className="lp-foot">
           <div className="lp-logo" style={{ marginBottom: 14 }}>
             <img src="./assets/logo-mark.svg" alt=""/>
-            <span className="word">Scan<span className="b">Immo</span></span>
+            <span className="word">Localise<span className="b">Immo</span></span>
           </div>
           <div className="lp-foot-row">
             <a href="./comment-ca-marche.html">Comment ça marche</a>
@@ -121,15 +119,15 @@ function Landing({ device = 'desktop', style = 'chaleureux', decor = 'personnage
             <a href="./blog.html">Blog</a>
             <a href="#" onClick={(e)=>e.preventDefault()}>Tarifs</a>
             <a href="#" onClick={(e)=>e.preventDefault()}>Mentions légales</a>
-            <a href="mailto:contact@scanimmo.io">Contact</a>
+            <a href="mailto:contact@localiseimmo.fr">Contact</a>
           </div>
           <div className="legal">
-            Données cadastrales : IGN · Cadastre officiel français — Licence Ouverte Etalab. ScanImmo n'est pas affilié à un organisme public.
+            Données cadastrales : IGN · Cadastre officiel français, Licence Ouverte Etalab. LocaliseImmo n'est pas affilié à un organisme public.
           </div>
         </footer>
       </div>
 
-      {/* FLOATING CTA — mobile only, follows scroll, always tappable */}
+      {/* FLOATING CTA, mobile only, follows scroll, always tappable */}
       {device === 'mobile' && (
         <div className="lp-fab-wrap" aria-hidden="false">
           <button className="lp-fab" type="button">

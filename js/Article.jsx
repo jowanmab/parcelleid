@@ -2,12 +2,12 @@
 
 const { useState: useArt } = React;
 
-// Sample article — methodology piece about ScanImmo's data sources
+// Sample article — methodology piece about LocaliseImmo's data sources
 const ARTICLE = {
   category: 'Méthodologie',
-  title: "D'où viennent les données de ScanImmo ?",
+  title: "D'où viennent les données de LocaliseImmo ?",
   subtitle: "Parcelle cadastrale et DPE — deux sources, deux niveaux de fiabilité. Voici exactement ce qu'on utilise, et pourquoi nous le disons.",
-  author: "L'équipe ScanImmo",
+  author: "L'équipe LocaliseImmo",
   date: '16 mai 2026',
   readTime: '8 min de lecture',
   toc: [
@@ -23,7 +23,7 @@ const ARTICLE = {
 };
 
 const ART_RELATED = [
-  { tag: 'Méthodologie', title: 'BD TOPO IGN : comment ScanImmo détecte les parcelles construites', read: '6 min' },
+  { tag: 'Méthodologie', title: 'BD TOPO IGN : comment LocaliseImmo détecte les parcelles construites', read: '6 min' },
   { tag: 'Guide pratique', title: 'Lire un DPE avant achat : les 4 chiffres qui comptent', read: '5 min' },
   { tag: 'Urbanisme', title: 'Qu\'est-ce qu\'un PLU et où le consulter gratuitement ?', read: '9 min' },
 ];
@@ -37,7 +37,7 @@ function ArtCallout({ kind = 'retenir', title, children }) {
   );
 }
 
-function ArtTryScanImmo() {
+function ArtTryLocaliseImmo() {
   return (
     <aside className="art-try">
       <div className="art-try-left">
@@ -46,7 +46,7 @@ function ArtTryScanImmo() {
         <p>Tapez la commune et la surface — vous voyez l'emplacement exact en 30 secondes.</p>
       </div>
       <button className="art-try-btn">
-        Ouvrir ScanImmo
+        Ouvrir LocaliseImmo
         <span className="art-try-arrow"><Icons.ArrowRight s={14}/></span>
       </button>
     </aside>
@@ -79,7 +79,7 @@ const ART_FAQ = [
     a: "Oui. Le DPE n'est obligatoire qu'à la vente ou à la location longue durée — et seuls les DPE produits depuis juillet 2021 alimentent la base ADEME. Si votre bien n'a pas changé de main depuis, il n'y a probablement aucun DPE dans la base.",
   },
   {
-    q: "Que faire si ScanImmo affiche un DPE différent de l'annonce ?",
+    q: "Que faire si LocaliseImmo affiche un DPE différent de l'annonce ?",
     a: "Fiez-vous à l'annonce — qui est censée afficher le DPE le plus récent fourni par le vendeur. Notre base reflète ce qui a été déposé à l'ADEME, mais le diagnostiqueur a pu en produire un nouveau depuis. C'est un signal à clarifier avec l'agent.",
   },
 ];
@@ -184,10 +184,10 @@ function Article({ variant = 'sober', device = 'desktop', style = 'chaleureux', 
             {/* INTRO */}
             <section id="intro">
               <p className="art-lead">
-                Quand vous tapez <b>« Bordeaux · 95 m² · DPE C »</b> dans ScanImmo, la carte affiche en quelques secondes les emplacements compatibles. Ce qui se passe entre les deux mérite d'être expliqué — surtout parce que toutes les sources de données françaises ne se valent pas.
+                Quand vous tapez <b>« Bordeaux · 95 m² · DPE C »</b> dans LocaliseImmo, la carte affiche en quelques secondes les emplacements compatibles. Ce qui se passe entre les deux mérite d'être expliqué — surtout parce que toutes les sources de données françaises ne se valent pas.
               </p>
               <p>
-                ScanImmo croise <b>deux sources publiques</b> pour géolocaliser une annonce. L'une est fiable au mètre carré près. L'autre dépend du calendrier de publication de l'ADEME. Voici précisément ce qu'on utilise, ce qu'on garantit, et ce qu'on ne garantit pas.
+                LocaliseImmo croise <b>deux sources publiques</b> pour géolocaliser une annonce. L'une est fiable au mètre carré près. L'autre dépend du calendrier de publication de l'ADEME. Voici précisément ce qu'on utilise, ce qu'on garantit, et ce qu'on ne garantit pas.
               </p>
             </section>
 
@@ -197,11 +197,11 @@ function Article({ variant = 'sober', device = 'desktop', style = 'chaleureux', 
               <b>Ce qu'on utilise.</b> La base cadastrale officielle française, mise à disposition par la <b>DGFiP</b> (Direction Générale des Finances Publiques) via l'<b>IGN</b>. Chaque parcelle du territoire a une géométrie tracée par les géomètres, une référence unique (section + numéro), et une surface mesurée — pas estimée.
             </p>
             <p>
-              C'est cette surface en m² qui sert de <b>filtre principal</b> à ScanImmo. Quand vous indiquez « 450 m² ±2% », nous interrogeons toutes les parcelles de la commune dont la surface tombe entre 441 et 459 m². La précision est centimétrique.
+              C'est cette surface en m² qui sert de <b>filtre principal</b> à LocaliseImmo. Quand vous indiquez « 450 m² ±2% », nous interrogeons toutes les parcelles de la commune dont la surface tombe entre 441 et 459 m². La précision est centimétrique.
             </p>
 
             <ArtCallout kind="retenir" title="À retenir">
-              La surface cadastrale est une donnée publique, légalement opposable et mise à jour mensuellement par la DGFiP. C'est <b>la source la plus fiable</b> à laquelle ScanImmo a accès. Quand l'annonce et le cadastre divergent, c'est l'annonce qui ment.
+              La surface cadastrale est une donnée publique, légalement opposable et mise à jour mensuellement par la DGFiP. C'est <b>la source la plus fiable</b> à laquelle LocaliseImmo a accès. Quand l'annonce et le cadastre divergent, c'est l'annonce qui ment.
             </ArtCallout>
 
             {/* Filtre */}
@@ -210,13 +210,13 @@ function Article({ variant = 'sober', device = 'desktop', style = 'chaleureux', 
               Le territoire français compte environ <b>100 millions de parcelles cadastrales</b>. Une commune moyenne en a plusieurs milliers. Si on les remontait toutes, vous noieriez sous les champs, les terrains nus et les parcelles techniques (réseaux, voirie).
             </p>
             <p>
-              ScanImmo applique un <b>pré-filtre bâti</b> : nous croisons les polygones cadastraux avec la <b>BD TOPO IGN</b> (la couche officielle des bâtiments français). Si aucun bâtiment n'est présent sur une parcelle, nous l'écartons des résultats par défaut.
+              LocaliseImmo applique un <b>pré-filtre bâti</b> : nous croisons les polygones cadastraux avec la <b>BD TOPO IGN</b> (la couche officielle des bâtiments français). Si aucun bâtiment n'est présent sur une parcelle, nous l'écartons des résultats par défaut.
             </p>
             <p>
               Concrètement, ce filtre <b>élimine environ 60% du bruit</b> sur une commune typique. Vous voyez seulement des parcelles susceptibles d'abriter une annonce immobilière.
             </p>
 
-            <ArtTryScanImmo/>
+            <ArtTryLocaliseImmo/>
 
             {/* 2. DPE */}
             <h2 id="dpe">2. Le DPE énergie — notre source secondaire</h2>
@@ -224,7 +224,7 @@ function Article({ variant = 'sober', device = 'desktop', style = 'chaleureux', 
               <b>Ce qu'on utilise.</b> La base ADEME des Diagnostics de Performance Énergétique déposés depuis juillet 2021. Chaque DPE est rattaché à une adresse postale et porte une classe énergétique (A à G), une classe GES (gaz à effet de serre), une consommation en kWh/m²/an et une date.
             </p>
             <p>
-              Quand vous indiquez <b>DPE C</b> dans le formulaire, ScanImmo écarte les biens dont le DPE déclaré ne correspond pas. C'est un filtre <b>secondaire</b> — il affine, il ne décide pas.
+              Quand vous indiquez <b>DPE C</b> dans le formulaire, LocaliseImmo écarte les biens dont le DPE déclaré ne correspond pas. C'est un filtre <b>secondaire</b> — il affine, il ne décide pas.
             </p>
 
             {/* Diagram — kept as a schematic (explanatory, not decorative) */}
@@ -251,7 +251,7 @@ function Article({ variant = 'sober', device = 'desktop', style = 'chaleureux', 
               L'ADEME publie sa base de DPE <b>hebdomadairement</b> — en théorie. Dans les faits, le calendrier dépend de leurs ressources internes. Il y a des semaines où la publication saute. Quand cela arrive, nous le détectons et le signalons.
             </p>
             <p>
-              ScanImmo synchronise dans la foulée de chaque publication, généralement dans les <b>24 heures</b>. Nous l'indiquons explicitement dans l'app : la date de la dernière synchronisation ADEME est visible dans l'en-tête des résultats.
+              LocaliseImmo synchronise dans la foulée de chaque publication, généralement dans les <b>24 heures</b>. Nous l'indiquons explicitement dans l'app : la date de la dernière synchronisation ADEME est visible dans l'en-tête des résultats.
             </p>
 
             <ArtCallout kind="attention" title="Attention">
@@ -263,7 +263,7 @@ function Article({ variant = 'sober', device = 'desktop', style = 'chaleureux', 
             {/* Matching */}
             <h2 id="matching">Comment on croise les deux</h2>
             <p>
-              Le moteur ScanImmo procède en trois étapes :
+              Le moteur LocaliseImmo procède en trois étapes :
             </p>
             <ol className="art-ol">
               <li><b>Filtre surface.</b> Toutes les parcelles construites de la commune dont la surface tombe dans la fourchette tolérée sont retenues.</li>
@@ -295,15 +295,15 @@ function Article({ variant = 'sober', device = 'desktop', style = 'chaleureux', 
             <section className="art-final-cta">
               <h3>Prêt à géolocaliser votre prochaine annonce ?</h3>
               <p>Commune + surface + DPE. La parcelle exacte en 30 secondes — gratuitement, sans inscription.</p>
-              <button className="art-cta-btn">Ouvrir ScanImmo <Icons.ArrowRight s={14}/></button>
+              <button className="art-cta-btn">Ouvrir LocaliseImmo <Icons.ArrowRight s={14}/></button>
             </section>
 
             {/* AUTHOR */}
             <div className="art-author">
               <div className="art-author-avatar">SI</div>
               <div>
-                <div className="art-author-name">L'équipe ScanImmo</div>
-                <p>ScanImmo est un outil gratuit de géolocalisation d'annonces immobilières, basé sur les données publiques françaises (IGN, DGFiP, Etalab, ADEME). Projet personnel, indépendant, financé par publicité sur les articles.</p>
+                <div className="art-author-name">L'équipe LocaliseImmo</div>
+                <p>LocaliseImmo est un outil gratuit de géolocalisation d'annonces immobilières, basé sur les données publiques françaises (IGN, DGFiP, Etalab, ADEME). Projet personnel, indépendant, financé par publicité sur les articles.</p>
               </div>
             </div>
           </article>
@@ -342,10 +342,10 @@ function Article({ variant = 'sober', device = 'desktop', style = 'chaleureux', 
             <a href="./sources.html">Sources & méthode</a>
             <a href="./blog.html">Blog</a>
             <a href="#" onClick={(e)=>e.preventDefault()}>Mentions légales</a>
-            <a href="mailto:contact@scanimmo.io">Contact</a>
+            <a href="mailto:contact@localiseimmo.fr">Contact</a>
           </div>
           <div className="legal">
-            Données cadastrales : IGN · Cadastre officiel français — Licence Ouverte Etalab. ScanImmo n'est pas affilié à un organisme public.
+            Données cadastrales : IGN · Cadastre officiel français — Licence Ouverte Etalab. LocaliseImmo n'est pas affilié à un organisme public.
           </div>
         </footer>
       </div>

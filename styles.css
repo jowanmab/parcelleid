@@ -1,4 +1,4 @@
-/* ScanImmo Landing — uses sage palette tokens from mobile UI kit */
+/* LocaliseImmo Landing, uses sage palette tokens from mobile UI kit */
 @import url('./tokens.css');
 @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
@@ -6,7 +6,7 @@
 body { font-family: var(--font); color: var(--ink); background: #efe7d6; }
 
 /* ════════════════════════════════════════════════════════════
-   PAGE ROOT — sage cream background
+   PAGE ROOT, sage cream background
    ════════════════════════════════════════════════════════════ */
 .lp { width: 100%; min-height: 100%; background: var(--bg); color: var(--ink); font-family: var(--font); }
 .lp[data-device="desktop"] { font-size: 16px; }
@@ -47,7 +47,7 @@ body { font-family: var(--font); color: var(--ink); background: #efe7d6; }
 }
 
 /* ════════════════════════════════════════════════════════════
-   HERO — title + subtitle + form + illustration
+   HERO, title + subtitle + form + illustration
    ════════════════════════════════════════════════════════════ */
 .lp-hero { padding: 24px 0 56px; }
 .lp-hero[data-device="desktop"] {
@@ -77,6 +77,19 @@ body { font-family: var(--font); color: var(--ink); background: #efe7d6; }
 .lp-hero[data-device="mobile"] h1 { font-size: 32px; line-height: 1.08; }
 .lp-hero h1 em { font-style: normal; color: var(--primary-hover); }
 .lp-hero p.lead { font-size: 17px; line-height: 1.55; color: var(--mid); text-wrap: pretty; margin-bottom: 24px; max-width: 480px; }
+
+.lp-lead-tip {
+  font-size: 13.5px; line-height: 1.55;
+  color: var(--mid); text-wrap: pretty;
+  margin-top: -12px; margin-bottom: 24px;
+  max-width: 480px;
+}
+.lp-lead-tip strong {
+  color: var(--primary-hover);
+  font-weight: 700;
+  letter-spacing: -0.005em;
+}
+.lp-hero[data-device="mobile"] .lp-lead-tip { font-size: 12.5px; margin-bottom: 20px; }
 .lp-hero[data-device="mobile"] p.lead { font-size: 15.5px; margin-bottom: 20px; }
 
 .lp-trust-row { display: flex; gap: 18px; align-items: center; color: var(--muted); font-size: 12.5px; flex-wrap: wrap; }
@@ -94,11 +107,87 @@ body { font-family: var(--font); color: var(--ink); background: #efe7d6; }
   border-radius: 24px; padding: 22px;
   box-shadow: 0 20px 60px rgba(46,53,48,0.08), 0 2px 8px rgba(46,53,48,0.04);
 }
-.lp-form-card[data-device="mobile"] { padding: 18px; border-radius: 20px; }
+.lp-form-card[data-device="mobile"] { padding: 14px; border-radius: 16px; }
+
+/* ─── Mobile-tight overrides, compress the form so the CTA sits
+       above the fold on iPhone SE (375×667, ~537px usable). ─── */
+.lp-form-card[data-device="mobile"] .lp-form-head { margin-bottom: 10px; }
+.lp-form-card[data-device="mobile"] .lp-form-title { font-size: 14px; }
+.lp-form-card[data-device="mobile"] .lp-field { margin-bottom: 9px; }
+.lp-form-card[data-device="mobile"] .lp-field-label { margin-bottom: 5px; }
+.lp-form-card[data-device="mobile"] .lp-input {
+  padding: 11px 14px;
+  /* 16px font on mobile to prevent iOS Safari from zooming on focus */
+  font-size: 16px;
+}
+.lp-form-card[data-device="mobile"] .lp-input-icon .lp-input { padding-left: 40px; }
+.lp-form-card[data-device="mobile"] .lp-surface-hint { margin-top: 5px; font-size: 11.5px; }
+.lp-form-card[data-device="mobile"] .lp-tol-pill { height: 44px; }
+.lp-form-card[data-device="mobile"] .lp-more-toggle { margin-top: 10px; padding: 9px 12px; font-size: 12.5px; }
+.lp-form-card[data-device="mobile"] .lp-form-cta { margin-top: 12px; padding: 13px 18px; font-size: 15px; }
+.lp-form-card[data-device="mobile"] .lp-form-foot { margin-top: 8px; font-size: 11px; }
 
 .lp-form-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 14px; }
-.lp-form-title { font-size: 13.5px; font-weight: 700; color: var(--ink); }
+.lp-form-title { font-size: 15px; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
 .lp-form-meta { font-size: 11px; color: var(--muted); font-weight: 500; }
+
+/* ─── "Plus de critères" accordion (DPE / GES / date) ─── */
+.lp-more-toggle {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; margin-top: 14px; padding: 11px 14px;
+  background: var(--soft, #EDE9DD); color: var(--mid);
+  border: 1px dashed var(--border); border-radius: 10px;
+  font-family: inherit; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: background .15s, border-color .15s, color .15s;
+}
+.lp-more-toggle:hover { background: var(--bg, #FAF7EF); color: var(--ink); border-color: var(--mid); }
+.lp-more-toggle.open { background: white; border-style: solid; border-color: var(--border); color: var(--ink); }
+.lp-more-hint { color: var(--muted); font-weight: 500; }
+.lp-more-chev { display: inline-flex; color: var(--mid); transition: transform .25s; }
+.lp-more-toggle.open .lp-more-chev { transform: rotate(180deg); }
+
+.lp-more {
+  overflow: hidden; max-height: 0;
+  transition: max-height .35s ease;
+}
+.lp-more.open { max-height: 600px; }
+.lp-more-inner {
+  padding: 14px 2px 2px;
+}
+
+/* ─── Date mode tabs (Exact / Fourchette) ─── */
+.lp-field-label-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; margin-bottom: 6px;
+}
+.lp-date-mode {
+  display: inline-flex; padding: 2px;
+  background: var(--soft, #EDE9DD);
+  border-radius: 999px;
+}
+.lp-date-mode-btn {
+  border: none; background: transparent;
+  font-family: inherit; font-size: 11.5px; font-weight: 600;
+  color: var(--mid); padding: 5px 11px;
+  border-radius: 999px; cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.lp-date-mode-btn:hover { color: var(--ink); }
+.lp-date-mode-btn.active {
+  background: white; color: var(--ink);
+  box-shadow: 0 1px 2px rgba(46,53,48,0.08);
+}
+.lp-date-range {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+.lp-date-range-col {
+  display: flex; flex-direction: column; gap: 4px;
+}
+.lp-date-range-cap {
+  font-size: 10.5px; font-weight: 700;
+  color: var(--muted); letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
 
 .lp-field { margin-bottom: 12px; }
 .lp-field-label {
@@ -256,6 +345,9 @@ body { font-family: var(--font); color: var(--ink); background: #efe7d6; }
 }
 .lp-sec-title em { font-style: normal; color: var(--primary-hover); }
 .lp-sec-sub { font-size: 16px; color: var(--mid); margin-top: 12px; max-width: 560px; margin-left: auto; margin-right: auto; text-wrap: pretty; }
+.lp-sec-head--wide .lp-sec-sub { max-width: 760px; text-wrap: balance; }
+.lp-sec-head--wide[data-device="mobile"] .lp-sec-sub,
+[data-device="mobile"] .lp-sec-head--wide .lp-sec-sub { max-width: 100%; }
 
 .lp-steps { display: grid; gap: 20px; }
 .lp-steps[data-device="desktop"] { grid-template-columns: repeat(3, 1fr); gap: 28px; }
@@ -341,11 +433,11 @@ body { font-family: var(--font); color: var(--ink); background: #efe7d6; }
 @media (prefers-reduced-motion: reduce) {
   .illu-hero-img { animation: none; }
 }
-/* Step illustrations sit inside .lp-step-illu / .cm-step-frame — both
+/* Step illustrations sit inside .lp-step-illu / .cm-step-frame, both
    already have a sage-tinted background that complements the illustrations. */
 
 @media (prefers-reduced-motion: no-preference) {
-  /* Loupe — gentle float + tiny sway */
+  /* Loupe, gentle float + tiny sway */
   .illu-loupe {
     transform-origin: 0 0;
     transform-box: fill-box;
@@ -397,7 +489,7 @@ body { font-family: var(--font); color: var(--ink); background: #efe7d6; }
     96%, 98%      { transform: scaleY(0.1); }
   }
 
-  /* Sparkles — staggered pulse */
+  /* Sparkles, staggered pulse */
   .sparkle-1 { animation: illu-sparkle 2.4s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
   .sparkle-2 { animation: illu-sparkle 3.1s ease-in-out infinite 0.4s; transform-origin: center; transform-box: fill-box; }
   .sparkle-3 { animation: illu-sparkle 2.7s ease-in-out infinite 0.8s; transform-origin: center; transform-box: fill-box; }
@@ -407,7 +499,7 @@ body { font-family: var(--font); color: var(--ink); background: #efe7d6; }
   }
   .sparkle-cross { transform-origin: center; transform-box: fill-box; }
 
-  /* Step illustrations — gentle hover lift handled by .lp-step:hover already.
+  /* Step illustrations, gentle hover lift handled by .lp-step:hover already.
      Apply ambient effects only on hero. */
 }
 
@@ -430,7 +522,7 @@ body { font-family: var(--font); color: var(--ink); background: #efe7d6; }
 }
 .lp-hero-copy-tight .lp-hero-eyebrow { margin-bottom: 14px; }
 
-/* Floating "search" CTA on mobile — sticky to the bottom of the viewport
+/* Floating "search" CTA on mobile, sticky to the bottom of the viewport
    so the user can launch the search no matter where they are in the page. */
 .lp-fab-wrap {
   position: sticky;
@@ -468,10 +560,10 @@ body { font-family: var(--font); color: var(--ink); background: #efe7d6; }
 .lp[data-device="desktop"] .lp-fab-wrap { display: none; }
 
 /* ════════════════════════════════════════════════════════════════════════════
-   TWEAKS — STYLE personality reshape
+   TWEAKS, STYLE personality reshape
    ════════════════════════════════════════════════════════════════════════════ */
 
-/* ─── PRÉCIS — tool-mode: sharp corners, mono captions, restrained shadows ─── */
+/* ─── PRÉCIS, tool-mode: sharp corners, mono captions, restrained shadows ─── */
 .lp[data-style="precision"] { background: #f5f3ed; }
 .lp[data-style="precision"] .lp-hero-eyebrow {
   font-family: 'JetBrains Mono', ui-monospace, monospace;
@@ -519,7 +611,7 @@ body { font-family: var(--font); color: var(--ink); background: #efe7d6; }
 }
 .lp[data-style="precision"] .lp-trust-band .label { font-family: 'JetBrains Mono', monospace; }
 
-/* ─── ÉDITORIAL — magazine: serif accents, generous whitespace, hard-edged ─── */
+/* ─── ÉDITORIAL, magazine: serif accents, generous whitespace, hard-edged ─── */
 .lp[data-style="editorial"] { background: #f7f1e5; }
 .lp[data-style="editorial"] .lp-hero h1,
 .lp[data-style="editorial"] .lp-sec-title,
@@ -580,10 +672,10 @@ body { font-family: var(--font); color: var(--ink); background: #efe7d6; }
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
-   TWEAKS — ENERGY (density / scale / drama)
+   TWEAKS, ENERGY (density / scale / drama)
    ════════════════════════════════════════════════════════════════════════════ */
 
-/* ─── DENSE — packed, efficient ─── */
+/* ─── DENSE, packed, efficient ─── */
 .lp[data-energy="dense"] .lp-hero { padding: 16px 0 40px; }
 .lp[data-energy="dense"][data-device="desktop"] .lp-hero { padding: 20px 0 56px; gap: 40px; }
 .lp[data-energy="dense"] .lp-hero h1 { font-size: clamp(24px, 3.4vw, 40px); margin-bottom: 12px; }
@@ -601,7 +693,7 @@ body { font-family: var(--font); color: var(--ink); background: #efe7d6; }
 .lp[data-energy="dense"] .lp-step p { font-size: 13.5px; }
 .lp[data-energy="dense"] .lp-trust-band { padding: 18px; margin-top: 22px; }
 
-/* ─── DRAMATIQUE — oversized headline, big contrast, asymmetric ─── */
+/* ─── DRAMATIQUE, oversized headline, big contrast, asymmetric ─── */
 .lp[data-energy="dramatique"] .lp-hero { padding: 56px 0 120px; }
 .lp[data-energy="dramatique"][data-device="desktop"] .lp-hero {
   padding: 64px 0 140px;
@@ -627,7 +719,7 @@ body { font-family: var(--font); color: var(--ink); background: #efe7d6; }
 .lp[data-energy="dramatique"] .lp-step-num { font-size: 14px; }
 
 /* ════════════════════════════════════════════════════════════════════════════
-   TWEAKS — DECOR (minimal layout + cartographie tweaks)
+   TWEAKS, DECOR (minimal layout + cartographie tweaks)
    ════════════════════════════════════════════════════════════════════════════ */
 .lp[data-decor="minimal"] .lp-hero[data-device="desktop"] {
   grid-template-columns: 1fr;
@@ -717,7 +809,7 @@ body { font-family: var(--font); color: var(--ink); background: #efe7d6; }
 .cm-lead-small { font-size: 17px; line-height: 1.5; color: var(--ink); font-weight: 600; margin-bottom: 14px; letter-spacing: -0.01em; }
 .cm-link { color: var(--primary-hover); font-weight: 600; text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 3px; cursor: pointer; }
 
-/* TWO COL — Le problème */
+/* TWO COL, Le problème */
 .cm-twocol { display: grid; gap: 56px; }
 .cm-twocol[data-device="desktop"] { grid-template-columns: 1.05fr 0.95fr; gap: 72px; }
 .cm-twocol[data-device="mobile"] { grid-template-columns: 1fr; gap: 28px; }
@@ -912,7 +1004,7 @@ body { font-family: var(--font); color: var(--ink); background: #efe7d6; }
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
-   ARTICLE — Methodology piece
+   ARTICLE, Methodology piece
    ════════════════════════════════════════════════════════════════════════════ */
 
 .art .lp-nav-links a.active {
@@ -980,7 +1072,7 @@ body { font-family: var(--font); color: var(--ink); background: #efe7d6; }
   font-style: italic;
 }
 
-/* BODY GRID — TOC + content */
+/* BODY GRID, TOC + content */
 .art-body-grid { display: grid; gap: 48px; padding: 24px 0 56px; }
 .art-body-grid[data-device="desktop"] { grid-template-columns: 220px 1fr; max-width: 1080px; margin: 0 auto; }
 .art-body-grid[data-device="mobile"]  { grid-template-columns: 1fr; padding: 16px 0 40px; }
@@ -1101,7 +1193,7 @@ body { font-family: var(--font); color: var(--ink); background: #efe7d6; }
 .art-callout-body { font-size: 16px; line-height: 1.6; color: var(--ink); }
 .art-callout-body b { font-weight: 800; }
 
-/* TRY SCANIMMO CTA inline */
+/* TRY LOCALISEIMMO CTA inline */
 .art-try {
   display: flex; align-items: center; justify-content: space-between;
   gap: 20px; padding: 22px 26px;
@@ -1230,9 +1322,9 @@ body { font-family: var(--font); color: var(--ink); background: #efe7d6; }
 .art-related-card h3 { font-size: 18px; font-weight: 800; letter-spacing: -0.02em; color: var(--ink); line-height: 1.3; }
 .art-related-read { font-size: 12px; color: var(--muted); margin-top: auto; padding-top: 8px; }
 
-/* ─── EDITORIAL VARIANT — removed; we committed to the sober treatment.
+/* ─── EDITORIAL VARIANT, removed; we committed to the sober treatment.
    The sober article is durable, scannable, and converts better than a
-   magazine treatment for a tool-with-blog product like ScanImmo. ─── */
+   magazine treatment for a tool-with-blog product like LocaliseImmo. ─── */
 
 /* ════════════════════════════════════════════════════════════════════════════
    BLOG HUB

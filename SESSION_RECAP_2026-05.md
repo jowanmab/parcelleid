@@ -9,7 +9,7 @@ Sert de contexte pour futures conversations Claude.
 
 Au cours de cette session, on a transformé ParcelleID d'un outil cadastrale basique
 en plateforme complète avec :
-- **Site marketing ScanImmo** (landing + blog + comment-ca-marche + sources)
+- **Site marketing LocaliseImmo** (landing + blog + comment-ca-marche + sources)
 - **Outil SIG enrichi** (badge multi-logements, vignettes Street View + satellite)
 - **Optimisation DB majeure** (index review, précalcul parcelle_dpe_match many-to-many)
 - **Pipeline DPE automatisé** (2× par semaine via cron + monitoring Healthchecks.io)
@@ -23,11 +23,11 @@ en plateforme complète avec :
 
 | Fichier | Rôle |
 |---|---|
-| `index.html` | Landing ScanImmo (React + Babel standalone) |
+| `index.html` | Landing LocaliseImmo (React + Babel standalone) |
 | `sig.html` | Outil SIG / carte (ancien `index.html` renommé) |
 | `comment-ca-marche.html`, `sources.html`, `blog.html`, `article.html` | Pages marketing |
 | `sig-bootstrap.js` | Code injecté dans sig.html pour préremplir le formulaire via params URL |
-| `styles.css` / `tokens.css` | Styles ScanImmo (palette sage + pêche) |
+| `styles.css` / `tokens.css` | Styles LocaliseImmo (palette sage + pêche) |
 | `image-slot.js` | Web Component pour photos remplaçables |
 | `js/*.jsx` | Composants React des pages marketing |
 | `assets/` | Logos + illustrations Storyset |
@@ -354,10 +354,10 @@ Les recherches "single critère très large" (`DPE=D` seul → 42K résultats) r
 
 ---
 
-## 7. Site marketing ScanImmo
+## 7. Site marketing LocaliseImmo
 
 Pages publiques :
-- `https://jowanmab.github.io/parcelleid/` → landing ScanImmo
+- `https://jowanmab.github.io/parcelleid/` → landing LocaliseImmo
 - `https://jowanmab.github.io/parcelleid/comment-ca-marche.html`
 - `https://jowanmab.github.io/parcelleid/sources.html`
 - `https://jowanmab.github.io/parcelleid/blog.html`

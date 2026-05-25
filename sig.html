@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ParcelleID — Identifier une annonce immo</title>
+  <title>LocaliseImmo — Identifier une annonce immo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>"/>
@@ -61,8 +61,51 @@
 
     .dpe-class-btn.active {
       border: 2px solid white;
-      box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 0 0 3px var(--ink), 0 4px 12px rgba(0,0,0,0.28);
+      transform: scale(1.08);
+      position: relative;
+      z-index: 2;
     }
+    .dpe-class-btn.active::after {
+      content: '✓';
+      position: absolute;
+      top: -7px; right: -7px;
+      background: var(--ink);
+      color: #fff;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      font-size: 11px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      border: 2px solid #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+    .dpe-class-buttons:has(.dpe-class-btn.active) .dpe-class-btn:not(.active) {
+      opacity: 0.32;
+      filter: grayscale(45%);
+    }
+
+    .filter-active-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: 8px;
+      padding: 2px 4px 2px 9px;
+      border-radius: 11px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #fff;
+      vertical-align: middle;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.18);
+    }
+    .filter-active-chip:empty { display: none; }
+    .filter-active-chip button {
+      background: rgba(0,0,0,0.22); border: none; color: inherit;
+      width: 17px; height: 17px; border-radius: 50%;
+      font-size: 12px; line-height: 1; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 0; font-weight: 800;
+    }
+    .filter-active-chip button:hover { background: rgba(0,0,0,0.4); }
 
     .dpe-class-btn:active {
       transform: scale(0.95);
@@ -479,7 +522,7 @@
             <input type="number" id="surface-logement-input" placeholder="Ex : 85" min="1" class="dpe-input"/>
           </div>
           <div>
-            <div class="form-label">Date diagnostic</div>
+            <div class="form-label">Date diagnostic<span class="filter-active-chip" id="date-chip"></span></div>
             <input type="date" id="dpe-date-input" class="dpe-input">
           </div>
         </div>
@@ -501,7 +544,7 @@
       </div>
 
       <div class="form-section">
-        <div class="form-label">Classe énergie</div>
+        <div class="form-label">Classe énergie<span class="filter-active-chip" id="energie-chip"></span></div>
         <div class="field">
           <div class="dpe-class-buttons">
             <button type="button" class="dpe-class-btn energie-btn" data-class="A">A</button>
@@ -516,7 +559,7 @@
       </div>
 
       <div class="form-section">
-        <div class="form-label">Classe GES</div>
+        <div class="form-label">Classe GES<span class="filter-active-chip" id="ges-chip"></span></div>
         <div class="field">
           <div class="dpe-class-buttons">
             <button type="button" class="dpe-class-btn ges-btn" data-class="A">A</button>
@@ -1269,6 +1312,7 @@ function doReset() {
   document.getElementById('dpe-energie-selected').value = '';
   document.getElementById('dpe-ges-selected').value = '';
   document.querySelectorAll('.dpe-class-btn.active').forEach(b => b.classList.remove('active'));
+  updateDpeFilterChips();
   document.getElementById('tol-range').value = 3;
   selectedCommune = null; allFeatures = []; renderedCount = 0; activeFeature = null;
   updateTol();
@@ -1855,10 +1899,46 @@ function updateSearchBtn() {
   searchHint.style.display = hasFilter ? 'none' : 'block';
 }
 
+const DPE_COLORS = { A:'#0f7c3a', B:'#5cb85c', C:'#f0d000', D:'#ff9900', E:'#e74c3c', F:'#d92a2a', G:'#c1121f' };
+function updateDpeFilterChips() {
+  const fmtDate = d => { const p = d.split('-'); return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : d; };
+  const setChip = (id, val, bg) => {
+    const el = document.getElementById(id);
+    if (!val) { el.innerHTML = ''; return; }
+    const fg = (val === 'C' || val === 'B') ? '#333' : '#fff';
+    el.style.background = bg;
+    el.style.color = fg;
+    el.innerHTML = `${val} <button type="button" aria-label="Effacer" data-clear="${id}">×</button>`;
+  };
+  setChip('energie-chip', document.getElementById('dpe-energie-selected').value, DPE_COLORS[document.getElementById('dpe-energie-selected').value] || '#666');
+  setChip('ges-chip',     document.getElementById('dpe-ges-selected').value,     DPE_COLORS[document.getElementById('dpe-ges-selected').value]     || '#666');
+  const dateVal = document.getElementById('dpe-date-input').value;
+  setChip('date-chip', dateVal ? fmtDate(dateVal) : '', '#5a8fbd');
+}
+
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.filter-active-chip button[data-clear]');
+  if (!btn) return;
+  e.preventDefault(); e.stopPropagation();
+  const id = btn.dataset.clear;
+  if (id === 'energie-chip') {
+    document.getElementById('dpe-energie-selected').value = '';
+    document.querySelectorAll('.energie-btn.active').forEach(b => b.classList.remove('active'));
+  } else if (id === 'ges-chip') {
+    document.getElementById('dpe-ges-selected').value = '';
+    document.querySelectorAll('.ges-btn.active').forEach(b => b.classList.remove('active'));
+  } else if (id === 'date-chip') {
+    document.getElementById('dpe-date-input').value = '';
+  }
+  updateDpeFilterChips();
+  updateSearchBtn();
+});
+
 surfLogementInput.addEventListener('input', updateSearchBtn);
 surfInput.addEventListener('input', updateSearchBtn);
-document.getElementById('dpe-date-input').addEventListener('input', updateSearchBtn);
+document.getElementById('dpe-date-input').addEventListener('input', () => { updateSearchBtn(); updateDpeFilterChips(); });
 updateSearchBtn();
+updateDpeFilterChips();
 loadMe();
 checkVerifyToken();
 
@@ -1870,6 +1950,7 @@ document.querySelectorAll('.energie-btn').forEach(btn => {
     if (!already) { btn.classList.add('active'); document.getElementById('dpe-energie-selected').value = btn.dataset.class; }
     else { document.getElementById('dpe-energie-selected').value = ''; }
     updateSearchBtn();
+    updateDpeFilterChips();
   });
 });
 
@@ -1881,6 +1962,7 @@ document.querySelectorAll('.ges-btn').forEach(btn => {
     if (!already) { btn.classList.add('active'); document.getElementById('dpe-ges-selected').value = btn.dataset.class; }
     else { document.getElementById('dpe-ges-selected').value = ''; }
     updateSearchBtn();
+    updateDpeFilterChips();
   });
 });
 
@@ -1890,8 +1972,8 @@ window.addEventListener('load', () => {
   }, 500);
 });
 
-// ── Bootstrap depuis la landing ScanImmo : lit les params URL et lance la recherche
-(function scanimmoBootstrap() {
+// ── Bootstrap depuis la landing LocaliseImmo : lit les params URL et lance la recherche
+(function localiseImmoBootstrap() {
   const params = new URLSearchParams(window.location.search);
   if (!params.has('commune') && !params.has('insee')) return;
   const communeName = params.get('commune') || '';
@@ -1921,6 +2003,7 @@ window.addEventListener('load', () => {
   }
   const date = params.get('date');
   if (date) document.getElementById('dpe-date-input').value = date;
+  if (typeof updateDpeFilterChips === 'function') updateDpeFilterChips();
   if (selectedCommune && selectedCommune.code) {
     if (typeof updateSearchBtn === 'function') updateSearchBtn();
     setTimeout(() => { if (typeof doSearch === 'function') doSearch(); }, 200);

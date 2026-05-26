@@ -9,6 +9,25 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <style>
+    /* ── PEGMAN (Street View drag & drop) ── */
+    .pegman-control a {
+      width: 30px !important; height: 34px !important;
+      display: flex !important; align-items: center; justify-content: center;
+      cursor: grab; background: #fff;
+    }
+    .pegman-control a:active { cursor: grabbing; }
+    .pegman-control.is-dragging a { opacity: 0.35; }
+    .pegman-control a svg { display: block; pointer-events: none; }
+    #pegman-ghost {
+      position: fixed; pointer-events: none; z-index: 9999;
+      width: 32px; height: 38px; display: none;
+      transform: translate(-50%, -90%);
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.35));
+    }
+    #pegman-ghost.show { display: block; }
+    #map.pegman-dragover { cursor: crosshair !important; }
+    #map.pegman-dragover .leaflet-interactive { cursor: crosshair !important; }
+
     /* ── STREET VIEW MODAL ── */
     #sv-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 9500; display: none; align-items: center; justify-content: center; }
     #sv-modal.show { display: flex; }
@@ -155,9 +174,9 @@
 
     /* ── HEADER ── */
     header { background: var(--white); border-bottom: 1px solid var(--soft); padding: 0 16px 0 16px; height: 52px; display: flex; align-items: center; gap: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); flex-shrink: 0; z-index: 800; position: relative; }
-    .logo { font-weight: 800; font-size: 1.15rem; color: var(--ink); letter-spacing: -0.03em; display: flex; align-items: center; gap: 4px; }
-    .logo .logo-id { background: var(--blue); color: #fff; font-size: 0.72rem; font-weight: 800; padding: 2px 6px; border-radius: 5px; letter-spacing: 0.01em; }
-    .logo-sub { font-size: 0.65rem; color: var(--muted); font-weight: 400; margin-left: 2px; }
+    .logo { font-weight: 800; font-size: 1.15rem; color: var(--ink); letter-spacing: -0.03em; display: flex; align-items: center; gap: 8px; text-decoration: none; }
+    .logo img { width: 28px; height: 28px; display: block; }
+    .logo .b { color: var(--blue); }
     .header-sep { flex: 1; }
     .header-tag { font-size: 0.64rem; color: var(--muted); border: 1px solid var(--border); padding: 3px 8px; border-radius: 20px; letter-spacing: 0.05em; }
     .user-badge { font-size: 0.78rem; font-weight: 600; color: var(--mid); border: 1px solid var(--border); padding: 5px 12px; border-radius: 20px; cursor: pointer; transition: background 0.15s; display: flex; align-items: center; gap: 6px; background: none; font-family: 'Plus Jakarta Sans', sans-serif; white-space: nowrap; }
@@ -429,9 +448,8 @@
 <body>
 
 <header>
-  <div class="logo">Parcelle<span class="logo-id">ID</span><span class="logo-sub">Cadastre France</span></div>
+  <a href="index.html" class="logo" aria-label="Retour à l'accueil LocaliseImmo"><img src="./assets/logo-mark.svg" alt=""/><span>Localise<span class="b">Immo</span></span></a>
   <div class="header-sep"></div>
-  <div class="header-tag">V5 · Cadastre IGN</div>
   <div id="auth-header">
     <button class="user-badge" onclick="openAuth('login')">Se connecter</button>
   </div>
@@ -656,6 +674,11 @@
   </div>
 </main>
 
+<svg id="pegman-ghost" viewBox="0 0 24 28" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <circle cx="12" cy="5" r="4" fill="#FBBC04" stroke="#1a1a1a" stroke-width="0.7"/>
+  <path d="M7 9 L7 19 L10 19 L10 26 L14 26 L14 19 L17 19 L17 9 Z" fill="#FBBC04" stroke="#1a1a1a" stroke-width="0.7" stroke-linejoin="round"/>
+</svg>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD1pMAMR9M6vLrsfoLJ5GDyIbkDTgLvqg4&libraries=streetView,geometry&loading=async"></script>
 <script>
@@ -766,6 +789,91 @@ const LayerControl = L.Control.extend({
 });
 new LayerControl().addTo(map);
 
+// PEGMAN : glisser le bonhomme sur la carte → ouvre Street View au point de drop
+const PegmanControl = L.Control.extend({
+  options: { position: 'topleft' },
+  onAdd() {
+    const wrap = L.DomUtil.create('div', 'leaflet-bar pegman-control');
+    const a = L.DomUtil.create('a', '', wrap);
+    a.href = '#';
+    a.title = 'Street View — glissez sur la carte';
+    a.setAttribute('role', 'button');
+    a.setAttribute('aria-label', 'Street View');
+    a.innerHTML = `<svg width="20" height="24" viewBox="0 0 24 28" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="5" r="4" fill="#FBBC04" stroke="#1a1a1a" stroke-width="0.7"/>
+      <path d="M7 9 L7 19 L10 19 L10 26 L14 26 L14 19 L17 19 L17 9 Z" fill="#FBBC04" stroke="#1a1a1a" stroke-width="0.7" stroke-linejoin="round"/>
+    </svg>`;
+    L.DomEvent.disableClickPropagation(wrap);
+    L.DomEvent.on(a, 'click', e => L.DomEvent.preventDefault(e));
+    this._wrap = wrap;
+    this._anchor = a;
+    return wrap;
+  }
+});
+const pegmanCtrl = new PegmanControl();
+pegmanCtrl.addTo(map);
+
+(function setupPegmanDrag() {
+  const ghost = document.getElementById('pegman-ghost');
+  const mapEl = document.getElementById('map');
+  const ctrlEl = pegmanCtrl._wrap;
+  const anchor = pegmanCtrl._anchor;
+  let dragging = false;
+
+  function getPoint(e) {
+    if (e.touches && e.touches.length) return e.touches[0];
+    if (e.changedTouches && e.changedTouches.length) return e.changedTouches[0];
+    return e;
+  }
+
+  function moveGhost(e) {
+    const p = getPoint(e);
+    ghost.style.left = p.clientX + 'px';
+    ghost.style.top  = p.clientY + 'px';
+  }
+
+  function onStart(e) {
+    e.preventDefault();
+    dragging = true;
+    ctrlEl.classList.add('is-dragging');
+    ghost.classList.add('show');
+    mapEl.classList.add('pegman-dragover');
+    document.body.style.cursor = 'grabbing';
+    moveGhost(e);
+  }
+
+  function onMove(e) {
+    if (!dragging) return;
+    if (e.cancelable) e.preventDefault();
+    moveGhost(e);
+  }
+
+  function onEnd(e) {
+    if (!dragging) return;
+    dragging = false;
+    ctrlEl.classList.remove('is-dragging');
+    ghost.classList.remove('show');
+    mapEl.classList.remove('pegman-dragover');
+    document.body.style.cursor = '';
+
+    const p = getPoint(e);
+    const rect = mapEl.getBoundingClientRect();
+    if (p.clientX < rect.left || p.clientX > rect.right ||
+        p.clientY < rect.top  || p.clientY > rect.bottom) return;
+
+    const containerPoint = L.point(p.clientX - rect.left, p.clientY - rect.top);
+    const latlng = map.containerPointToLatLng(containerPoint);
+    openSVModal(latlng.lat, latlng.lng);
+  }
+
+  anchor.addEventListener('mousedown', onStart);
+  anchor.addEventListener('touchstart', onStart, { passive: false });
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('touchmove', onMove, { passive: false });
+  window.addEventListener('mouseup', onEnd);
+  window.addEventListener('touchend', onEnd);
+})();
+
 // ÉTAT
 let parcelsLayer = null, communeLayer = null;
 let allFeatures = [], renderedCount = 0;
@@ -818,14 +926,17 @@ async function fetchCommunes(q) {
   try {
     const isCP = /^\d{3,5}$/.test(q);
     const url = isCP
-      ? `https://geo.api.gouv.fr/communes?codePostal=${encodeURIComponent(q)}&fields=nom,code,codeDepartement,centre&limit=20`
-      : `https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(q)}&fields=nom,code,codeDepartement,centre&boost=population&limit=8`;
+      ? `https://geo.api.gouv.fr/communes?codePostal=${encodeURIComponent(q)}&fields=nom,code,codeDepartement,centre,codesPostaux&limit=20`
+      : `https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(q)}&fields=nom,code,codeDepartement,centre,codesPostaux&boost=population&limit=8`;
     const data = await fetch(url).then(r => r.json());
     communeSugg.innerHTML = '';
     if (!data.length) { communeSugg.style.display = 'none'; return; }
     data.forEach(c => {
       const li = document.createElement('li');
-      li.innerHTML = `<span>${c.nom}</span><small>${c.code}</small>`;
+      const cp = Array.isArray(c.codesPostaux) && c.codesPostaux.length
+        ? (isCP && c.codesPostaux.includes(q) ? q : c.codesPostaux.join(' / '))
+        : '';
+      li.innerHTML = `<span>${c.nom}</span><small>${cp}</small>`;
       li.addEventListener('click', () => {
         communeInput.value = c.nom;
         selectedCommune = { nom: c.nom, code: c.code, lat: c.centre?.coordinates[1], lng: c.centre?.coordinates[0] };

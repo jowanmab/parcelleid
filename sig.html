@@ -236,9 +236,6 @@
     .results-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
     .results-label { font-size: 0.61rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
     .results-count { font-size: 0.73rem; font-weight: 700; color: var(--blue); }
-    .credits-bar { font-size: 0.72rem; color: var(--mid); padding: 8px 12px; background: var(--blue-lt); border: 1px solid var(--blue-bd); border-radius: 8px; margin-bottom: 10px; display: none; }
-    .credits-bar.show { display: block; }
-    .credits-bar strong { color: var(--blue); }
 
     /* ── SEARCH SUMMARY (mobile, après recherche) ── */
     .search-summary { display: none; }
@@ -574,10 +571,7 @@
       /* Hide search-summary inside panel — summary is now in the top pill */
       .search-summary.show { display: none !important; }
 
-      /* Hide credits-bar from panel on mobile (we'll re-show inside modal if needed) */
-      .credits-bar { display: none !important; }
-
-      /* Form-block hidden from panel by default on mobile — lives in the modal */
+/* Form-block hidden from panel by default on mobile — lives in the modal */
       #search-form-block { display: none !important; }
 
       /* ── MODAL OPEN STATE ── */
@@ -742,7 +736,7 @@
       <div class="auth-sub">Choisissez un nouveau mot de passe pour votre compte.</div>
       <div class="auth-msg" id="reset-msg"></div>
       <input class="auth-input" type="password" id="reset-pwd" placeholder="Nouveau mot de passe (8 car. min)"/>
-      <button class="auth-btn" onclick="doReset()">Mettre à jour</button>
+      <button class="auth-btn" onclick="doPasswordReset()">Mettre à jour</button>
     </div>
   </div>
 </div>
@@ -758,11 +752,6 @@
     </div>
 
     <div class="panel-scroll">
-      <div class="credits-bar" id="credits-bar">
-        🔍 Crédits restants : <strong id="credits-count">—</strong> / 5
-        &nbsp;·&nbsp; <a href="#" style="color:var(--blue);font-weight:600" onclick="alert('Packs bientôt disponibles !')">Acheter →</a>
-      </div>
-
       <div class="search-summary" id="search-summary" role="button" tabindex="0" onclick="expandSearch()">
         <div class="search-summary-content">
           <div class="search-summary-location" id="search-summary-location">📍 —</div>
@@ -1166,6 +1155,7 @@ pegmanCtrl.addTo(map);
 let parcelsLayer = null, communeLayer = null;
 let allFeatures = [], renderedCount = 0;
 let activeFeature = null;
+let favLayer = null, favMarkers = {};
 let currentTargetSurf = 0, currentIsLogement = false;
 let currentFilters = { surfLog: 0, surfCad: 0, dpeE: '', dpeG: '', dpeDate: '' };
 const BATCH = 10;
@@ -1239,40 +1229,70 @@ async function fetchCommunes(q) {
 function setStatus(msg, type = '') { const el = document.getElementById('status'); el.innerHTML = msg; el.className = 'show' + (type ? ' ' + type : ''); }
 function clearStatus() { document.getElementById('status').className = ''; }
 
-// Calcule la position & l'orientation Street View pour viser la parcelle.
-// Heuristique gratuite : on prend le milieu du côté le plus long du polygone
-// (souvent le côté donnant sur la rue) comme position caméra, et le heading
-// pointe vers le centroïde du polygone — la caméra "regarde la parcelle".
-function computeParcelView(feature) {
-  let coords = null;
+// Centroïde polygonal simple (moyenne des sommets) en lat/lng.
+function parcelCentroid(feature) {
   try {
     const g = feature.geometry;
-    coords = g.type === 'MultiPolygon' ? g.coordinates[0][0] : g.coordinates[0];
-  } catch {}
-  if (!coords || coords.length < 3) return { lat: 0, lng: 0, heading: null };
-  let cLng = 0, cLat = 0;
-  for (const c of coords) { cLng += c[0]; cLat += c[1]; }
-  cLng /= coords.length; cLat /= coords.length;
-  // Côté le plus long (en distance projetée; négligeable à l'échelle d'une parcelle)
-  let maxLen = -1, mLng = cLng, mLat = cLat;
-  for (let i = 0; i < coords.length - 1; i++) {
-    const dx = coords[i+1][0] - coords[i][0];
-    const dy = coords[i+1][1] - coords[i][1];
-    const len = dx*dx + dy*dy;
-    if (len > maxLen) {
-      maxLen = len;
-      mLng = (coords[i][0] + coords[i+1][0]) / 2;
-      mLat = (coords[i][1] + coords[i+1][1]) / 2;
+    const coords = g.type === 'MultiPolygon' ? g.coordinates[0][0] : g.coordinates[0];
+    if (!coords || !coords.length) return null;
+    let cLng = 0, cLat = 0;
+    for (const c of coords) { cLng += c[0]; cLat += c[1]; }
+    return { lat: cLat / coords.length, lng: cLng / coords.length };
+  } catch { return null; }
+}
+
+// Trouve la position RÉELLE de la panorama Street View la plus proche d'une
+// cible (lat/lng), puis calcule le heading depuis cette panorama vers la cible
+// — pour que la caméra "regarde" la parcelle. Retourne {pano, heading} ou null.
+//
+// L'API Embed Street View prend "location=lat,lng" et snap à la panorama la
+// plus proche, ce qui peut être à des dizaines de mètres dans n'importe quelle
+// direction. Sans recalculer le heading depuis cette position réelle, la
+// caméra finit pointée n'importe où. C'est pourquoi on passe par
+// StreetViewService pour obtenir le pano ID + sa position exacte.
+async function findStreetViewToward(targetLat, targetLng) {
+  const ready = () => typeof google !== 'undefined' && google.maps
+    && google.maps.StreetViewService && google.maps.geometry
+    && google.maps.geometry.spherical;
+  if (!ready()) {
+    const start = Date.now();
+    while (Date.now() - start < 4000 && !ready()) {
+      await new Promise(r => setTimeout(r, 120));
     }
+    if (!ready()) return null;
   }
-  // Bearing midpoint → centroïde (formule sphérique)
-  const toRad = d => d * Math.PI / 180;
-  const φ1 = toRad(mLat), φ2 = toRad(cLat);
-  const Δλ = toRad(cLng - mLng);
-  const y = Math.sin(Δλ) * Math.cos(φ2);
-  const x = Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
-  const heading = (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
-  return { lat: mLat, lng: mLng, heading: Math.round(heading) };
+  const target = new google.maps.LatLng(targetLat, targetLng);
+  const svc = new google.maps.StreetViewService();
+  const lookup = (radius) => new Promise((resolve) => {
+    svc.getPanorama(
+      {
+        location: target,
+        radius,
+        source: google.maps.StreetViewSource.OUTDOOR,
+        preference: google.maps.StreetViewPreference.NEAREST
+      },
+      (data, status) => resolve(status === 'OK' && data && data.location && data.location.latLng ? data : null)
+    );
+  });
+  let data = await lookup(80);
+  if (!data) data = await lookup(500);
+  if (!data) return null;
+  const panoLatLng = data.location.latLng;
+  const headingDeg = google.maps.geometry.spherical.computeHeading(panoLatLng, target);
+  return {
+    pano: data.location.pano,
+    heading: Math.round((headingDeg + 360) % 360)
+  };
+}
+
+// Construit l'URL Embed Street View. Si on a un pano ID (StreetViewService
+// l'a résolu), on l'utilise — c'est déterministe. Sinon fallback location.
+function buildStreetViewEmbedUrl({ pano, lat, lng, heading }) {
+  const KEY = 'AIzaSyD1pMAMR9M6vLrsfoLJ5GDyIbkDTgLvqg4';
+  const headingParam = (heading !== null && heading !== undefined) ? `&heading=${heading}` : '';
+  const base = `https://www.google.com/maps/embed/v1/streetview?key=${KEY}`;
+  if (pano) return `${base}&pano=${pano}${headingParam}&fov=100&pitch=0`;
+  return `${base}&location=${lat},${lng}${headingParam}&fov=100&pitch=0`;
 }
 
 function computeFitZoom(coords, canvasSize, fillRatio) {
@@ -1455,24 +1475,17 @@ function loadMoreCards(targetSurf, isLogement = false) {
     card.appendChild(thumb);
     card.addEventListener('mouseenter', () => { if (!parcelsLayer) return; parcelsLayer.eachLayer(l => { if (l.feature === f && l.feature !== activeFeature) l.setStyle(STYLE_HOVER); }); });
     card.addEventListener('mouseleave', () => { if (!parcelsLayer) return; parcelsLayer.eachLayer(l => { if (l.feature === f && l.feature !== activeFeature) l.setStyle(STYLE_DEFAULT); }); });
-    const observer = new IntersectionObserver(entries => {
+    const observer = new IntersectionObserver(async entries => {
       if (!entries[0].isIntersecting) return;
       observer.disconnect();
-      let lat = 0, lng = 0;
-      try {
-        const geom = f.geometry;
-        const coords = geom.type === 'MultiPolygon' ? geom.coordinates[0][0] : geom.coordinates[0];
-        let mnLat = Infinity, mxLat = -Infinity, mnLng = Infinity, mxLng = -Infinity;
-        coords.forEach(c => { mnLng = Math.min(mnLng, c[0]); mxLng = Math.max(mxLng, c[0]); mnLat = Math.min(mnLat, c[1]); mxLat = Math.max(mxLat, c[1]); });
-        lat = (mnLat + mxLat) / 2; lng = (mnLng + mxLng) / 2;
-      } catch {}
       const thumbCoords = (f.geometry.type === 'MultiPolygon' ? f.geometry.coordinates[0][0] : f.geometry.coordinates[0]);
       drawThumb(canvas, f, computeFitZoom(thumbCoords, 256, 0.8));
-      const view = computeParcelView(f);
-      const svLat = view.lat || lat;
-      const svLng = view.lng || lng;
-      const headingParam = view.heading !== null ? `&heading=${view.heading}` : '';
-      const embedUrl = `https://www.google.com/maps/embed/v1/streetview?key=AIzaSyD1pMAMR9M6vLrsfoLJ5GDyIbkDTgLvqg4&location=${svLat},${svLng}${headingParam}&fov=100&pitch=0`;
+      const c = parcelCentroid(f);
+      if (!c) return;
+      const view = await findStreetViewToward(c.lat, c.lng);
+      const embedUrl = view
+        ? buildStreetViewEmbedUrl({ pano: view.pano, heading: view.heading })
+        : buildStreetViewEmbedUrl({ lat: c.lat, lng: c.lng });
       const iframe = document.createElement('iframe');
       iframe.src = embedUrl;
       iframe.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:none;';
@@ -2108,17 +2121,13 @@ async function loadMe() {
 
 function updateAuthUI(user) {
   const hdr = document.getElementById('auth-header');
-  const cb = document.getElementById('credits-bar');
   if (!user) {
     hdr.innerHTML = `<button class="user-badge" onclick="openAuth('login')">Se connecter</button>`;
-    cb.classList.remove('show');
     updateFavToggle();
     return;
   }
   const isPro = user.plan === 'pro';
   hdr.innerHTML = `<div class="user-badge" onclick="doLogout()" style="cursor:pointer"><span>${user.email.split('@')[0]}</span><span class="plan-pill ${isPro?'pro':''}">${isPro?'Pro':'Free'}</span></div>`;
-  if (!isPro) { cb.classList.add('show'); document.getElementById('credits-count').textContent = user.credits; }
-  else { cb.classList.remove('show'); }
   updateFavToggle();
 }
 
@@ -2185,7 +2194,7 @@ async function doForgot() {
 }
 
 let resetToken = null;
-async function doReset() {
+async function doPasswordReset() {
   const pwd = document.getElementById('reset-pwd').value;
   const msg = document.getElementById('reset-msg');
   msg.className = 'auth-msg'; msg.textContent = '';
@@ -2261,15 +2270,67 @@ function toggleFavoritesView() {
 function enterFavoritesView() {
   inFavView = true;
   updateFavToggle();
+  // Désélectionne la parcelle active et masque les couches de recherche
+  if (activeFeature && parcelsLayer) {
+    parcelsLayer.eachLayer(l => { if (l.feature === activeFeature) l.setStyle(STYLE_DEFAULT); });
+  }
+  activeFeature = null;
+  if (parcelsLayer) map.removeLayer(parcelsLayer);
+  if (communeLayer) map.removeLayer(communeLayer);
+  showFavoritesOnMap();
   document.getElementById('r-label').textContent = 'Mes favoris';
   document.getElementById('r-count').textContent =
     favoritesList.length + ' bien' + (favoritesList.length > 1 ? 's' : '');
   renderFavoritesCards();
 }
 
+function selectFavorite(fav, { fromMarker = false } = {}) {
+  if (!fav.lat || !fav.lng) return;
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+  Object.values(favMarkers).forEach(m => m.setStyle({ radius: 8, weight: 2, fillOpacity: 0.5 }));
+  const card = fav.parcelle_id ? document.querySelector(`.card[data-fav-id="${CSS.escape(fav.parcelle_id)}"]`) : null;
+  if (card) {
+    card.classList.add('active');
+    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+  const target = fav.parcelle_id ? favMarkers[fav.parcelle_id] : null;
+  if (target) { target.setStyle({ radius: 12, weight: 4, fillOpacity: 0.75 }); target.bringToFront(); }
+  if (!fromMarker) map.setView([fav.lat, fav.lng], 19);
+  if (target) target.openPopup();
+  if (!fromMarker && isMobile()) setPanelState('');
+}
+
+function showFavoritesOnMap() {
+  if (favLayer) { map.removeLayer(favLayer); favLayer = null; }
+  favMarkers = {};
+  const points = favoritesList.filter(f => f.lat && f.lng);
+  if (!points.length) return;
+  favLayer = L.layerGroup();
+  const latlngs = [];
+  points.forEach(f => {
+    const m = L.circleMarker([f.lat, f.lng], {
+      radius: 8, color: '#e89878', weight: 2, fillColor: '#e89878', fillOpacity: 0.5
+    });
+    m.bindPopup(
+      `<strong>${f.adresse || f.commune || 'Favori'}</strong>` +
+      (f.parcelle_id ? `<br/><small>Parcelle ${f.parcelle_id}</small>` : '')
+    );
+    m.on('click', () => selectFavorite(f, { fromMarker: true }));
+    m.addTo(favLayer);
+    if (f.parcelle_id) favMarkers[f.parcelle_id] = m;
+    latlngs.push([f.lat, f.lng]);
+  });
+  favLayer.addTo(map);
+  if (latlngs.length === 1) map.setView(latlngs[0], 17);
+  else { try { map.fitBounds(latlngs, { padding: [40, 40] }); } catch {} }
+}
+
 function exitFavoritesView() {
   inFavView = false;
   updateFavToggle();
+  if (favLayer) { map.removeLayer(favLayer); favLayer = null; favMarkers = {}; }
+  if (parcelsLayer) parcelsLayer.addTo(map);
+  if (communeLayer) communeLayer.addTo(map);
   document.getElementById('r-label').textContent = 'Biens trouvés';
   const list = document.getElementById('results-list');
   list.innerHTML = '';
@@ -2303,6 +2364,7 @@ function createFavoriteCard(fav) {
     : `<span class="info-badge info-badge-empty">—</span>`;
 
   const card = document.createElement('div'); card.className = 'card';
+  if (fav.parcelle_id) card.dataset.favId = fav.parcelle_id;
   const thumb = document.createElement('div'); thumb.className = 'card-thumb';
   const thumbSV = document.createElement('div'); thumbSV.className = 'card-thumb-sv';
   const svPlaceholder = document.createElement('div'); svPlaceholder.className = 'card-thumb-sv-placeholder';
@@ -2320,6 +2382,10 @@ function createFavoriteCard(fav) {
   favBtn.addEventListener('click', async ev => {
     ev.stopPropagation();
     await removeFavorite(fav.parcelle_id);
+    if (favLayer && favMarkers[fav.parcelle_id]) {
+      favLayer.removeLayer(favMarkers[fav.parcelle_id]);
+      delete favMarkers[fav.parcelle_id];
+    }
     card.style.transition = 'opacity 0.2s, transform 0.2s';
     card.style.opacity = '0'; card.style.transform = 'scale(0.97)';
     setTimeout(() => {
@@ -2358,10 +2424,16 @@ function createFavoriteCard(fav) {
   card.appendChild(thumb);
 
   if (fav.lat && fav.lng) {
-    const observer = new IntersectionObserver(entries => {
+    const observer = new IntersectionObserver(async entries => {
       if (!entries[0].isIntersecting) return;
       observer.disconnect();
-      const url = `https://www.google.com/maps/embed/v1/streetview?key=AIzaSyD1pMAMR9M6vLrsfoLJ5GDyIbkDTgLvqg4&location=${fav.lat},${fav.lng}&fov=100&pitch=0`;
+      let url;
+      const view = await findStreetViewToward(fav.lat, fav.lng);
+      if (view) {
+        url = buildStreetViewEmbedUrl({ pano: view.pano, heading: view.heading });
+      } else {
+        url = buildStreetViewEmbedUrl({ lat: fav.lat, lng: fav.lng });
+      }
       const iframe = document.createElement('iframe');
       iframe.src = url;
       iframe.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:none;';
@@ -2373,6 +2445,14 @@ function createFavoriteCard(fav) {
   } else {
     svPlaceholder.innerHTML = '<span style="font-size:1.4rem">📍</span><small style="font-size:0.6rem;color:#93c5fd;font-weight:600">Sans localisation</small>';
   }
+
+  let mouseOverSV = false;
+  thumbSV.addEventListener('mouseenter', () => { mouseOverSV = true; });
+  thumbSV.addEventListener('mouseleave', () => { mouseOverSV = false; });
+  card.addEventListener('click', () => {
+    if (mouseOverSV) return;
+    selectFavorite(fav);
+  });
   return card;
 }
 
@@ -2449,16 +2529,20 @@ function refreshFavButtonsOnCards() {
 }
 
 // STREET VIEW MODAL
-function openSVModal(lat, lng, feature = null) {
-  let svLat = lat, svLng = lng, headingParam = '';
+async function openSVModal(lat, lng, feature = null) {
+  let targetLat = lat, targetLng = lng;
   if (feature) {
-    const view = computeParcelView(feature);
-    if (view.lat && view.lng) { svLat = view.lat; svLng = view.lng; }
-    if (view.heading !== null) headingParam = `&heading=${view.heading}`;
+    const c = parcelCentroid(feature);
+    if (c) { targetLat = c.lat; targetLng = c.lng; }
   }
-  const url = `https://www.google.com/maps/embed/v1/streetview?key=AIzaSyD1pMAMR9M6vLrsfoLJ5GDyIbkDTgLvqg4&location=${svLat},${svLng}${headingParam}&fov=100&pitch=0`;
-  document.getElementById('sv-modal-iframe').src = url;
   document.getElementById('sv-modal').classList.add('show');
+  const iframe = document.getElementById('sv-modal-iframe');
+  // Affichage immédiat (fallback location) le temps de résoudre la panorama réelle.
+  iframe.src = buildStreetViewEmbedUrl({ lat: targetLat, lng: targetLng });
+  const view = await findStreetViewToward(targetLat, targetLng);
+  if (view) {
+    iframe.src = buildStreetViewEmbedUrl({ pano: view.pano, heading: view.heading });
+  }
 }
 
 function closeSVModal() {

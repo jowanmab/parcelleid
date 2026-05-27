@@ -387,13 +387,6 @@
     .auth-msg.ok  { background: rgba(22,163,74,0.07); color: #16a34a; border: 1px solid rgba(22,163,74,0.2); display: block; }
     .auth-close { float: right; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--muted); margin-top: -4px; }
 
-    /* ── AIRBNB-STYLE ELEMENTS (hidden by default on desktop) ── */
-    .ab-search-top, .ab-modal-topbar, .ab-map-fab { display: none; }
-
-    /* Desktop: push the top-right Leaflet area (pegman) below the #map-count
-       badge so they don't overlap. Mobile overrides this further down. */
-    .leaflet-top.leaflet-right { top: 56px; }
-
     /* MOBILE */
     @media (max-width: 768px) {
       main { display: block; position: relative; height: 100%; }
@@ -433,239 +426,22 @@
       #commune-suggestions li { padding: 12px 12px; min-height: 44px; }
       input:focus { scroll-margin-top: 80px; }
       button, a, input { touch-action: manipulation; }
-      /* Bottom-left is now empty (LayerControl moved to top-left, no other
-         Leaflet control sits at bottom-left). */
+      .leaflet-bottom.leaflet-left { bottom: calc(var(--panel-h) + 24px) !important; left: 10px !important; transition: bottom 0.38s cubic-bezier(0.4,0,0.2,1); }
+      body.panel-mid .leaflet-bottom.leaflet-left  { bottom: calc(48% + 10px) !important; }
+      body.panel-open .leaflet-bottom.leaflet-left { bottom: calc(85% + 10px) !important; }
       .leaflet-top.leaflet-right { top: 14px; right: 10px; }
       .leaflet-top.leaflet-left  { top: 14px; left: 10px; }
       #map-count { top: 10px; right: 10px; font-size: 0.78rem; padding: 5px 10px; }
       #measure-toolbar { top: 10px; left: 50%; transform: translateX(-50%); }
       .measure-btn { padding: 8px 11px; gap: 4px; font-size: 0.7rem; min-height: 40px; }
       .measure-btn .btn-label { display: none; }
-      /* measure-result and map-footer also sit inside the resizable .map-wrap. */
       #measure-result { bottom: calc(var(--panel-h) + 30px); transition: bottom 0.38s cubic-bezier(0.4,0,0.2,1); font-size: 0.78rem; padding: 8px 12px; gap: 10px; }
-      body.panel-mid  #measure-result { bottom: 10px; }
-      body.panel-open #measure-result { bottom: 10px; }
+      body.panel-mid  #measure-result { bottom: calc(48% + 10px); }
+      body.panel-open #measure-result { bottom: calc(85% + 10px); }
       .map-footer { bottom: calc(var(--panel-h) + 28px); transition: bottom 0.38s cubic-bezier(0.4,0,0.2,1); font-size: 0.6rem; padding: 4px 12px; }
-      body.panel-mid  .map-footer { bottom: 8px; }
-      body.panel-open .map-footer { bottom: 8px; }
+      body.panel-mid  .map-footer { bottom: calc(48% + 8px); }
+      body.panel-open .map-footer { bottom: calc(85% + 8px); }
       #results-list { grid-template-columns: 1fr; }
-
-      /* ════════════════════════════════════════
-         AIRBNB-STYLE MOBILE LAYOUT
-         ════════════════════════════════════════ */
-
-      /* Hide the original header on mobile — replaced by the search pill */
-      body > header { display: none; }
-
-      /* Top compact search pill row (logo + pill) — always visible at top */
-      .ab-search-top {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        position: fixed;
-        top: 0; left: 0; right: 0;
-        padding: 12px 14px;
-        padding-top: calc(env(safe-area-inset-top, 12px) + 12px);
-        background: var(--white);
-        z-index: 1500;
-        border-bottom: 1px solid var(--soft);
-      }
-      .ab-top-logo {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        flex-shrink: 0;
-        text-decoration: none;
-        color: var(--ink);
-        max-width: 28%;
-      }
-      .ab-top-logo img {
-        width: 28px; height: 28px; flex-shrink: 0; display: block;
-      }
-      .ab-top-logo-text {
-        display: flex;
-        flex-direction: column;
-        line-height: 1.05;
-        font-size: 0.72rem;
-        font-weight: 800;
-        letter-spacing: -0.02em;
-      }
-      .ab-top-logo-text .b { color: var(--blue); }
-      .ab-search-pill {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        flex: 1;
-        min-width: 0;
-        height: 56px;
-        background: var(--white);
-        border: 1px solid var(--border);
-        border-radius: 32px;
-        padding: 0 8px 0 18px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05);
-        cursor: pointer;
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        transition: box-shadow 0.18s, transform 0.12s;
-      }
-      .ab-search-pill:active { transform: scale(0.985); }
-      .ab-search-pill:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.05); }
-      .ab-pill-icon {
-        display: inline-flex; align-items: center; justify-content: center;
-        width: 22px; height: 22px; flex-shrink: 0; color: var(--ink);
-      }
-      .ab-pill-text {
-        flex: 1; min-width: 0; display: flex; flex-direction: column;
-        align-items: flex-start; gap: 1px; text-align: left;
-      }
-      .ab-pill-title {
-        font-size: 0.86rem; font-weight: 700; color: var(--ink);
-        letter-spacing: -0.01em; white-space: nowrap; overflow: hidden;
-        text-overflow: ellipsis; max-width: 100%; line-height: 1.2;
-      }
-      .ab-pill-sub {
-        font-size: 0.7rem; font-weight: 500; color: var(--mid);
-        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        max-width: 100%; line-height: 1.2;
-      }
-      .ab-pill-filter {
-        width: 40px; height: 40px; border-radius: 50%;
-        background: var(--white); border: 1px solid var(--border);
-        display: inline-flex; align-items: center; justify-content: center;
-        color: var(--ink); flex-shrink: 0;
-      }
-
-      /* Map fills the screen; pill floats above with white bg + shadow.
-         When the drawer slides up, the map *actually shrinks* (height changes)
-         instead of just being hidden behind the panel — Airbnb-style adaptive
-         layout. JS calls map.invalidateSize() so Leaflet re-renders the tiles
-         at the new dimensions. */
-      main { padding: 0; }
-      .map-wrap {
-        height: 100%;
-        transition: height 0.38s cubic-bezier(0.4,0,0.2,1);
-      }
-      body.panel-mid  .map-wrap { height: 50%; }
-      body.panel-open .map-wrap { height: 5%; }
-
-      /* Bottom drawer — thin strip with count only when collapsed */
-      :root { --panel-h: 56px; }
-      .panel {
-        height: calc(var(--panel-h) + env(safe-area-inset-bottom, 0px));
-        border-radius: 18px 18px 0 0;
-        box-shadow: 0 -4px 24px rgba(0,0,0,0.10);
-      }
-      .panel.mid  { height: 50%; }
-      .panel.open { height: 95%; }
-      .panel-handle {
-        padding: 8px 0 8px;
-        flex-direction: column;
-      }
-      .panel-pill {
-        width: 36px; height: 4px; margin-bottom: 6px;
-        background: #d6d3c8; border-radius: 2px;
-      }
-      .panel-handle-label {
-        font-size: 0.88rem; font-weight: 700; color: var(--ink);
-        letter-spacing: -0.01em;
-      }
-      /* Hide the small count chip — count is already in the label text */
-      .panel-handle-count { display: none !important; }
-
-      /* Hide search-summary inside panel — summary is now in the top pill */
-      .search-summary.show { display: none !important; }
-
-      /* Hide credits-bar from panel on mobile (we'll re-show inside modal if needed) */
-      .credits-bar { display: none !important; }
-
-      /* Form-block hidden from panel by default on mobile — lives in the modal */
-      #search-form-block { display: none !important; }
-
-      /* ── MODAL OPEN STATE ── */
-      /* When the modal is open, lift the form-block into a fullscreen overlay */
-      body.ab-modal-open #search-form-block {
-        display: block !important;
-        position: fixed;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background: var(--white);
-        z-index: 4000;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        padding: calc(env(safe-area-inset-top, 0px) + 70px) 18px
-                 calc(env(safe-area-inset-bottom, 0px) + 24px) 18px;
-        animation: ab-modal-in 0.28s cubic-bezier(0.2, 0, 0, 1);
-      }
-      @keyframes ab-modal-in {
-        from { transform: translateY(24px); opacity: 0; }
-        to   { transform: translateY(0);    opacity: 1; }
-      }
-      body.ab-modal-open .ab-modal-topbar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        position: fixed;
-        top: 0; left: 0; right: 0;
-        height: calc(env(safe-area-inset-top, 0px) + 60px);
-        padding: env(safe-area-inset-top, 0px) 14px 0 14px;
-        background: var(--white);
-        z-index: 4001;
-        border-bottom: 1px solid var(--soft);
-      }
-      .ab-modal-close {
-        width: 36px; height: 36px;
-        background: none; border: 1px solid var(--border);
-        border-radius: 50%; cursor: pointer;
-        display: inline-flex; align-items: center; justify-content: center;
-        color: var(--ink); font-family: inherit;
-      }
-      .ab-modal-close:active { transform: scale(0.92); }
-      .ab-modal-title {
-        font-size: 0.95rem; font-weight: 700; color: var(--ink);
-        letter-spacing: -0.01em;
-      }
-      /* Hide the hero (h1, eyebrow, p) in modal — modal already has a title */
-      body.ab-modal-open .hero { display: none; }
-      /* Show form on mobile inside modal */
-      body.ab-modal-open #search-form-block { display: block !important; }
-
-      /* Hide bottom drawer & top pill while modal is open */
-      body.ab-modal-open .panel { display: none !important; }
-      body.ab-modal-open .ab-search-top { display: none; }
-      body.ab-modal-open .ab-map-fab { display: none !important; }
-
-      /* ── MAP FAB (floating Carte button) ──
-         Fixed at the bottom-center of the viewport, always reachable while the
-         user scrolls the result cards. Hidden only when the drawer is collapsed
-         (no cards visible) or the search modal is open. */
-      body.panel-mid .ab-map-fab,
-      body.panel-open .ab-map-fab {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        position: fixed;
-        left: 50%;
-        transform: translateX(-50%);
-        bottom: calc(env(safe-area-inset-bottom, 0px) + 22px);
-        background: var(--ink);
-        color: var(--white);
-        border: none;
-        border-radius: 28px;
-        padding: 11px 20px 11px 16px;
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        font-size: 0.86rem;
-        font-weight: 700;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.28), 0 2px 6px rgba(0,0,0,0.18);
-        z-index: 1400;
-        cursor: pointer;
-        letter-spacing: -0.01em;
-      }
-      .ab-map-fab:active { transform: translateX(-50%) scale(0.95); }
-
-      /* Push Leaflet controls below the search pill */
-      .leaflet-top.leaflet-right { top: calc(env(safe-area-inset-top, 0px) + 92px) !important; }
-      .leaflet-top.leaflet-left  { top: calc(env(safe-area-inset-top, 0px) + 92px) !important; }
-      #measure-toolbar { top: calc(env(safe-area-inset-top, 0px) + 92px) !important; }
-      /* Count chip is now in the drawer handle — hide the floating one */
-      #map-count { display: none !important; }
     }
   </style>
 </head>
@@ -678,29 +454,6 @@
     <button class="user-badge" onclick="openAuth('login')">Se connecter</button>
   </div>
 </header>
-
-<!-- ── AIRBNB-STYLE TOP PILL (mobile only) ── -->
-<div class="ab-search-top" id="ab-search-top">
-  <a href="index.html" class="ab-top-logo" aria-label="Retour à l'accueil LocaliseImmo">
-    <img src="./assets/logo-mark.svg" alt="" />
-    <span class="ab-top-logo-text">
-      <span>Localise</span>
-      <span class="b">Immo</span>
-    </span>
-  </a>
-  <button class="ab-search-pill" id="ab-search-pill" type="button" aria-label="Modifier la recherche">
-    <span class="ab-pill-icon" aria-hidden="true">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    </span>
-    <span class="ab-pill-text">
-      <span class="ab-pill-title" id="ab-pill-title">Rechercher un bien</span>
-      <span class="ab-pill-sub" id="ab-pill-sub">Commune · Surface · DPE</span>
-    </span>
-    <span class="ab-pill-filter" aria-hidden="true">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="6" y1="12" x2="18" y2="12"/><line x1="10" y1="18" x2="14" y2="18"/></svg>
-    </span>
-  </button>
-</div>
 
 <!-- AUTH MODAL -->
 <div class="auth-overlay hidden" id="auth-overlay">
@@ -752,7 +505,7 @@
     <div class="panel-handle" id="panel-handle">
       <div class="panel-pill"></div>
       <div class="panel-handle-label">
-        <span id="handle-label-text">🔍 Rechercher un bien</span>
+        🔍 Rechercher un bien
         <span class="panel-handle-count" id="handle-count"></span>
       </div>
     </div>
@@ -921,21 +674,6 @@
   </div>
 </main>
 
-<!-- ── AIRBNB-STYLE MODAL TOPBAR (only visible when modal is open, mobile only) ── -->
-<div class="ab-modal-topbar" id="ab-modal-topbar">
-  <button class="ab-modal-close" id="ab-modal-close" type="button" aria-label="Fermer">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-  </button>
-  <span class="ab-modal-title">Rechercher</span>
-  <span style="width:36px"></span>
-</div>
-
-<!-- ── AIRBNB-STYLE MAP FAB (shown when drawer is mid/open, mobile only) ── -->
-<button class="ab-map-fab" id="ab-map-fab" type="button" aria-label="Revenir à la carte">
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
-  <span>Carte</span>
-</button>
-
 <svg id="pegman-ghost" viewBox="0 0 24 28" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
   <circle cx="12" cy="5" r="4" fill="#FBBC04" stroke="#1a1a1a" stroke-width="0.7"/>
   <path d="M7 9 L7 19 L10 19 L10 26 L14 26 L14 19 L17 19 L17 9 Z" fill="#FBBC04" stroke="#1a1a1a" stroke-width="0.7" stroke-linejoin="round"/>
@@ -951,37 +689,11 @@ const panelHandle = document.getElementById('panel-handle');
 let panelState = '';
 
 function setPanelState(state) {
-  // Capture the geographic bounds currently visible BEFORE the map resizes.
-  // We re-fit to these bounds during the transition so the same map content
-  // stays in view — Airbnb behavior: map shrinks, content stays.
-  let priorBounds = null;
-  if (typeof map !== 'undefined' && map) {
-    try { priorBounds = map.getBounds(); } catch {}
-  }
-
   panelState = state;
   mobilePanel.classList.remove('mid', 'open');
   document.body.classList.remove('panel-mid', 'panel-open');
   if (state === 'mid')  { mobilePanel.classList.add('mid');  document.body.classList.add('panel-mid'); }
   if (state === 'open') { mobilePanel.classList.add('open'); document.body.classList.add('panel-open'); }
-
-  // During the CSS height transition (~380ms), continuously invalidateSize and
-  // re-fit to priorBounds via requestAnimationFrame. The map zooms out as it
-  // shrinks so the same geographic area remains visible end-to-end.
-  if (typeof map !== 'undefined' && map) {
-    const start = performance.now();
-    const duration = 420;
-    const tick = () => {
-      try {
-        map.invalidateSize({ pan: false, animate: false });
-        if (priorBounds && priorBounds.isValid && priorBounds.isValid()) {
-          map.fitBounds(priorBounds, { animate: false, padding: [0, 0] });
-        }
-      } catch {}
-      if (performance.now() - start < duration) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  }
 }
 
 let dragStartY = 0, dragStartState = '';
@@ -1030,7 +742,7 @@ window.addEventListener('touchend', onDragEnd);
 window.addEventListener('mouseup', onDragEnd);
 
 // CARTE
-const map = L.map('map', { zoomControl: false, maxZoom: 22 }).setView([46.6, 2.3], 5);
+const map = L.map('map', { zoomControl: true, maxZoom: 22 }).setView([46.6, 2.3], 5);
 const tileVoyager   = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { attribution: '© OpenStreetMap contributors © CARTO', subdomains: 'abcd', maxZoom: 20 });
 const tileSatellite = L.tileLayer('https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}', { attribution: '© IGN BD Ortho', maxZoom: 22, maxNativeZoom: 19 });
 const tilePLU = L.tileLayer.wms('https://data.geopf.fr/wms-v/ows', { layers: 'du', format: 'image/png', transparent: true, version: '1.3.0', opacity: 0.7, attribution: '© Géoportail Urbanisme', maxZoom: 22, minZoom: 0, maxNativeZoom: 15 });
@@ -1038,22 +750,22 @@ let pluActive = false;
 tileVoyager.addTo(map);
 
 const LayerControl = L.Control.extend({
-  options: { position: 'topleft' },
+  options: { position: 'bottomleft' },
   onAdd() {
     const wrap = L.DomUtil.create('div');
-    wrap.style.cssText = 'display:flex;flex-direction:column;gap:5px;';
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:6px;';
     let isSat = false;
     const mkBtn = (imgSrc, label) => {
       const el = L.DomUtil.create('div', '', wrap);
-      el.style.cssText = 'width:61px;cursor:pointer;border-radius:7px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.15);border:2px solid;';
-      el.innerHTML = `<img src="${imgSrc}" style="width:61px;height:41px;object-fit:cover;display:block;"/><div style="font-size:0.54rem;font-weight:700;text-align:center;padding:3px 0;letter-spacing:0.06em;text-transform:uppercase;">${label}</div>`;
+      el.style.cssText = 'width:68px;cursor:pointer;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.15);border:2px solid;';
+      el.innerHTML = `<img src="${imgSrc}" style="width:68px;height:46px;object-fit:cover;display:block;"/><div style="font-size:0.6rem;font-weight:700;text-align:center;padding:3px 0;letter-spacing:0.06em;text-transform:uppercase;">${label}</div>`;
       return el;
     };
     const btnCarte = mkBtn('https://a.basemaps.cartocdn.com/rastertiles/voyager/5/16/11.png', 'Carte');
     const btnSat   = mkBtn('https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg&TILEMATRIXSET=PM&TILEMATRIX=5&TILEROW=11&TILECOL=16', 'Satellite');
     const styleBtn = (btn, active) => {
       btn.style.borderColor = active ? '#8AB89A' : '#E5E1D6';
-      btn.querySelector('div').style.cssText = `font-size:0.54rem;font-weight:700;text-align:center;padding:3px 0;letter-spacing:0.06em;text-transform:uppercase;background:${active ? '#8AB89A' : 'rgba(255,255,255,0.9)'};color:${active ? 'white' : '#6B7771'};`;
+      btn.querySelector('div').style.cssText = `font-size:0.6rem;font-weight:700;text-align:center;padding:3px 0;letter-spacing:0.06em;text-transform:uppercase;background:${active ? '#8AB89A' : 'rgba(255,255,255,0.9)'};color:${active ? 'white' : '#6B7771'};`;
     };
     styleBtn(btnCarte, true); styleBtn(btnSat, false);
     L.DomEvent.on(btnCarte, 'click', () => {
@@ -1079,7 +791,7 @@ new LayerControl().addTo(map);
 
 // PEGMAN : glisser le bonhomme sur la carte → ouvre Street View au point de drop
 const PegmanControl = L.Control.extend({
-  options: { position: 'topright' },
+  options: { position: 'topleft' },
   onAdd() {
     const wrap = L.DomUtil.create('div', 'leaflet-bar pegman-control');
     const a = L.DomUtil.create('a', '', wrap);
@@ -1340,11 +1052,6 @@ function selectFeature(feature, card) {
   if (parcelsLayer) parcelsLayer.eachLayer(l => { if (l.feature === feature) { l.setStyle(STYLE_SELECTED); l.bringToFront(); } });
 }
 
-function setHandleLabel(text) {
-  const el = document.getElementById('handle-label-text');
-  if (el) el.textContent = text;
-}
-
 function renderCards(features, targetSurf, isLogement = false) {
   allFeatures = features; renderedCount = 0;
   currentTargetSurf = targetSurf; currentIsLogement = isLogement;
@@ -1356,14 +1063,12 @@ function renderCards(features, targetSurf, isLogement = false) {
     list.innerHTML = `<div style="font-size:0.8rem;color:var(--muted);text-align:center;padding:20px 0;border:1px dashed var(--border);border-radius:8px;grid-column:1/-1;">Aucun bien trouvé.<br/>Essayez d'augmenter la tolérance.</div>`;
     const hc = document.getElementById('handle-count');
     hc.textContent = '0'; hc.classList.remove('show');
-    setHandleLabel('Aucun bien trouvé');
     return;
   }
   const txt = features.length + ' bien' + (features.length > 1 ? 's' : '');
   countEl.textContent = txt;
   const hc = document.getElementById('handle-count');
   hc.textContent = features.length; hc.classList.add('show');
-  setHandleLabel(features.length + ' bien' + (features.length > 1 ? 's' : '') + ' trouvé' + (features.length > 1 ? 's' : ''));
   loadMoreCards(targetSurf, isLogement);
 }
 
@@ -1817,14 +1522,12 @@ function doReset() {
   document.getElementById('map-count').style.display = 'none';
   document.getElementById('overlay').classList.remove('gone');
   const hc = document.getElementById('handle-count'); hc.classList.remove('show');
-  setHandleLabel('🔍 Rechercher un bien');
   clearStatus();
   map.setView([46.6, 2.3], 5);
   clearMeasure(); stopMeasure();
   expandSearch();
   updateSearchBtn();
-  if (isMobile()) setPanelState('');
-  updateAbPill();
+  if (isMobile()) setPanelState('mid');
 }
 
 function buildSearchSummary() {
@@ -1862,113 +1565,22 @@ function collapseSearch() {
   document.getElementById('search-summary').classList.add('show');
   const ps = document.querySelector('.panel-scroll');
   if (ps) ps.scrollTop = 0;
-  // Mobile: also close the Airbnb-style modal if it was open
-  if (isMobile()) closeAbModal();
-  updateAbPill();
 }
 
 function expandSearch() {
   document.getElementById('search-form-block').classList.remove('collapsed');
   document.getElementById('search-summary').classList.remove('show');
-  // Always scroll the panel back to the top so the form is visible — matches
-  // typical web search "Edit/Modify" behavior.
-  const ps = document.querySelector('.panel-scroll');
-  if (ps) ps.scrollTop = 0;
   if (isMobile()) {
-    // Open the Airbnb-style fullscreen modal (also scrolls modal content to top)
-    openAbModal();
-  } else {
-    // Desktop: focus the commune input so the user can immediately edit
-    const ci = document.getElementById('commune-input');
-    if (ci) setTimeout(() => ci.focus(), 0);
+    setPanelState('open');
+    const ps = document.querySelector('.panel-scroll');
+    if (ps) ps.scrollTop = 0;
   }
 }
-
-// ── AIRBNB-STYLE TOP PILL + MODAL ──
-// We physically move #search-form-block out of .panel into <body> so it can be
-// shown as a fullscreen modal even when .panel is hidden (display:none on parent
-// would otherwise hide all descendants, even position:fixed ones).
-let _abFormHome = null; // { parent, nextSibling } where the form lived originally
-function openAbModal() {
-  if (!isMobile()) return;
-  const fb = document.getElementById('search-form-block');
-  if (fb && !document.body.classList.contains('ab-modal-open')) {
-    _abFormHome = { parent: fb.parentNode, nextSibling: fb.nextSibling };
-    document.body.appendChild(fb);
-  }
-  document.body.classList.add('ab-modal-open');
-  // Make sure form block is logically expanded
-  fb.classList.remove('collapsed');
-  // Scroll modal to top so the commune field is visible
-  setTimeout(() => { if (fb) fb.scrollTop = 0; }, 0);
-}
-
-function closeAbModal() {
-  if (!document.body.classList.contains('ab-modal-open')) return;
-  document.body.classList.remove('ab-modal-open');
-  const fb = document.getElementById('search-form-block');
-  if (fb && _abFormHome && _abFormHome.parent) {
-    if (_abFormHome.nextSibling && _abFormHome.nextSibling.parentNode === _abFormHome.parent) {
-      _abFormHome.parent.insertBefore(fb, _abFormHome.nextSibling);
-    } else {
-      _abFormHome.parent.appendChild(fb);
-    }
-    _abFormHome = null;
-  }
-}
-
-function updateAbPill() {
-  // Sync top-pill text from the search summary spans (commune + chips).
-  const titleEl = document.getElementById('ab-pill-title');
-  const subEl   = document.getElementById('ab-pill-sub');
-  if (!titleEl || !subEl) return;
-  const commune = selectedCommune ? selectedCommune.nom : null;
-  if (!commune) {
-    titleEl.textContent = 'Rechercher un bien';
-    subEl.textContent = 'Commune · Surface · DPE';
-    return;
-  }
-  titleEl.textContent = commune;
-  const bits = [];
-  const sLog = parseFloat(document.getElementById('surface-logement-input').value);
-  const sCad = parseFloat(document.getElementById('surface-input').value);
-  const dpeE = document.getElementById('dpe-energie-selected').value;
-  const dpeG = document.getElementById('dpe-ges-selected').value;
-  if (sLog > 0) bits.push(sLog + ' m² hab.');
-  if (sCad > 0) bits.push(sCad + ' m² terr.');
-  if (dpeE) bits.push('DPE ' + dpeE);
-  if (dpeG) bits.push('GES ' + dpeG);
-  subEl.textContent = bits.length ? bits.join(' · ') : 'Tous les biens';
-}
-
-// Wire up top-pill click → open modal
-const _abPillBtn = document.getElementById('ab-search-pill');
-if (_abPillBtn) _abPillBtn.addEventListener('click', () => {
-  openAbModal();
-});
-
-// Wire up modal close button
-const _abModalClose = document.getElementById('ab-modal-close');
-if (_abModalClose) _abModalClose.addEventListener('click', () => {
-  // If the user closes without searching, just close the modal — keep prior state
-  closeAbModal();
-});
-
-// Wire up FAB "Carte" button → collapse drawer to strip
-const _abMapFab = document.getElementById('ab-map-fab');
-if (_abMapFab) _abMapFab.addEventListener('click', () => {
-  setPanelState('');
-});
 
 communeInput.addEventListener('keydown', e => { if (e.key === 'Enter' && selectedCommune) doSearch(); });
 surfInput.addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
 
-// Mobile initial state: collapsed drawer (just the count strip), map visible full-screen,
-// search pill at top. User taps pill to open search modal.
-if (isMobile()) {
-  setPanelState('');
-  updateAbPill();
-}
+if (isMobile()) setPanelState('mid');
 
 // OUTIL DE MESURE
 let measureMode = null, measurePoints = [], measureLines = [], liveTooltip = null;

@@ -48,6 +48,23 @@ en plateforme complète avec :
 10. **INSEE arrondissements** : `INSEE_ARRONDISSEMENTS` fan-out parallèle pour Paris (75056 → 75101-75120), Marseille (13055 → 13201-13216), Lyon (69123 → 69381-69389).
 11. **Zoom adaptatif vignette satellite** : `computeFitZoom()` calcule le bon zoom (15-19) pour que la parcelle remplisse ~80% du canvas.
 
+### Refonte mobile Airbnb-style (2026-05-27)
+
+Backup conservée : `sig.backup.html` (124 ko, état pré-refonte).
+
+1. **Pill de recherche en haut** (logo + pill compacte) : flexbox fixé top, logo gauche (icône SVG + texte 2 lignes "Localise/Immo"), pill droite (icône loupe + titre dynamique + sous-titre + bouton filtres rond). Tap pill → ouvre modal plein écran.
+2. **Modal plein écran pour les filtres** : le `#search-form-block` est physiquement déplacé hors de `.panel` dans `<body>` à l'ouverture (sinon `display:none` du parent cacherait aussi le contenu malgré `position:fixed`). Restauré à sa place originale à la fermeture. Topbar fixée avec bouton ✕ + titre. Animation slide-up + fade.
+3. **Bandeau bas réduit à 56 px** (au lieu de 76 px) : affiche uniquement "X biens trouvés" — la pill du haut affiche les filtres.
+4. **Drawer scroll 2 étapes** : collapsed (56 px) → mid (50 %) → open (95 %). Drag handle gère les transitions.
+5. **FAB "Carte" fixe** : pill noire centrée en bas du viewport (`bottom: env(safe-area-inset-bottom) + 22px`), visible quand drawer est mid/open. Tap → repli drawer à collapsed.
+6. **Carte adaptative façon Airbnb** : `.map-wrap` height change réellement (100 % → 50 % → 5 %) via classes `body.panel-mid/open`. `setPanelState()` capture `priorBounds = map.getBounds()` AVANT le changement, puis boucle `requestAnimationFrame` sur 420 ms appelant `invalidateSize()` + `fitBounds(priorBounds)` à chaque frame. Résultat : la carte zoome out progressivement pendant qu'elle rétrécit, gardant exactement le même contenu géographique visible.
+7. **Contrôles Leaflet réorganisés** :
+   - `zoomControl: false` (suppression des +/-)
+   - LayerControl (Carte/Satellite/PLU) : `topleft`, taille -10 % (61×41 px, font 0.54rem)
+   - Pegman : `topright`, descendu à `top: 56px` sur desktop pour ne pas chevaucher `#map-count`
+   - Attribution + footer : ancrés au bas de la carte rétrécie (`bottom: 10px`)
+8. **Bouton "Modifier" → scroll top + focus** : `expandSearch()` scrolle le `.panel-scroll` à 0 dans tous les cas et focus le champ commune sur desktop.
+
 ### Recherche → SIG bridge
 
 La landing pousse vers `./sig.html?commune=...&insee=...&surf_log=...&dpe=D&...`

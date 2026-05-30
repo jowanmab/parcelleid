@@ -341,7 +341,8 @@ function Article({ variant = 'sober', device = 'desktop', style = 'chaleureux', 
             <a href="./comment-ca-marche.html">Comment ça marche</a>
             <a href="./sources.html">Sources & méthode</a>
             <a href="./blog.html">Blog</a>
-            <a href="#" onClick={(e)=>e.preventDefault()}>Mentions légales</a>
+            <a href="./mentions-legales.html">Mentions légales</a>
+            <a href="./confidentialite.html">Confidentialité</a>
             <a href="mailto:contact@localiseimmo.fr">Contact</a>
           </div>
           <div className="legal">

@@ -254,6 +254,144 @@
     .date-input-area[data-mode="single"] .date-range-sep,
     .date-input-area[data-mode="single"] #dpe-date-input-max { display: none; }
     .date-range-sep { font-size: 0.85rem; color: var(--muted); font-weight: 700; text-align: center; }
+
+    /* Bande dépliable (utilisée pour la section DPE/GES/Date) */
+    .form-section.collapsible { padding: 0; }
+    .collapsible-header {
+      display: flex; align-items: center; gap: 10px;
+      width: 100%;
+      background: transparent; border: none;
+      padding: 11px 11px;
+      font-family: inherit; cursor: pointer;
+      color: var(--ink); font-size: 0.85rem; font-weight: 700;
+      letter-spacing: -0.01em;
+      text-align: left;
+      min-height: 42px;
+    }
+    .collapsible-title { flex: 1; min-width: 0; }
+    .collapsible-summary {
+      font-size: 0.72rem; font-weight: 600; color: var(--blue);
+      background: var(--blue-lt); border: 1px solid var(--blue-bd);
+      padding: 2px 8px; border-radius: 10px;
+      white-space: nowrap;
+    }
+    .collapsible-summary:empty { display: none; }
+    .collapsible-chevron {
+      width: 16px; height: 16px; flex-shrink: 0;
+      color: var(--mid);
+      transition: transform 0.25s ease;
+    }
+    .collapsible[data-collapsed="false"] .collapsible-chevron { transform: rotate(180deg); }
+    .collapsible-body {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.35s ease, padding 0.25s ease, opacity 0.2s ease;
+      opacity: 0;
+      padding: 0 11px;
+    }
+    .collapsible[data-collapsed="false"] > .collapsible-body {
+      max-height: 800px;
+      padding: 0 11px 10px 11px;
+      opacity: 1;
+    }
+
+    /* Hiérarchie primaire / secondaire ──
+       Primaire (Commune + Surface habitable) : visuellement dominant.
+       Secondaire (Surface terrain + DPE/GES/Date) : atténué, signale que c'est optionnel. */
+    .form-section.primary {
+      border-color: var(--blue-bd);
+      background: linear-gradient(180deg, rgba(238,245,240,0.55) 0%, var(--bg) 100%);
+      box-shadow: 0 1px 3px rgba(138,184,154,0.08);
+    }
+    .form-section.primary > .form-label {
+      font-size: 0.78rem;
+      color: var(--ink);
+      font-weight: 700;
+    }
+    .form-section.primary input[type=text],
+    .form-section.primary input[type=number] {
+      border-color: var(--blue-bd);
+    }
+    .form-section.secondary {
+      background: transparent;
+      border-style: dashed;
+      border-color: var(--soft);
+    }
+    .form-section.secondary > .form-label,
+    .form-section.secondary .form-label {
+      color: var(--muted);
+      font-weight: 500;
+    }
+    /* Séparateur "Filtres avancés" entre les deux blocs */
+    .secondary-divider {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 0.68rem; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.1em;
+      margin: 10px 2px 8px;
+    }
+    .secondary-divider::before,
+    .secondary-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+    .secondary-divider span { white-space: nowrap; }
+
+    /* Empty state : aucun bien trouvé — invite l'utilisateur à relâcher des filtres */
+    .empty-state {
+      grid-column: 1 / -1;
+      display: flex; flex-direction: column; align-items: center;
+      background: linear-gradient(180deg, rgba(238,245,240,0.65) 0%, var(--white) 100%);
+      border: 1.5px dashed var(--blue-bd);
+      border-radius: 14px;
+      padding: 22px 18px 20px;
+      text-align: center;
+      margin: 6px 0;
+    }
+    .empty-state-icon {
+      width: 54px; height: 54px;
+      background: var(--blue-lt);
+      border: 1.5px solid var(--blue-bd);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+      margin-bottom: 10px;
+    }
+    .empty-state-title {
+      font-size: 1rem; font-weight: 800;
+      color: var(--ink); letter-spacing: -0.01em;
+      margin-bottom: 3px;
+    }
+    .empty-state-sub {
+      font-size: 0.78rem; color: var(--mid);
+      margin-bottom: 14px;
+    }
+    .empty-state-tips {
+      text-align: left;
+      font-size: 0.78rem;
+      color: var(--ink);
+      background: var(--white);
+      border: 1px solid var(--soft);
+      border-radius: 10px;
+      padding: 11px 13px;
+      width: 100%;
+      max-width: 340px;
+      line-height: 1.45;
+    }
+    .empty-state-tips-title {
+      font-size: 0.66rem; font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+    .empty-state-tip {
+      display: flex; align-items: flex-start; gap: 8px;
+      padding: 4px 0;
+    }
+    .empty-state-tip::before {
+      content: '→';
+      color: var(--blue); font-weight: 800;
+      flex-shrink: 0;
+      line-height: 1.45;
+    }
+    .empty-state-tip b { color: var(--blue); font-weight: 700; }
     .btn-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-bottom: 8px; }
     .btn-search { background: var(--blue); color: var(--white); border: none; border-radius: var(--radius); padding: 9px 12px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: background 0.2s, transform 0.1s; letter-spacing: -0.01em; min-height: 38px; }
     .btn-search:hover { background: #6F9F84; }
@@ -716,10 +854,20 @@
       }
       /* Hide labels by default — placeholder porte l'info */
       body.ab-modal-open #search-form-block .form-label { display: none; }
+      /* Labels visibles au-dessus pour les 3 champs primaires (Ville + Surfaces) — placeholders portent l'exemple */
+      body.ab-modal-open #search-form-block .form-section.primary > .form-label {
+        display: block;
+        font-size: 11px;
+        margin-bottom: 4px;
+        text-transform: none;
+        letter-spacing: 0;
+        color: var(--ink);
+        font-weight: 700;
+      }
       /* Mais garder un mini-label pour Date / Énergie / GES (pas de placeholder possible) */
-      body.ab-modal-open #search-form-block .form-section:has(#dpe-date-input) > .form-label,
-      body.ab-modal-open #search-form-block .form-section:has(.energie-btn) > .form-label,
-      body.ab-modal-open #search-form-block .form-section:has(.ges-btn) > .form-label {
+      body.ab-modal-open #search-form-block .form-section:has(#dpe-date-input) .form-label,
+      body.ab-modal-open #search-form-block .form-section:has(.energie-btn) .form-label,
+      body.ab-modal-open #search-form-block .form-section:has(.ges-btn) .form-label {
         display: block;
         font-size: 10px;
         margin-bottom: 3px;
@@ -882,30 +1030,31 @@
         <p>Commune + surface → les biens correspondants s'affichent sur la carte.</p>
       </div>
 
-      <!-- ── Section 1 : Commune ── -->
-      <div class="form-section">
-        <div class="form-label">Commune ou code postal</div>
+      <!-- ── BLOC PRIMAIRE : Commune + Surface habitable (les 2 critères que tout le monde remplit) ── -->
+      <!-- Section 1 : Ville -->
+      <div class="form-section primary">
+        <div class="form-label">Ville ou code postal</div>
         <div class="field">
           <div class="ac-wrap">
-            <input type="text" id="commune-input" placeholder="Commune ou code postal…" autocomplete="off"/>
+            <input type="text" id="commune-input" placeholder="Nantes, 77000…" autocomplete="off"/>
             <ul id="commune-suggestions"></ul>
           </div>
         </div>
       </div>
 
-      <!-- ── Section 2 : Surface logement ── -->
-      <div class="form-section">
-        <div class="form-label">Surface logement (m²)</div>
-        <input type="number" id="surface-logement-input" placeholder="Surface logement (m²)" min="1" class="dpe-input"/>
+      <!-- Section 2 : Surface habitable -->
+      <div class="form-section primary">
+        <div class="form-label">Surface habitable (m²)</div>
+        <input type="number" id="surface-logement-input" placeholder="Ex : 85, 120…" min="1" class="dpe-input"/>
       </div>
 
-      <!-- ── Section 3 : Surface terrain + tolérance cyclique ── -->
-      <div class="form-section">
+      <!-- Section 3 : Surface terrain + tolérance cyclique (toujours primaire) -->
+      <div class="form-section primary">
         <div class="form-label">Surface terrain (m²)</div>
         <!-- Surface terrain + bouton tolérance cyclique sur la même ligne.
              Les parcelles de + 10 000 m² sont rares → input ~5 chiffres, le bouton tient au bout. -->
         <div class="surf-cad-row">
-          <input type="number" id="surface-input" placeholder="Surface terrain (m²)" min="1"/>
+          <input type="number" id="surface-input" placeholder="Ex : 450, 1200…" min="1"/>
           <button type="button" id="tol-cycle-btn" class="tol-cycle-btn" aria-label="Changer la tolérance">+3%</button>
         </div>
         <!-- Compat : input caché pour que tout le code existant continue à lire tol-range.value -->
@@ -917,8 +1066,17 @@
         </div>
       </div>
 
-      <!-- ── Section 4 : DPE + GES + Date diagnostic (regroupés) ── -->
-      <div class="form-section">
+      <!-- ── Séparateur visuel : tout ce qui suit est secondaire ── -->
+      <div class="secondary-divider"><span>Filtres avancés</span></div>
+
+      <!-- ── Section 4 : DPE + GES + Date diagnostic — bande dépliable (fermée par défaut) ── -->
+      <div class="form-section collapsible secondary" data-collapsed="true" id="dpe-section">
+        <button type="button" class="collapsible-header" id="dpe-section-toggle" aria-expanded="false" aria-controls="dpe-section-body">
+          <span class="collapsible-title">DPE · GES · Date diagnostic</span>
+          <span class="collapsible-summary" id="dpe-section-summary" aria-hidden="true"></span>
+          <svg class="collapsible-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="collapsible-body" id="dpe-section-body">
         <div class="form-label">Classe énergie<span class="filter-active-chip" id="energie-chip"></span></div>
         <div class="field">
           <div class="dpe-class-buttons">
@@ -957,6 +1115,7 @@
           <span class="date-range-sep" aria-hidden="true">→</span>
           <input type="date" id="dpe-date-input-max" class="dpe-input" aria-label="Au (date max)">
         </div>
+        </div><!-- /collapsible-body -->
       </div>
 
       <input type="hidden" id="dpe-energie-selected" value="">
@@ -1512,7 +1671,18 @@ function renderCards(features, targetSurf, isLogement = false) {
   list.innerHTML = '';
   if (!features.length) {
     countEl.textContent = '0 résultat';
-    list.innerHTML = `<div style="font-size:0.8rem;color:var(--muted);text-align:center;padding:20px 0;border:1px dashed var(--border);border-radius:8px;grid-column:1/-1;">Aucun bien trouvé.<br/>Essayez d'augmenter la tolérance.</div>`;
+    list.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon" aria-hidden="true">🔍</div>
+        <div class="empty-state-title">Aucun bien trouvé</div>
+        <div class="empty-state-sub">avec ces critères</div>
+        <div class="empty-state-tips">
+          <div class="empty-state-tips-title">Pour relancer la recherche</div>
+          <div class="empty-state-tip">Augmentez la <b>tolérance</b> (clic sur le bouton +%) ou repassez-la à <b>+0%</b></div>
+          <div class="empty-state-tip">Retirez un <b>filtre avancé</b> (DPE, GES, date)</div>
+          <div class="empty-state-tip">Essayez avec <b>uniquement la surface habitable</b>, ou <b>uniquement la surface terrain</b></div>
+        </div>
+      </div>`;
     const hc = document.getElementById('handle-count');
     hc.textContent = '0'; hc.classList.remove('show');
     setHandleLabel('Aucun bien trouvé');
@@ -2738,6 +2908,7 @@ function updateDpeFilterChips() {
   else if (dateMin) dateLabel = `≥ ${fmtDate(dateMin)}`;
   else if (dateMax) dateLabel = `≤ ${fmtDate(dateMax)}`;
   setChip('date-chip', dateLabel, '#5a8fbd');
+  if (typeof updateDpeSectionSummary === 'function') updateDpeSectionSummary();
 }
 
 document.addEventListener('click', (e) => {
@@ -2775,6 +2946,27 @@ function setDateMode(mode) {
 document.querySelectorAll('.date-mode-tab').forEach(tab => {
   tab.addEventListener('click', () => setDateMode(tab.dataset.mode));
 });
+
+// Bande dépliable DPE/GES/Date — clic sur l'en-tête → toggle open/closed.
+const dpeSection = document.getElementById('dpe-section');
+const dpeToggle = document.getElementById('dpe-section-toggle');
+if (dpeToggle && dpeSection) {
+  dpeToggle.addEventListener('click', () => {
+    const collapsed = dpeSection.dataset.collapsed === 'true';
+    dpeSection.dataset.collapsed = collapsed ? 'false' : 'true';
+    dpeToggle.setAttribute('aria-expanded', collapsed ? 'true' : 'false');
+  });
+}
+// Résumé affiché dans l'en-tête quand la bande est repliée : compte les filtres actifs.
+function updateDpeSectionSummary() {
+  const dpeE = document.getElementById('dpe-energie-selected').value;
+  const dpeG = document.getElementById('dpe-ges-selected').value;
+  const dpeDate = document.getElementById('dpe-date-input').value;
+  const dpeDateMax = document.getElementById('dpe-date-input-max').value;
+  const count = [dpeE, dpeG, (dpeDate || dpeDateMax)].filter(Boolean).length;
+  const el = document.getElementById('dpe-section-summary');
+  if (el) el.textContent = count > 0 ? `${count} filtre${count > 1 ? 's' : ''}` : '';
+}
 updateSearchBtn();
 updateDpeFilterChips();
 loadMe();

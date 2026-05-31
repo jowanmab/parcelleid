@@ -216,6 +216,44 @@
     .surface-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; }
     .tol-pill { background: var(--blue-lt); border: 1.5px solid var(--blue-bd); border-radius: 8px; padding: 6px 10px; font-size: 0.75rem; color: var(--blue); font-weight: 700; text-align: center; white-space: nowrap; min-height: 34px; display: flex; align-items: center; justify-content: center; }
     input[type=range] { width: 100%; accent-color: var(--blue); background: transparent; border: none; padding: 0; margin-top: 8px; height: 7px; cursor: pointer; border-radius: 3px; }
+    /* Bouton cyclique de tolérance — un seul bouton, clic = valeur suivante (3,5,7,10,15,20,25 %) */
+    .tol-cycle-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--blue); color: var(--white);
+      border: 1.5px solid var(--blue);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 0.86rem; font-weight: 700;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      min-height: 38px; min-width: 70px;
+      letter-spacing: -0.01em;
+      box-shadow: 0 1px 4px rgba(138,184,154,0.35);
+      white-space: nowrap;
+    }
+    .tol-cycle-btn:hover { background: #6F9F84; }
+    .tol-cycle-btn:active { transform: scale(0.96); }
+    /* Ligne Surface terrain : input (extensible) + bouton tolérance au bout */
+    .surf-cad-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; }
+    /* Espacement entre les sous-labels d'une section regroupée */
+    .form-label-spaced { margin-top: 10px; }
+    /* Hint "Entre X et Y m²" */
+    .surf-range-hint { font-size: 0.72rem; color: var(--muted); margin-top: 6px; }
+    /* Label avec toggle aligné à droite (gagne une ligne par rapport au toggle placé en-dessous) */
+    .form-label-with-tabs { display: flex !important; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+    .form-label-text { display: inline-flex; align-items: center; }
+    /* Mode date : segmented control (Date unique / Plage) */
+    .date-mode-tabs { display: inline-flex; gap: 2px; background: var(--soft); border-radius: 8px; padding: 3px; }
+    .date-mode-tab { background: transparent; border: none; border-radius: 6px; padding: 5px 12px; font-size: 0.74rem; font-weight: 600; color: var(--mid); cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s; letter-spacing: -0.01em; }
+    .date-mode-tab:hover { color: var(--ink); }
+    .date-mode-tab.active { background: var(--white); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    /* Zone date : layout selon le mode */
+    .date-input-area { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; }
+    .date-input-area[data-mode="single"] { grid-template-columns: 1fr; }
+    .date-input-area[data-mode="single"] .date-range-sep,
+    .date-input-area[data-mode="single"] #dpe-date-input-max { display: none; }
+    .date-range-sep { font-size: 0.85rem; color: var(--muted); font-weight: 700; text-align: center; }
     .btn-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-bottom: 8px; }
     .btn-search { background: var(--blue); color: var(--white); border: none; border-radius: var(--radius); padding: 9px 12px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: background 0.2s, transform 0.1s; letter-spacing: -0.01em; min-height: 38px; }
     .btn-search:hover { background: #6F9F84; }
@@ -339,6 +377,11 @@
     #search-loader { position: absolute; inset: 0; z-index: 650; background: rgba(250,249,245,0.55); backdrop-filter: blur(2px); transition: opacity 0.3s; pointer-events: none; }
     #search-loader.hidden { opacity: 0; }
     #search-loader iframe { width: 100%; height: 100%; border: none; display: block; background: transparent; }
+    /* Mobile : le loader doit passer devant la modale de recherche (bordereau, z-index 4000/4001)
+       pour faire patienter l'utilisateur — sinon il reste caché derrière le formulaire. */
+    @media (max-width: 768px) {
+      #search-loader { position: fixed; z-index: 5000; background: rgba(250,249,245,0.85); }
+    }
     .overlay-icon { font-size: 2.8rem; }
     .overlay-title { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.02em; }
     .overlay-sub { font-size: 0.82rem; color: var(--mid); text-align: center; max-width: 280px; line-height: 1.5; }
@@ -660,6 +703,77 @@
       #measure-toolbar { top: calc(env(safe-area-inset-top, 0px) + 92px) !important; }
       /* Count chip is now in the drawer handle — hide the floating one */
       #map-count { display: none !important; }
+
+      /* ── COMPACT MODAL : tout tient sur un écran mobile + slot pub 25% en bas ──
+         Les labels redondants sont masqués, les placeholders font office de label. */
+      body.ab-modal-open #search-form-block {
+        padding-bottom: calc(env(safe-area-inset-bottom, 0px) + min(25vh, 260px) + 12px) !important;
+        padding-top: calc(env(safe-area-inset-top, 0px) + 64px) !important;
+      }
+      body.ab-modal-open #search-form-block .form-section {
+        padding: 8px 10px;
+        margin-bottom: 6px;
+      }
+      /* Hide labels by default — placeholder porte l'info */
+      body.ab-modal-open #search-form-block .form-label { display: none; }
+      /* Mais garder un mini-label pour Date / Énergie / GES (pas de placeholder possible) */
+      body.ab-modal-open #search-form-block .form-section:has(#dpe-date-input) > .form-label,
+      body.ab-modal-open #search-form-block .form-section:has(.energie-btn) > .form-label,
+      body.ab-modal-open #search-form-block .form-section:has(.ges-btn) > .form-label {
+        display: block;
+        font-size: 10px;
+        margin-bottom: 3px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+        font-weight: 600;
+      }
+      body.ab-modal-open #search-form-block input[type=text],
+      body.ab-modal-open #search-form-block input[type=number],
+      body.ab-modal-open #search-form-block input[type=date],
+      body.ab-modal-open #search-form-block .dpe-input {
+        min-height: 38px !important;
+        padding: 8px 11px !important;
+      }
+      body.ab-modal-open #search-form-block .dpe-class-btn {
+        min-height: 32px;
+        padding: 5px 3px;
+        font-size: 12px;
+      }
+      body.ab-modal-open #search-form-block .dpe-class-buttons { gap: 4px; margin-bottom: 0; }
+      body.ab-modal-open #search-form-block .tol-cycle-btn { min-height: 38px; padding: 6px 12px; font-size: 0.8rem; min-width: 62px; }
+      body.ab-modal-open #search-form-block .surf-cad-row { gap: 6px; }
+      body.ab-modal-open #search-form-block .form-label-spaced { margin-top: 7px; }
+      body.ab-modal-open #search-form-block .surf-range-hint { font-size: 0.68rem; }
+      body.ab-modal-open #search-form-block .date-input-area { gap: 5px; }
+      body.ab-modal-open #search-form-block .date-mode-tabs { margin-bottom: 5px; }
+      body.ab-modal-open #search-form-block .date-mode-tab { padding: 4px 10px; font-size: 0.72rem; }
+      body.ab-modal-open #search-form-block .btn-search,
+      body.ab-modal-open #search-form-block .btn-reset {
+        min-height: 38px !important;
+        padding: 9px !important;
+        font-size: 0.84rem !important;
+      }
+      body.ab-modal-open #search-form-block .btn-row { gap: 6px; margin-bottom: 4px; }
+
+      /* ── SLOT PUBLICITAIRE — 25% du viewport (capé à 260px), fixé en bas ── */
+      .ab-modal-ad { display: none; }
+      body.ab-modal-open .ab-modal-ad {
+        display: flex;
+        position: fixed;
+        left: 0; right: 0; bottom: 0;
+        height: min(25vh, 260px);
+        z-index: 4002;
+        background: var(--bg);
+        border-top: 1px solid var(--soft);
+        align-items: center;
+        justify-content: center;
+        color: var(--muted);
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
     }
   </style>
   <script defer src="https://cloud.umami.is/script.js" data-website-id="ee03afb3-c7d2-46b5-aa45-09e2931365d7"></script>
@@ -768,6 +882,7 @@
         <p>Commune + surface → les biens correspondants s'affichent sur la carte.</p>
       </div>
 
+      <!-- ── Section 1 : Commune ── -->
       <div class="form-section">
         <div class="form-label">Commune ou code postal</div>
         <div class="field">
@@ -778,34 +893,31 @@
         </div>
       </div>
 
+      <!-- ── Section 2 : Surface logement ── -->
       <div class="form-section">
-        <div class="form-row-2">
-          <div>
-            <div class="form-label">Surface logement (m²)</div>
-            <input type="number" id="surface-logement-input" placeholder="Ex : 85" min="1" class="dpe-input"/>
-          </div>
-          <div>
-            <div class="form-label">Date diagnostic<span class="filter-active-chip" id="date-chip"></span></div>
-            <input type="date" id="dpe-date-input" class="dpe-input">
-          </div>
-        </div>
+        <div class="form-label">Surface logement (m²)</div>
+        <input type="number" id="surface-logement-input" placeholder="Surface logement (m²)" min="1" class="dpe-input"/>
       </div>
 
+      <!-- ── Section 3 : Surface terrain + tolérance cyclique ── -->
       <div class="form-section">
-        <div class="form-label">Surface cadastrale</div>
-        <div class="field">
-          <div class="surface-row">
-            <input type="number" id="surface-input" placeholder="Ex : 450" min="1"/>
-            <div class="tol-pill">±<span id="tol-val">15</span>%</div>
-          </div>
-          <input type="range" id="tol-range" min="0" max="25" value="3" step="1"/>
+        <div class="form-label">Surface terrain (m²)</div>
+        <!-- Surface terrain + bouton tolérance cyclique sur la même ligne.
+             Les parcelles de + 10 000 m² sont rares → input ~5 chiffres, le bouton tient au bout. -->
+        <div class="surf-cad-row">
+          <input type="number" id="surface-input" placeholder="Surface terrain (m²)" min="1"/>
+          <button type="button" id="tol-cycle-btn" class="tol-cycle-btn" aria-label="Changer la tolérance">+3%</button>
         </div>
-        <div style="font-size:0.7rem;color:var(--muted);margin-top:5px;margin-bottom:10px">
+        <!-- Compat : input caché pour que tout le code existant continue à lire tol-range.value -->
+        <input type="hidden" id="tol-range" value="3">
+
+        <div class="surf-range-hint">
           Entre <span id="surf-min" style="color:var(--blue);font-weight:600">—</span>
           et <span id="surf-max" style="color:var(--blue);font-weight:600">—</span> m²
         </div>
       </div>
 
+      <!-- ── Section 4 : DPE + GES + Date diagnostic (regroupés) ── -->
       <div class="form-section">
         <div class="form-label">Classe énergie<span class="filter-active-chip" id="energie-chip"></span></div>
         <div class="field">
@@ -819,10 +931,8 @@
             <button type="button" class="dpe-class-btn energie-btn" data-class="G">G</button>
           </div>
         </div>
-      </div>
 
-      <div class="form-section">
-        <div class="form-label">Classe GES<span class="filter-active-chip" id="ges-chip"></span></div>
+        <div class="form-label form-label-spaced">Classe GES<span class="filter-active-chip" id="ges-chip"></span></div>
         <div class="field">
           <div class="dpe-class-buttons">
             <button type="button" class="dpe-class-btn ges-btn" data-class="A">A</button>
@@ -833,6 +943,19 @@
             <button type="button" class="dpe-class-btn ges-btn" data-class="F">F</button>
             <button type="button" class="dpe-class-btn ges-btn" data-class="G">G</button>
           </div>
+        </div>
+
+        <div class="form-label form-label-spaced form-label-with-tabs">
+          <span class="form-label-text">Date diagnostic<span class="filter-active-chip" id="date-chip"></span></span>
+          <div class="date-mode-tabs" role="tablist" aria-label="Mode de saisie de la date">
+            <button type="button" class="date-mode-tab active" data-mode="single" role="tab">Date unique</button>
+            <button type="button" class="date-mode-tab" data-mode="range" role="tab">Plage</button>
+          </div>
+        </div>
+        <div class="date-input-area" id="date-input-area" data-mode="single">
+          <input type="date" id="dpe-date-input" class="dpe-input" aria-label="Date">
+          <span class="date-range-sep" aria-hidden="true">→</span>
+          <input type="date" id="dpe-date-input-max" class="dpe-input" aria-label="Au (date max)">
         </div>
       </div>
 
@@ -919,6 +1042,9 @@
   <span class="ab-modal-title">Rechercher</span>
   <span style="width:36px"></span>
 </div>
+
+<!-- Slot publicitaire visible uniquement quand la modale de recherche est ouverte (25vh, capé 260px) -->
+<div class="ab-modal-ad" id="ab-modal-ad" aria-label="Emplacement publicitaire">Publicité</div>
 
 <!-- ── AIRBNB-STYLE MAP FAB (shown when drawer is mid/open, mobile only) ── -->
 <button class="ab-map-fab" id="ab-map-fab" type="button" aria-label="Revenir à la carte">
@@ -1158,7 +1284,7 @@ let allFeatures = [], renderedCount = 0;
 let activeFeature = null;
 let favLayer = null, favMarkers = {};
 let currentTargetSurf = 0, currentIsLogement = false;
-let currentFilters = { surfLog: 0, surfCad: 0, dpeE: '', dpeG: '', dpeDate: '' };
+let currentFilters = { surfLog: 0, surfCad: 0, dpeE: '', dpeG: '', dpeDate: '', dpeDateMax: '' };
 const BATCH = 10;
 
 let ghostLayer = null, ghostLayerInsee = null, ghostLoading = false;
@@ -1181,14 +1307,26 @@ function setProgress(pct) {
 const tolRange = document.getElementById('tol-range'), surfInput = document.getElementById('surface-input');
 function updateTol() {
   const tol = parseInt(tolRange.value), surf = parseFloat(surfInput.value);
-  document.getElementById('tol-val').textContent = tol;
   if (surf > 0) {
     document.getElementById('surf-min').textContent = Math.round(surf * (1 - tol / 100));
     document.getElementById('surf-max').textContent = Math.round(surf * (1 + tol / 100));
   } else { document.getElementById('surf-min').textContent = '—'; document.getElementById('surf-max').textContent = '—'; }
 }
-tolRange.addEventListener('input', updateTol);
 surfInput.addEventListener('input', updateTol);
+// Bouton cyclique tolérance : 0 → 3 → 5 → 7 → 10 → 15 → 20 → 25 → 0 …
+const TOL_CYCLE = [0, 3, 5, 7, 10, 15, 20, 25];
+function setTol(val) {
+  tolRange.value = String(val);
+  const btn = document.getElementById('tol-cycle-btn');
+  if (btn) btn.textContent = val === 0 ? '0%' : `+${val}%`;
+  updateTol();
+}
+document.getElementById('tol-cycle-btn').addEventListener('click', () => {
+  const cur = parseInt(tolRange.value, 10);
+  const idx = TOL_CYCLE.indexOf(cur);
+  const next = TOL_CYCLE[(idx === -1 ? 0 : (idx + 1) % TOL_CYCLE.length)];
+  setTol(next);
+});
 updateTol();
 
 const communeInput = document.getElementById('commune-input'), communeSugg = document.getElementById('commune-suggestions');
@@ -1439,7 +1577,8 @@ function loadMoreCards(targetSurf, isLogement = false) {
     const dParc = diffPct(surfParc, currentFilters.surfCad);
     const dpeMismatch = currentFilters.dpeE && dpeClass && dpeClass !== currentFilters.dpeE;
     const gesMismatch = currentFilters.dpeG && gesClass && gesClass !== currentFilters.dpeG;
-    const dateMismatch = currentFilters.dpeDate && dateDpe && dateDpe < currentFilters.dpeDate;
+    const dateMismatch = (currentFilters.dpeDate && dateDpe && dateDpe < currentFilters.dpeDate) ||
+                         (currentFilters.dpeDateMax && dateDpe && dateDpe > currentFilters.dpeDateMax);
     const fmtDate = d => { if (!d) return '—'; const p = d.split('-'); return p.length === 3 ? `${p[2]}/${p[1]}/${p[0].slice(2)}` : d; };
     const badge = (cls, mismatch) => cls
       ? `<span class="info-badge${mismatch ? ' info-badge-mismatch' : ''}" style="background:${dpeColorsLocal[cls] || '#999'};color:${cls === 'C' ? '#333' : '#fff'}" title="${mismatch ? 'Classe différente du filtre' : ''}">${cls}</span>`
@@ -1693,6 +1832,7 @@ async function fetchParcelles({ insee, surfCad = 0, tolCad = 0, surfLog = 0, tol
   const classeEnergie = document.getElementById('dpe-energie-selected').value;
   const classeGes = document.getElementById('dpe-ges-selected').value;
   const dateMin = document.getElementById('dpe-date-input').value;
+  const dateMax = document.getElementById('dpe-date-input-max').value;
   const buildUrl = (code) => {
     let url = `https://parcelleid.duckdns.org/parcelles?insee=${code}`;
     if (surfCad > 0) url += `&surf=${surfCad}&tol=${tolCad}`;
@@ -1700,6 +1840,7 @@ async function fetchParcelles({ insee, surfCad = 0, tolCad = 0, surfLog = 0, tol
     if (classeEnergie) url += `&classe_energie=${classeEnergie}`;
     if (classeGes) url += `&classe_ges=${classeGes}`;
     if (dateMin) url += `&date_dpe_min=${dateMin}`;
+    if (dateMax) url += `&date_dpe_max=${dateMax}`;
     return url;
   };
   const responses = await Promise.all(codes.map(c => fetch(buildUrl(c)).catch(() => null)));
@@ -1722,13 +1863,14 @@ async function doSearch() {
   const dpeE = document.getElementById('dpe-energie-selected').value;
   const dpeG = document.getElementById('dpe-ges-selected').value;
   const dpeDate = document.getElementById('dpe-date-input').value;
+  const dpeDateMax = document.getElementById('dpe-date-input-max').value;
   const hasSurf = (surfLogement > 0) || (surfCadastrale > 0);
-  const hasDpe = !!(dpeE || dpeG || dpeDate);
+  const hasDpe = !!(dpeE || dpeG || dpeDate || dpeDateMax);
   if (!hasSurf && !hasDpe) { setStatus('⚠️ Renseignez au moins un critère (surface, classe DPE/GES ou date diagnostic).', 'err'); return; }
   currentFilters = {
     surfLog: surfLogement > 0 ? surfLogement : 0,
     surfCad: surfCadastrale > 0 ? surfCadastrale : 0,
-    dpeE, dpeG, dpeDate
+    dpeE, dpeG, dpeDate, dpeDateMax
   };
   // Cible pour le tri et l'affichage de l'écart % sur les cartes.
   const surf = surfLogement > 0 ? surfLogement : surfCadastrale;
@@ -1817,13 +1959,14 @@ function doReset() {
   document.getElementById('surface-input').value = '';
   document.getElementById('surface-logement-input').value = '';
   document.getElementById('dpe-date-input').value = '';
+  document.getElementById('dpe-date-input-max').value = '';
+  if (typeof setDateMode === 'function') setDateMode('single');
   document.getElementById('dpe-energie-selected').value = '';
   document.getElementById('dpe-ges-selected').value = '';
   document.querySelectorAll('.dpe-class-btn.active').forEach(b => b.classList.remove('active'));
   updateDpeFilterChips();
-  document.getElementById('tol-range').value = 3;
+  setTol(3);
   selectedCommune = null; allFeatures = []; renderedCount = 0; activeFeature = null;
-  updateTol();
   if (parcelsLayer) { map.removeLayer(parcelsLayer); parcelsLayer = null; }
   if (communeLayer) { map.removeLayer(communeLayer); communeLayer = null; }
   document.getElementById('results-list').innerHTML = `<div style="font-size:0.8rem;color:var(--muted);text-align:center;padding:20px 0;border:1px dashed var(--border);border-radius:8px;grid-column:1/-1;">Les résultats apparaîtront ici</div>`;
@@ -1849,6 +1992,7 @@ function buildSearchSummary() {
   const dpeE = document.getElementById('dpe-energie-selected').value;
   const dpeG = document.getElementById('dpe-ges-selected').value;
   const dpeDate = document.getElementById('dpe-date-input').value;
+  const dpeDateMax = document.getElementById('dpe-date-input-max').value;
 
   document.getElementById('search-summary-location').textContent = '📍 ' + commune;
 
@@ -1865,7 +2009,9 @@ function buildSearchSummary() {
   }
   if (dpeE) chips.push(`DPE ${dpeE}`);
   if (dpeG) chips.push(`GES ${dpeG}`);
-  if (dpeDate) chips.push(`📅 ${dpeDate}`);
+  if (dpeDate && dpeDateMax) chips.push(`📅 ${dpeDate} → ${dpeDateMax}`);
+  else if (dpeDate) chips.push(`📅 ≥ ${dpeDate}`);
+  else if (dpeDateMax) chips.push(`📅 ≤ ${dpeDateMax}`);
   document.getElementById('search-summary-chips').innerHTML =
     chips.map(c => `<span class="search-summary-chip">${c}</span>`).join('');
 }
@@ -2566,7 +2712,8 @@ function updateSearchBtn() {
   const dpeE = document.getElementById('dpe-energie-selected').value;
   const dpeG = document.getElementById('dpe-ges-selected').value;
   const dpeDate = document.getElementById('dpe-date-input').value;
-  const hasFilter = (surfLog > 0) || (surfCad > 0) || dpeE || dpeG || dpeDate;
+  const dpeDateMax = document.getElementById('dpe-date-input-max').value;
+  const hasFilter = (surfLog > 0) || (surfCad > 0) || dpeE || dpeG || dpeDate || dpeDateMax;
   searchBtn.disabled = !hasFilter;
   searchHint.style.display = hasFilter ? 'none' : 'block';
 }
@@ -2584,8 +2731,13 @@ function updateDpeFilterChips() {
   };
   setChip('energie-chip', document.getElementById('dpe-energie-selected').value, DPE_COLORS[document.getElementById('dpe-energie-selected').value] || '#666');
   setChip('ges-chip',     document.getElementById('dpe-ges-selected').value,     DPE_COLORS[document.getElementById('dpe-ges-selected').value]     || '#666');
-  const dateVal = document.getElementById('dpe-date-input').value;
-  setChip('date-chip', dateVal ? fmtDate(dateVal) : '', '#5a8fbd');
+  const dateMin = document.getElementById('dpe-date-input').value;
+  const dateMax = document.getElementById('dpe-date-input-max').value;
+  let dateLabel = '';
+  if (dateMin && dateMax) dateLabel = `${fmtDate(dateMin)} → ${fmtDate(dateMax)}`;
+  else if (dateMin) dateLabel = `≥ ${fmtDate(dateMin)}`;
+  else if (dateMax) dateLabel = `≤ ${fmtDate(dateMax)}`;
+  setChip('date-chip', dateLabel, '#5a8fbd');
 }
 
 document.addEventListener('click', (e) => {
@@ -2601,6 +2753,7 @@ document.addEventListener('click', (e) => {
     document.querySelectorAll('.ges-btn.active').forEach(b => b.classList.remove('active'));
   } else if (id === 'date-chip') {
     document.getElementById('dpe-date-input').value = '';
+    document.getElementById('dpe-date-input-max').value = '';
   }
   updateDpeFilterChips();
   updateSearchBtn();
@@ -2609,6 +2762,19 @@ document.addEventListener('click', (e) => {
 surfLogementInput.addEventListener('input', updateSearchBtn);
 surfInput.addEventListener('input', updateSearchBtn);
 document.getElementById('dpe-date-input').addEventListener('input', () => { updateSearchBtn(); updateDpeFilterChips(); });
+document.getElementById('dpe-date-input-max').addEventListener('input', () => { updateSearchBtn(); updateDpeFilterChips(); });
+
+// Toggle Date unique / Plage. Mode « single » → on vide le champ max pour éviter un filtre résiduel.
+function setDateMode(mode) {
+  document.querySelectorAll('.date-mode-tab').forEach(t => t.classList.toggle('active', t.dataset.mode === mode));
+  document.getElementById('date-input-area').dataset.mode = mode;
+  if (mode === 'single') document.getElementById('dpe-date-input-max').value = '';
+  updateSearchBtn();
+  updateDpeFilterChips();
+}
+document.querySelectorAll('.date-mode-tab').forEach(tab => {
+  tab.addEventListener('click', () => setDateMode(tab.dataset.mode));
+});
 updateSearchBtn();
 updateDpeFilterChips();
 loadMe();
@@ -2660,8 +2826,12 @@ window.addEventListener('load', () => {
   if (surfCad) document.getElementById('surface-input').value = surfCad;
   const tol = params.get('tol');
   if (tol !== null && tol !== '' && !isNaN(parseInt(tol, 10))) {
-    document.getElementById('tol-range').value = parseInt(tol, 10);
-    if (typeof updateTol === 'function') updateTol();
+    const t = parseInt(tol, 10);
+    // Snap à la valeur du cycle la plus proche (3,5,7,10,15,20,25).
+    const snapped = (typeof TOL_CYCLE !== 'undefined' ? TOL_CYCLE : [3,5,7,10,15,20,25])
+      .reduce((a, b) => Math.abs(b - t) < Math.abs(a - t) ? b : a);
+    if (typeof setTol === 'function') setTol(snapped);
+    else { document.getElementById('tol-range').value = snapped; if (typeof updateTol === 'function') updateTol(); }
   }
   const dpe = params.get('dpe');
   if (dpe && /^[A-G]$/i.test(dpe)) {
@@ -2675,6 +2845,12 @@ window.addEventListener('load', () => {
   }
   const date = params.get('date');
   if (date) document.getElementById('dpe-date-input').value = date;
+  const dateMax = params.get('date_max');
+  if (dateMax) {
+    // Bascule en mode plage (sans écraser la valeur passée dans l'URL).
+    if (typeof setDateMode === 'function') setDateMode('range');
+    document.getElementById('dpe-date-input-max').value = dateMax;
+  }
   if (typeof updateDpeFilterChips === 'function') updateDpeFilterChips();
   if (selectedCommune && selectedCommune.code) {
     if (typeof updateSearchBtn === 'function') updateSearchBtn();
@@ -2696,12 +2872,14 @@ function updateShareableUrl() {
   const dpe = document.getElementById('dpe-energie-selected').value;
   const ges = document.getElementById('dpe-ges-selected').value;
   const date = document.getElementById('dpe-date-input').value;
+  const dateMax = document.getElementById('dpe-date-input-max').value;
   if (surfLog) p.set('surf_log', surfLog);
   if (surfCad) p.set('surf_cad', surfCad);
   if (tol !== null && tol !== '') p.set('tol', tol);
   if (dpe) p.set('dpe', dpe);
   if (ges) p.set('ges', ges);
   if (date) p.set('date', date);
+  if (dateMax) p.set('date_max', dateMax);
   window.history.replaceState({}, '', `${window.location.pathname}?${p.toString()}`);
 }
 </script>

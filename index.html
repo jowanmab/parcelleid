@@ -14,7 +14,51 @@
   <meta property="og:url" content="https://localiseimmo.fr/">
   <meta property="og:locale" content="fr_FR">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="LocaliseImmo · Géolocaliser une annonce immobilière">
+  <meta name="twitter:description" content="Retrouvez l'adresse exacte d'une annonce immo à partir du cadastre officiel IGN.">
+  <meta name="keywords" content="géolocaliser annonce immobilière, retrouver adresse annonce immo, cadastre, parcelle, IGN, DVF, localiser un bien immobilier">
   <link rel="icon" href="./assets/favicon.svg">
+
+  <!-- Préconnexion aux CDN/sources pour accélérer le rendu (bon pour le SEO) -->
+  <link rel="preconnect" href="https://unpkg.com" crossorigin>
+  <link rel="dns-prefetch" href="https://unpkg.com">
+  <link rel="preconnect" href="https://cloud.umami.is">
+
+  <!-- Données structurées Schema.org : aident Google à comprendre le site -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://localiseimmo.fr/#organization",
+        "name": "LocaliseImmo",
+        "url": "https://localiseimmo.fr/",
+        "logo": "https://localiseimmo.fr/assets/logo-mark.svg",
+        "description": "Outil gratuit pour géolocaliser une annonce immobilière à partir du cadastre officiel français."
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://localiseimmo.fr/#website",
+        "url": "https://localiseimmo.fr/",
+        "name": "LocaliseImmo",
+        "inLanguage": "fr-FR",
+        "publisher": { "@id": "https://localiseimmo.fr/#organization" }
+      },
+      {
+        "@type": "WebApplication",
+        "name": "LocaliseImmo",
+        "url": "https://localiseimmo.fr/",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web",
+        "inLanguage": "fr-FR",
+        "description": "Retrouvez l'adresse exacte d'une annonce immobilière à partir de la surface du terrain et des informations du logement, grâce aux données cadastrales officielles de l'IGN. 35 000 communes couvertes.",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" }
+      }
+    ]
+  }
+  </script>
+
   <link rel="stylesheet" href="./styles.css">
   <style>
     body { background: var(--bg, #FAF7EF); margin: 0; }
@@ -27,14 +71,27 @@
     <!-- Contenu statique de secours : lu par les moteurs de recherche et affiché sans JavaScript.
          Il est automatiquement remplacé par l'application React une fois celle-ci chargée. -->
     <main style="max-width:760px;margin:0 auto;padding:48px 20px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;color:#2b2b2b;line-height:1.5;">
-      <h1 style="font-size:30px;line-height:1.2;">Retrouvez l'adresse exacte de l'annonce immobilière que vous regardez</h1>
-      <p style="font-size:18px;color:#444;">LocaliseImmo géolocalise un bien immobilier à partir de la <strong>surface du terrain</strong> et des <strong>informations de la maison</strong>, en s'appuyant sur les données cadastrales officielles de l'IGN.</p>
+      <h1 style="font-size:30px;line-height:1.2;">Géolocaliser une annonce immobilière : retrouvez l'adresse exacte d'un bien</h1>
+      <p style="font-size:18px;color:#444;">LocaliseImmo retrouve l'<strong>adresse exacte d'une annonce immobilière</strong> à partir de la <strong>surface du terrain</strong> et des <strong>informations du logement</strong>, en les croisant avec les données cadastrales officielles de l'IGN. Gratuit, sans inscription, en environ 30 secondes.</p>
       <ul style="font-size:16px;color:#444;">
-        <li>Données IGN officielles (cadastre français, Licence Ouverte Etalab)</li>
-        <li>35 000 communes couvertes</li>
+        <li>Données officielles : cadastre (DGFiP), IGN, DVF (Etalab) — Licence Ouverte</li>
+        <li>35 000 communes françaises couvertes</li>
         <li>Environ 30 secondes par géolocalisation</li>
+        <li>100 % gratuit, sans création de compte</li>
       </ul>
-      <p style="color:#444;"><strong>Astuce :</strong> la surface cadastrale est souvent la donnée la plus fiable, car elle ne change pas dans le temps, contrairement à une maison qu'on peut agrandir.</p>
+
+      <h2 style="font-size:22px;margin-top:32px;">Comment géolocaliser une annonce immo ?</h2>
+      <p style="color:#444;">Vous renseignez la commune, la surface annoncée et, si vous l'avez, la classe énergétique (DPE). LocaliseImmo croise ces critères avec le cadastre et l'imagerie satellite IGN pour identifier la ou les parcelles compatibles, puis affiche l'emplacement exact sur une carte — avec le voisinage, les commerces, les transports et l'historique des ventes (DVF).</p>
+      <p style="color:#444;"><strong>Astuce :</strong> la surface cadastrale du terrain est souvent la donnée la plus fiable, car elle ne change pas dans le temps, contrairement à une maison qu'on peut agrandir.</p>
+
+      <h2 style="font-size:22px;margin-top:32px;">Questions fréquentes</h2>
+      <h3 style="font-size:17px;margin-bottom:4px;">Est-ce vraiment gratuit ?</h3>
+      <p style="color:#444;margin-top:0;">Oui, totalement : pas de compte obligatoire, pas de carte bancaire.</p>
+      <h3 style="font-size:17px;margin-bottom:4px;">D'où viennent les données ?</h3>
+      <p style="color:#444;margin-top:0;">De sources publiques françaises : cadastre officiel (DGFiP), IGN, DVF (Etalab) et geo.api.gouv.fr.</p>
+      <h3 style="font-size:17px;margin-bottom:4px;">Ça marche pour les maisons et les appartements ?</h3>
+      <p style="color:#444;margin-top:0;">Les deux. Pour un appartement, on identifie le bâtiment (l'immeuble), pas l'étage.</p>
+
       <nav style="margin-top:24px;font-size:15px;">
         <a href="./comment-ca-marche.html">Comment ça marche</a> ·
         <a href="./sources.html">Sources &amp; méthode</a> ·
@@ -45,9 +102,9 @@
     </main>
   </div>
 
-  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
 
   <script src="./image-slot.js"></script>
   <script type="text/babel" src="./js/icons.jsx"></script>

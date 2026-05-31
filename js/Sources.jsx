@@ -117,7 +117,7 @@ function Sources({ device = 'desktop', style = 'chaleureux', decor = 'personnage
         <nav className="lp-nav" data-device={device}>
           <div className="lp-logo">
             <img src="./assets/logo-mark.svg" alt=""/>
-            <span className="word">Scan<span className="b">Immo</span></span>
+            <span className="word">Localise<span className="b">Immo</span></span>
           </div>
           {device === 'desktop' && (
             <div className="lp-nav-links">
@@ -307,7 +307,7 @@ function Sources({ device = 'desktop', style = 'chaleureux', decor = 'personnage
         <footer className="lp-foot">
           <div className="lp-logo" style={{ marginBottom: 14 }}>
             <img src="./assets/logo-mark.svg" alt=""/>
-            <span className="word">Scan<span className="b">Immo</span></span>
+            <span className="word">Localise<span className="b">Immo</span></span>
           </div>
           <div className="lp-foot-row">
             <a href="./index.html">Accueil</a>

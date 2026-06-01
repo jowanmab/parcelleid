@@ -373,13 +373,14 @@ Les recherches "single critère très large" (`DPE=D` seul → 42K résultats) r
 
 ## 7. Site marketing LocaliseImmo
 
-Pages publiques :
-- `https://jowanmab.github.io/parcelleid/` → landing LocaliseImmo
-- `https://jowanmab.github.io/parcelleid/comment-ca-marche.html`
-- `https://jowanmab.github.io/parcelleid/sources.html`
-- `https://jowanmab.github.io/parcelleid/blog.html`
-- `https://jowanmab.github.io/parcelleid/article.html`
-- `https://jowanmab.github.io/parcelleid/sig.html` → outil cadastre (ancien `index.html`)
+Pages publiques (domaine custom `localiseimmo.fr` via CNAME GitHub Pages) :
+- `https://localiseimmo.fr/` → landing LocaliseImmo
+- `https://localiseimmo.fr/comment-ca-marche.html`
+- `https://localiseimmo.fr/sources.html`
+- `https://localiseimmo.fr/blog.html`
+- `https://localiseimmo.fr/article.html`
+- `https://localiseimmo.fr/sig.html` → outil cadastre (ancien `index.html`)
+- `https://localiseimmo.fr/robots.txt` · `https://localiseimmo.fr/sitemap.xml` (SEO, cf. §13)
 
 Le bouton "Géolocaliser l'annonce" envoie les paramètres en query string vers `sig.html`,
 qui les lit via `sig-bootstrap.js` et lance la recherche automatiquement.
@@ -492,6 +493,78 @@ systemctl status parcelleid.service
 
 6. **Backup obligatoire `api.py.bak.TIMESTAMP`** avant chaque modif
    → 1 fois on a eu un crash post-modif, restauré en 30s via backup.
+
+---
+
+## 13. SEO & indexation Google (session 1er juin 2026)
+
+### Problème de départ
+
+`localiseimmo.fr` était **invisible sur Google** : `site:localiseimmo.fr` → 0 résultat, et
+le site n'apparaissait même pas en tapant son nom. Trois causes identifiées :
+
+1. **Contenu rendu 100 % côté client** : le `<body>` ne contenait qu'un `<div id="root">`
+   vide, tout le HTML étant généré dans le navigateur par React + `@babel/standalone`.
+   Googlebot ne voyait aucun texte à indexer.
+2. **Aucun `robots.txt` ni `sitemap.xml`** : pas de carte du site pour les crawlers.
+3. **Aucune balise SEO** : pas de `meta description`, canonical, Open Graph.
+
+À cela s'ajoutait que le site n'avait jamais été soumis à Google Search Console.
+
+### PR #2 — Rendre le site indexable (mergée)
+
+- **`robots.txt`** (`Allow: /` + lien sitemap) et **`sitemap.xml`** (7 pages publiques).
+- **Contenu HTML statique de secours** injecté dans chaque page React (`index`,
+  `comment-ca-marche`, `sources`, `blog`, `article`) : `<h1>`, intro, points clés, liens
+  internes — lus par Google, puis **remplacés automatiquement** par l'app React au chargement
+  (transparent pour les visiteurs).
+- **Balises SEO** sur toutes les pages : `meta description`, `link canonical`, Open Graph,
+  `robots index,follow`, titres enrichis. Canonical ajouté aussi sur les pages légales.
+
+### PR #3 — Renforcement SEO (mergée)
+
+- **Données structurées Schema.org (JSON-LD)** :
+  - Accueil : `Organization` + `WebSite` + `WebApplication` (gratuit, langue, catégorie).
+  - `comment-ca-marche.html` : `FAQPage` (5 questions) → éligible à l'affichage enrichi Google.
+- **Contenu d'accueil optimisé** : `<h1>` ciblé « Géolocaliser une annonce immobilière »,
+  `<h2>`/`<h3>`, section méthode + mini-FAQ textuelle, mots-clés (cadastre, parcelle, DVF, IGN).
+- **Performance** : React passé en **build production** (`*.production.min.js`) sur les 5 pages
+  (au lieu des builds `development` lourds) + `preconnect`/`dns-prefetch` vers `unpkg`/`umami`.
+- **Cohérence de marque** : ancien nom « ScanImmo » corrigé en « LocaliseImmo » dans tous les
+  composants (`Article`, `Sources`, `BlogHub`, `CommentCaMarche`).
+
+> ⚠️ **Dette technique introduite** : les attributs `integrity` (SRI) des scripts React/Babel
+> ont été retirés (impossible de calculer les empreintes des builds production dans
+> l'environnement Claude, réseau restreint). À recalculer et réajouter quand possible.
+
+### Google Search Console — configuration effectuée
+
+- **Propriété « Domaine »** `localiseimmo.fr` validée via enregistrement **TXT DNS chez OVH**
+  (sous-domaine `@`, valeur `google-site-verification=u0t8cQwTEGCA4TS7v4Xsl3gl63KZN1pSfpkKKn0d2o0`).
+  ⚠️ Ne jamais supprimer ce TXT (Google revérifie périodiquement).
+- **Sitemap soumis** : `sitemap.xml` (statut « Réussite »).
+- Note OVH : pour une propriété « Domaine », le champ Sitemaps n'a pas de préfixe prérempli
+  → saisir `sitemap.xml` (ou l'URL complète selon l'écran).
+
+### Reste à faire — SEO
+
+- [ ] **Demander l'indexation** des pages clés dans Search Console (« Inspecter une URL » →
+      `https://localiseimmo.fr/` et `/comment-ca-marche.html` → « Demander une indexation »).
+- [ ] **Vérifier les données structurées** sur search.google.com/test/rich-results.
+- [ ] **Surveiller le rapport « Pages »** (ex-Couverture) sous 1-3 semaines : repérer les
+      statuts « Détectée, actuellement non indexée » ou erreurs.
+- [ ] **Recalculer les hash SRI** des builds React/Babel production et réintégrer `integrity`.
+- [ ] **Publier des articles de blog optimisés** (le vrai levier de trafic) : ex. « Retrouver
+      l'adresse d'une annonce Leboncoin/SeLoger », « Comprendre le cadastre », « Lire le DVF ».
+- [ ] **(Optionnel, gros chantier)** Pré-compiler le JSX (Vite/esbuild) pour supprimer
+      `@babel/standalone` au runtime → rendu plus rapide et fiable, meilleur SEO.
+
+### Attentes réalistes
+
+- Sur le **nom de marque « localiseimmo »** : position #1 quasi certaine sous quelques jours.
+- Sur les **requêtes génériques** : fondations techniques posées, mais le classement dépend du
+  **temps** (Google teste les nouveaux sites des semaines/mois) et de la **notoriété** (liens
+  entrants, trafic, contenu). Pas de garantie de 1ʳᵉ page par la seule technique.
 
 ---
 

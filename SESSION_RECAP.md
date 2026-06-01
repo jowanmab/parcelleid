@@ -1,7 +1,9 @@
-# ParcelleID — Récap session mai 2026
+# ParcelleID / LocaliseImmo — Récap technique
 
-Document de référence post-session : changements front, backend, DB, pipeline.
-Sert de contexte pour futures conversations Claude.
+Document de référence vivant : changements front, backend, DB, pipeline, SEO.
+Sert de contexte pour les futures conversations Claude. Enrichi au fil des sessions.
+
+**Sessions couvertes :** mai 2026 (§1-12) · juin 2026 — SEO & indexation (§13).
 
 ---
 
@@ -263,7 +265,7 @@ Durée : **~4h48** pour toute la France (8.63M lignes). Paris seul : 3min40s.
 ### Bug DOM (corrigé) — coords aberrantes
 
 **Symptôme** : parcelles Pointe-à-Pitre affichées dans le golfe de Guinée.
-**Cause** : `download_dpe.py` utilisait `Transformer.from_crs("EPSG:2154", ...)` (Lambert 93)
+**Cause** : le script d'import DPE utilisait `Transformer.from_crs("EPSG:2154", ...)` (Lambert 93)
 qui n'est valide qu'en métropole. Les DOM ont leurs propres CRS locaux.
 **Fix appliqué** : reprojection batch des 666K parcelles DOM via :
 
@@ -373,13 +375,14 @@ Les recherches "single critère très large" (`DPE=D` seul → 42K résultats) r
 
 ## 7. Site marketing LocaliseImmo
 
-Pages publiques :
-- `https://jowanmab.github.io/parcelleid/` → landing LocaliseImmo
-- `https://jowanmab.github.io/parcelleid/comment-ca-marche.html`
-- `https://jowanmab.github.io/parcelleid/sources.html`
-- `https://jowanmab.github.io/parcelleid/blog.html`
-- `https://jowanmab.github.io/parcelleid/article.html`
-- `https://jowanmab.github.io/parcelleid/sig.html` → outil cadastre (ancien `index.html`)
+Pages publiques (domaine custom `localiseimmo.fr` via CNAME GitHub Pages) :
+- `https://localiseimmo.fr/` → landing LocaliseImmo
+- `https://localiseimmo.fr/comment-ca-marche.html`
+- `https://localiseimmo.fr/sources.html`
+- `https://localiseimmo.fr/blog.html`
+- `https://localiseimmo.fr/article.html`
+- `https://localiseimmo.fr/sig.html` → outil cadastre (ancien `index.html`)
+- `https://localiseimmo.fr/robots.txt` · `https://localiseimmo.fr/sitemap.xml` (SEO, cf. §13)
 
 Le bouton "Géolocaliser l'annonce" envoie les paramètres en query string vers `sig.html`,
 qui les lit via `sig-bootstrap.js` et lance la recherche automatiquement.
@@ -396,6 +399,20 @@ Conservés (encore utiles ou backups) :
 - `/opt/parcelleid/parcelles.dump` (130 MB) — backup
 - `/opt/dpe_final.csv` (1.65 GB) — source d'import historique
 - `/opt/parcelleid/api.py.bak.*` — historique versions API
+
+### Fichiers du repo non servis en production (backups / archives)
+
+Présents dans le dépôt mais ne faisant pas partie du site live — à connaître pour éviter
+toute confusion ou édition par erreur :
+
+| Fichier | Taille | Rôle |
+|---|---|---|
+| `sig.backup.html` | ~122 Ko | Backup de `sig.html` **avant** la refonte mobile Airbnb-style (cf. §1). Référencé nulle part. |
+| `parcelleid-v5-method2-local.html` | ~32 Ko | Ancienne version « method2 » de l'outil (titre encore « ParcelleID »), prototype local. Référencé nulle part. |
+| `assets/loader.html` | ~101 Ko | Écran de chargement, **encore référencé** par 2 fichiers — ne pas considérer comme orphelin. |
+
+> Note : les `*.bak` / `*.bak.*` sont déjà ignorés via `.gitignore`. Les fichiers ci-dessus
+> n'ont pas ce suffixe et sont donc versionnés — décision de nettoyage à prendre séparément.
 
 ---
 
@@ -453,7 +470,8 @@ systemctl status parcelleid.service
 - **Endpoint multi-INSEE** pour réduire les 20 appels parallèles Paris en 1 seul
 - **Simplifier les géométries** (`ST_SimplifyPreserveTopology`) pour les zooms larges
 - **Limiter LIMIT 1000** sur les recherches single-critère très larges
-- **Pages "Tarifs" et "Mentions légales"** sur le marketing (actuellement `href="#"`)
+- **Page "Tarifs"** sur le marketing (lien encore `href="#"` dans Landing/BlogHub/Article).
+  ✅ Mentions légales + Confidentialité désormais créées (`mentions-legales.html`, `confidentialite.html`)
 - **Pipeline upgrade** : passer ON CONFLICT DO NOTHING → DO UPDATE si ADEME publie des corrections
 
 ---
@@ -462,7 +480,7 @@ systemctl status parcelleid.service
 
 | Layer | Tech |
 |---|---|
-| Front | HTML + vanilla JS + Leaflet 1.9 + React 18 (landing only via Babel standalone) |
+| Front | HTML + vanilla JS + Leaflet 1.9 (sig.html) + React 18 sur les 5 pages marketing via Babel standalone (build production depuis §13) |
 | API | Python 3.12 + FastAPI + uvicorn (4 workers) + psycopg2 (pool 16) |
 | DB | PostgreSQL 16 + PostGIS |
 | Server | Hetzner CX33, Ubuntu 24.04 |
@@ -495,6 +513,78 @@ systemctl status parcelleid.service
 
 ---
 
+## 13. SEO & indexation Google (session 1er juin 2026)
+
+### Problème de départ
+
+`localiseimmo.fr` était **invisible sur Google** : `site:localiseimmo.fr` → 0 résultat, et
+le site n'apparaissait même pas en tapant son nom. Trois causes identifiées :
+
+1. **Contenu rendu 100 % côté client** : le `<body>` ne contenait qu'un `<div id="root">`
+   vide, tout le HTML étant généré dans le navigateur par React + `@babel/standalone`.
+   Googlebot ne voyait aucun texte à indexer.
+2. **Aucun `robots.txt` ni `sitemap.xml`** : pas de carte du site pour les crawlers.
+3. **Aucune balise SEO** : pas de `meta description`, canonical, Open Graph.
+
+À cela s'ajoutait que le site n'avait jamais été soumis à Google Search Console.
+
+### PR #2 — Rendre le site indexable (mergée)
+
+- **`robots.txt`** (`Allow: /` + lien sitemap) et **`sitemap.xml`** (7 pages publiques).
+- **Contenu HTML statique de secours** injecté dans chaque page React (`index`,
+  `comment-ca-marche`, `sources`, `blog`, `article`) : `<h1>`, intro, points clés, liens
+  internes — lus par Google, puis **remplacés automatiquement** par l'app React au chargement
+  (transparent pour les visiteurs).
+- **Balises SEO** sur toutes les pages : `meta description`, `link canonical`, Open Graph,
+  `robots index,follow`, titres enrichis. Canonical ajouté aussi sur les pages légales.
+
+### PR #3 — Renforcement SEO (mergée)
+
+- **Données structurées Schema.org (JSON-LD)** :
+  - Accueil : `Organization` + `WebSite` + `WebApplication` (gratuit, langue, catégorie).
+  - `comment-ca-marche.html` : `FAQPage` (5 questions) → éligible à l'affichage enrichi Google.
+- **Contenu d'accueil optimisé** : `<h1>` ciblé « Géolocaliser une annonce immobilière »,
+  `<h2>`/`<h3>`, section méthode + mini-FAQ textuelle, mots-clés (cadastre, parcelle, DVF, IGN).
+- **Performance** : React passé en **build production** (`*.production.min.js`) sur les 5 pages
+  (au lieu des builds `development` lourds) + `preconnect`/`dns-prefetch` vers `unpkg`/`umami`.
+- **Cohérence de marque** : ancien nom « ScanImmo » corrigé en « LocaliseImmo » dans tous les
+  composants (`Article`, `Sources`, `BlogHub`, `CommentCaMarche`).
+
+> ⚠️ **Dette technique introduite** : les attributs `integrity` (SRI) des scripts React/Babel
+> ont été retirés (impossible de calculer les empreintes des builds production dans
+> l'environnement Claude, réseau restreint). À recalculer et réajouter quand possible.
+
+### Google Search Console — configuration effectuée
+
+- **Propriété « Domaine »** `localiseimmo.fr` validée via enregistrement **TXT DNS chez OVH**
+  (sous-domaine `@`, valeur `google-site-verification=u0t8cQwTEGCA4TS7v4Xsl3gl63KZN1pSfpkKKn0d2o0`).
+  ⚠️ Ne jamais supprimer ce TXT (Google revérifie périodiquement).
+- **Sitemap soumis** : `sitemap.xml` (statut « Réussite »).
+- Note OVH : pour une propriété « Domaine », le champ Sitemaps n'a pas de préfixe prérempli
+  → saisir `sitemap.xml` (ou l'URL complète selon l'écran).
+
+### Reste à faire — SEO
+
+- [ ] **Demander l'indexation** des pages clés dans Search Console (« Inspecter une URL » →
+      `https://localiseimmo.fr/` et `/comment-ca-marche.html` → « Demander une indexation »).
+- [ ] **Vérifier les données structurées** sur search.google.com/test/rich-results.
+- [ ] **Surveiller le rapport « Pages »** (ex-Couverture) sous 1-3 semaines : repérer les
+      statuts « Détectée, actuellement non indexée » ou erreurs.
+- [ ] **Recalculer les hash SRI** des builds React/Babel production et réintégrer `integrity`.
+- [ ] **Publier des articles de blog optimisés** (le vrai levier de trafic) : ex. « Retrouver
+      l'adresse d'une annonce Leboncoin/SeLoger », « Comprendre le cadastre », « Lire le DVF ».
+- [ ] **(Optionnel, gros chantier)** Pré-compiler le JSX (Vite/esbuild) pour supprimer
+      `@babel/standalone` au runtime → rendu plus rapide et fiable, meilleur SEO.
+
+### Attentes réalistes
+
+- Sur le **nom de marque « localiseimmo »** : position #1 quasi certaine sous quelques jours.
+- Sur les **requêtes génériques** : fondations techniques posées, mais le classement dépend du
+  **temps** (Google teste les nouveaux sites des semaines/mois) et de la **notoriété** (liens
+  entrants, trafic, contenu). Pas de garantie de 1ʳᵉ page par la seule technique.
+
+---
+
 ## Glossaire mini
 
 - **GiST** : Generalized Search Tree, index spatial Postgres pour requêtes ST_Contains/ST_DWithin
@@ -505,4 +595,4 @@ systemctl status parcelleid.service
 
 ---
 
-_Document généré à l'issue de la session du 17 mai 2026._
+_Initié à l'issue de la session du 17 mai 2026. Dernière mise à jour : 1er juin 2026 (SEO & indexation)._

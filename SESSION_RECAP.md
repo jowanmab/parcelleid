@@ -1,7 +1,9 @@
-# ParcelleID — Récap session mai 2026
+# ParcelleID / LocaliseImmo — Récap technique
 
-Document de référence post-session : changements front, backend, DB, pipeline.
-Sert de contexte pour futures conversations Claude.
+Document de référence vivant : changements front, backend, DB, pipeline, SEO.
+Sert de contexte pour les futures conversations Claude. Enrichi au fil des sessions.
+
+**Sessions couvertes :** mai 2026 (§1-12) · juin 2026 — SEO & indexation (§13).
 
 ---
 
@@ -263,7 +265,7 @@ Durée : **~4h48** pour toute la France (8.63M lignes). Paris seul : 3min40s.
 ### Bug DOM (corrigé) — coords aberrantes
 
 **Symptôme** : parcelles Pointe-à-Pitre affichées dans le golfe de Guinée.
-**Cause** : `download_dpe.py` utilisait `Transformer.from_crs("EPSG:2154", ...)` (Lambert 93)
+**Cause** : le script d'import DPE utilisait `Transformer.from_crs("EPSG:2154", ...)` (Lambert 93)
 qui n'est valide qu'en métropole. Les DOM ont leurs propres CRS locaux.
 **Fix appliqué** : reprojection batch des 666K parcelles DOM via :
 
@@ -398,6 +400,20 @@ Conservés (encore utiles ou backups) :
 - `/opt/dpe_final.csv` (1.65 GB) — source d'import historique
 - `/opt/parcelleid/api.py.bak.*` — historique versions API
 
+### Fichiers du repo non servis en production (backups / archives)
+
+Présents dans le dépôt mais ne faisant pas partie du site live — à connaître pour éviter
+toute confusion ou édition par erreur :
+
+| Fichier | Taille | Rôle |
+|---|---|---|
+| `sig.backup.html` | ~122 Ko | Backup de `sig.html` **avant** la refonte mobile Airbnb-style (cf. §1). Référencé nulle part. |
+| `parcelleid-v5-method2-local.html` | ~32 Ko | Ancienne version « method2 » de l'outil (titre encore « ParcelleID »), prototype local. Référencé nulle part. |
+| `assets/loader.html` | ~101 Ko | Écran de chargement, **encore référencé** par 2 fichiers — ne pas considérer comme orphelin. |
+
+> Note : les `*.bak` / `*.bak.*` sont déjà ignorés via `.gitignore`. Les fichiers ci-dessus
+> n'ont pas ce suffixe et sont donc versionnés — décision de nettoyage à prendre séparément.
+
 ---
 
 ## 9. Commandes utiles
@@ -454,7 +470,8 @@ systemctl status parcelleid.service
 - **Endpoint multi-INSEE** pour réduire les 20 appels parallèles Paris en 1 seul
 - **Simplifier les géométries** (`ST_SimplifyPreserveTopology`) pour les zooms larges
 - **Limiter LIMIT 1000** sur les recherches single-critère très larges
-- **Pages "Tarifs" et "Mentions légales"** sur le marketing (actuellement `href="#"`)
+- **Page "Tarifs"** sur le marketing (lien encore `href="#"` dans Landing/BlogHub/Article).
+  ✅ Mentions légales + Confidentialité désormais créées (`mentions-legales.html`, `confidentialite.html`)
 - **Pipeline upgrade** : passer ON CONFLICT DO NOTHING → DO UPDATE si ADEME publie des corrections
 
 ---
@@ -463,7 +480,7 @@ systemctl status parcelleid.service
 
 | Layer | Tech |
 |---|---|
-| Front | HTML + vanilla JS + Leaflet 1.9 + React 18 (landing only via Babel standalone) |
+| Front | HTML + vanilla JS + Leaflet 1.9 (sig.html) + React 18 sur les 5 pages marketing via Babel standalone (build production depuis §13) |
 | API | Python 3.12 + FastAPI + uvicorn (4 workers) + psycopg2 (pool 16) |
 | DB | PostgreSQL 16 + PostGIS |
 | Server | Hetzner CX33, Ubuntu 24.04 |
@@ -578,4 +595,4 @@ le site n'apparaissait même pas en tapant son nom. Trois causes identifiées :
 
 ---
 
-_Document généré à l'issue de la session du 17 mai 2026._
+_Initié à l'issue de la session du 17 mai 2026. Dernière mise à jour : 1er juin 2026 (SEO & indexation)._

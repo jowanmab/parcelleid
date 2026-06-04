@@ -904,6 +904,67 @@
       }
       body.ab-modal-open #search-form-block .btn-row { gap: 6px; margin-bottom: 4px; }
 
+      /* ── POPUP "AUCUN BIEN TROUVÉ" — affiché en haut, par-dessus la barre de recherche ── */
+      .mobile-no-result-popup { display: none; }
+      .mobile-no-result-popup.show {
+        display: flex;
+        position: fixed;
+        top: calc(env(safe-area-inset-top, 0px) + 84px);
+        left: 12px; right: 12px;
+        z-index: 1600;
+        background: var(--white);
+        border: 1.5px solid #dc2626;
+        border-radius: 14px;
+        padding: 12px 14px 12px 14px;
+        gap: 10px;
+        align-items: flex-start;
+        box-shadow: 0 8px 24px rgba(220,38,38,0.18), 0 2px 6px rgba(0,0,0,0.12);
+        animation: ab-no-result-in 0.28s cubic-bezier(0.2, 0, 0, 1);
+      }
+      @keyframes ab-no-result-in {
+        from { transform: translateY(-12px); opacity: 0; }
+        to   { transform: translateY(0);     opacity: 1; }
+      }
+      .mobile-no-result-popup .icon {
+        flex-shrink: 0;
+        width: 28px; height: 28px;
+        border-radius: 50%;
+        background: rgba(220,38,38,0.10);
+        color: #dc2626;
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 16px;
+      }
+      .mobile-no-result-popup .text { flex: 1; min-width: 0; line-height: 1.35; }
+      .mobile-no-result-popup .title {
+        font-size: 0.86rem; font-weight: 800; color: var(--ink);
+        letter-spacing: -0.01em;
+      }
+      .mobile-no-result-popup .sub {
+        font-size: 0.74rem; color: var(--mid); margin-top: 2px;
+      }
+      .mobile-no-result-popup .cta {
+        margin-top: 8px;
+        background: var(--blue); color: var(--white);
+        border: none; border-radius: 8px;
+        padding: 7px 12px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 0.78rem; font-weight: 700;
+        cursor: pointer;
+      }
+      .mobile-no-result-popup .cta:active { transform: scale(0.96); }
+      .mobile-no-result-popup .close {
+        flex-shrink: 0;
+        width: 28px; height: 28px;
+        background: none; border: none;
+        color: var(--mid);
+        font-size: 18px; line-height: 1; cursor: pointer;
+        border-radius: 50%;
+        display: inline-flex; align-items: center; justify-content: center;
+      }
+      .mobile-no-result-popup .close:hover { background: var(--bg); }
+      /* Quand la modale de recherche est ouverte, on cache le popup (l'utilisateur édite déjà) */
+      body.ab-modal-open .mobile-no-result-popup { display: none !important; }
+
       /* ── SLOT PUBLICITAIRE — 25% du viewport (capé à 260px), fixé en bas ── */
       .ab-modal-ad { display: none; }
       body.ab-modal-open .ab-modal-ad {
@@ -957,6 +1018,19 @@
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="6" y1="12" x2="18" y2="12"/><line x1="10" y1="18" x2="14" y2="18"/></svg>
     </span>
   </button>
+</div>
+
+<!-- Popup mobile "Aucun bien trouvé" — affiché au-dessus de la barre de recherche
+     quand une recherche renvoie 0 résultat, pour que l'utilisateur comprenne
+     que la requête a abouti mais sans match. -->
+<div class="mobile-no-result-popup" id="mobile-no-result-popup" role="alert" aria-live="polite">
+  <span class="icon" aria-hidden="true">!</span>
+  <div class="text">
+    <div class="title">Aucun bien trouvé</div>
+    <div class="sub">Augmentez la tolérance ou retirez un filtre (DPE, GES, date).</div>
+    <button type="button" class="cta" id="mobile-no-result-cta">Modifier la recherche</button>
+  </div>
+  <button type="button" class="close" id="mobile-no-result-close" aria-label="Fermer">×</button>
 </div>
 
 <!-- AUTH MODAL -->
@@ -2093,7 +2167,16 @@ async function doSearch() {
     drawParcels(features, surf, isLogement);
     renderCards(features, surf, isLogement);
     if (features.length > 0) clearStatus(); else setStatus("Aucun bien trouvé. Essayez d'augmenter la tolérance.", 'err');
-    if (features.length > 0) collapseSearch();
+    // Sur mobile : si 0 résultat, on ferme la modale ET on affiche un popup au-dessus de la
+    // barre de recherche — sinon la modale reste ouverte et l'utilisateur ne comprend pas
+    // qu'il n'y a aucun retour à sa recherche.
+    if (features.length > 0) {
+      collapseSearch();
+      hideMobileNoResultPopup();
+    } else if (isMobile()) {
+      collapseSearch();
+      showMobileNoResultPopup();
+    }
     if (isMobile()) setPanelState('mid');
     updateShareableUrl();
   } catch (err) { setStatus(`❌ ${err.message}`, 'err'); setProgress(100); }
@@ -2162,6 +2245,7 @@ function doReset() {
   expandSearch();
   updateSearchBtn();
   if (isMobile()) setPanelState('');
+  if (typeof hideMobileNoResultPopup === 'function') hideMobileNoResultPopup();
   updateAbPill();
 }
 
@@ -2282,9 +2366,27 @@ function updateAbPill() {
   subEl.textContent = bits.length ? bits.join(' · ') : 'Tous les biens';
 }
 
+// ── POPUP MOBILE "Aucun bien trouvé" ──
+function showMobileNoResultPopup() {
+  const el = document.getElementById('mobile-no-result-popup');
+  if (el) el.classList.add('show');
+}
+function hideMobileNoResultPopup() {
+  const el = document.getElementById('mobile-no-result-popup');
+  if (el) el.classList.remove('show');
+}
+const _noResultClose = document.getElementById('mobile-no-result-close');
+if (_noResultClose) _noResultClose.addEventListener('click', hideMobileNoResultPopup);
+const _noResultCta = document.getElementById('mobile-no-result-cta');
+if (_noResultCta) _noResultCta.addEventListener('click', () => {
+  hideMobileNoResultPopup();
+  openAbModal();
+});
+
 // Wire up top-pill click → open modal
 const _abPillBtn = document.getElementById('ab-search-pill');
 if (_abPillBtn) _abPillBtn.addEventListener('click', () => {
+  hideMobileNoResultPopup();
   openAbModal();
 });
 

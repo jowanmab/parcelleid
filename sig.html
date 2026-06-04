@@ -1812,13 +1812,24 @@ function loadMoreCards(targetSurf, isLogement = false) {
       if (mouseOverSV) return;
       selectFeature(f, card);
       if (!parcelsLayer) return;
-      parcelsLayer.eachLayer(l => {
-        if (l.feature === f) {
-          map.fitBounds(l.getBounds(), { padding: [80, 80] });
-          l.getPopup().setLatLng(L.latLng(l.getBounds().getNorth(), l.getBounds().getCenter().lng)).openOn(map);
-        }
-      });
-      if (isMobile()) setPanelState('');
+      // Sur mobile : replier le panel AVANT fitBounds, sinon le zoom est calculé
+      // sur une carte de ~5% de hauteur → zoom max sur la parcelle.
+      // setPanelState lance une transition CSS de ~420ms pendant laquelle il
+      // re-fit à priorBounds ; on doit donc attendre la fin pour fitBounds final.
+      const fitToParcel = () => {
+        parcelsLayer.eachLayer(l => {
+          if (l.feature === f) {
+            map.fitBounds(l.getBounds(), { padding: [80, 80] });
+            l.getPopup().setLatLng(L.latLng(l.getBounds().getNorth(), l.getBounds().getCenter().lng)).openOn(map);
+          }
+        });
+      };
+      if (isMobile()) {
+        setPanelState('');
+        setTimeout(fitToParcel, 440);
+      } else {
+        fitToParcel();
+      }
     });
     list.appendChild(card);
   });

@@ -1893,7 +1893,10 @@ function loadMoreCards(targetSurf, isLogement = false) {
       const fitToParcel = () => {
         parcelsLayer.eachLayer(l => {
           if (l.feature === f) {
-            map.fitBounds(l.getBounds(), { padding: [80, 80] });
+            // On élargit l'emprise de ~100 m autour de la parcelle pour qu'on
+            // voie son environnement et pas seulement le contour (sur tous les
+            // appareils, pas uniquement le mobile).
+            map.fitBounds(boundsWithBuffer(l.getBounds(), 100), { padding: [20, 20] });
             l.getPopup().setLatLng(L.latLng(l.getBounds().getNorth(), l.getBounds().getCenter().lng)).openOn(map);
           }
         });
@@ -1918,6 +1921,19 @@ function loadMoreCards(targetSurf, isLogement = false) {
     }, { threshold: 0.1 });
     scrollObs.observe(sentinel);
   }
+}
+
+// Élargit une emprise (LatLngBounds) d'un nombre de mètres dans toutes les
+// directions. Utilisé pour garder ~100 m d'environnement visible autour d'une
+// parcelle quand on zoome dessus.
+function boundsWithBuffer(bounds, meters) {
+  const midLat = bounds.getCenter().lat;
+  const latBuf = meters / 111320;
+  const lngBuf = meters / (111320 * Math.cos(midLat * Math.PI / 180));
+  return L.latLngBounds(
+    [bounds.getSouth() - latBuf, bounds.getWest() - lngBuf],
+    [bounds.getNorth() + latBuf, bounds.getEast() + lngBuf]
+  );
 }
 
 function openGoogleEarth(lat, lng) {

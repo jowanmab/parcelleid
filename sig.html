@@ -1291,7 +1291,7 @@
 </svg>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD1pMAMR9M6vLrsfoLJ5GDyIbkDTgLvqg4&libraries=streetView,geometry&loading=async"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCxBnG6NtlR7yDV9vHvTKMgOI_ucihUaBY&libraries=streetView,geometry&loading=async"></script>
 <script>
 // MOBILE PANEL
 const isMobile = () => window.innerWidth <= 768;
@@ -1660,7 +1660,7 @@ async function findStreetViewToward(targetLat, targetLng) {
 // Construit l'URL Embed Street View. Si on a un pano ID (StreetViewService
 // l'a résolu), on l'utilise — c'est déterministe. Sinon fallback location.
 function buildStreetViewEmbedUrl({ pano, lat, lng, heading }) {
-  const KEY = 'AIzaSyD1pMAMR9M6vLrsfoLJ5GDyIbkDTgLvqg4';
+  const KEY = 'AIzaSyCxBnG6NtlR7yDV9vHvTKMgOI_ucihUaBY';
   const headingParam = (heading !== null && heading !== undefined) ? `&heading=${heading}` : '';
   const base = `https://www.google.com/maps/embed/v1/streetview?key=${KEY}`;
   if (pano) return `${base}&pano=${pano}${headingParam}&fov=100&pitch=0`;
